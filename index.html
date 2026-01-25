@@ -138,9 +138,9 @@
 <ol>
 <li>右键桌面→选择“Git Bash Here”；</li>
 <li>输入命令安装Hexo脚手架（全局工具）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
-<em>（等待终端显示“added xx packages in xx s”即安装完成）</em></li>
+（等待终端显示“added xx packages in xx s”即安装完成）</li>
 <li>输入命令在桌面创建Hexo项目（项目名自定义，这里用<code>my-hexo-blog</code>）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init my-hexo-blog</span><br></pre></td></tr></table></figure>
-<em>（等待终端显示“Start blogging with Hexo!”即初始化完成）</em></li>
+（等待终端显示“Start blogging with Hexo!”即初始化完成）</li>
 <li>进入项目目录并安装依赖：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> my-hexo-blog  <span class="comment"># 进入项目文件夹</span></span><br><span class="line">npm install      <span class="comment"># 安装项目依赖</span></span><br></pre></td></tr></table></figure></li>
 </ol>
 </li>
@@ -183,9 +183,9 @@
 <li><p><strong>操作</strong>：</p>
 <ol>
 <li>在Git Bash的<code>my-hexo-blog</code>目录下，输入命令生成SSH密钥（替换为你的GitHub邮箱）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t ed25519 -C <span class="string">&quot;你的GitHub注册邮箱&quot;</span></span><br></pre></td></tr></table></figure>
-<em>（连续按3次回车，使用默认路径和空密码）</em></li>
+（连续按3次回车，使用默认路径和空密码）</li>
 <li>输入命令复制密钥内容：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> ~/.ssh/id_ed25519.pub</span><br></pre></td></tr></table></figure>
-<em>（终端会显示一长串以“ssh-ed25519”开头、你的邮箱结尾的字符串，全选复制）</em></li>
+（终端会显示一长串以“ssh-ed25519”开头、你的邮箱结尾的字符串，全选复制）</li>
 <li>登录GitHub→点击页面右上角“头像”→选择“Settings”；</li>
 <li>左侧菜单选择“SSH and GPG keys”→点击“New SSH key”；</li>
 <li>“Title”填写自定义名称（如“我的Windows电脑”），“Key”粘贴刚才复制的密钥字符串；</li>
@@ -204,11 +204,11 @@
 <h4 id="七、执行博客部署"><a href="#七、执行博客部署" class="headerlink" title="七、执行博客部署"></a>七、执行博客部署</h4><ul>
 <li><p><strong>操作1：清理本地缓存</strong><br>在Git Bash中输入：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
-<p><em>（终端显示“INFO Deleted database.”“INFO Deleted public folder.”即清理完成）</em></p>
+<p>（终端显示“INFO Deleted database.”“INFO Deleted public folder.”即清理完成）</p>
 </li>
 <li><p><strong>操作2：生成静态文件</strong><br>输入：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo generate  <span class="comment"># 可简写为 hexo g</span></span><br></pre></td></tr></table></figure>
-<p><em>（终端显示“INFO Generated: xxx.html”等信息，项目目录会生成<code>public</code>文件夹，里面是博客的静态文件）</em></p>
+<p>（终端显示“INFO Generated: xxx.html”等信息，项目目录会生成<code>public</code>文件夹，里面是博客的静态文件）</p>
 </li>
 <li><p><strong>操作3：部署到GitHub</strong><br>输入：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo deploy  <span class="comment"># 可简写为 hexo d</span></span><br></pre></td></tr></table></figure></li>
@@ -268,7 +268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/01/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2/" data-id="cuidBqO_20C6Gb41MRWTbWs6_" data-title="学习用Hexo写博客" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/01/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2/" data-id="cuidR4CC5JdgLI6SBKMRmOdzm" data-title="学习用Hexo写博客" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -526,7 +526,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/01/24/WorldMem%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/" data-id="cuidpNQrkL3QNTE-fq8oHqgXX" data-title="WorldMem项目部署记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/01/24/WorldMem%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/" data-id="cuidaHXxTLanT6WiFgGcdI8cW" data-title="WorldMem项目部署记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       

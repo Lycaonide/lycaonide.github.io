@@ -245,9 +245,12 @@
 
 
 <h5 id="3-本地预览博客效果"><a href="#3-本地预览博客效果" class="headerlink" title="3. 本地预览博客效果"></a>3. 本地预览博客效果</h5><ul>
-<li><strong>操作</strong>：<br>在Git Bash的Hexo项目目录下，输入命令启动本地服务：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean  <span class="comment"># 先清理旧缓存（可选，但建议执行）</span></span><br><span class="line">hexo s      <span class="comment"># 启动本地预览</span></span><br></pre></td></tr></table></figure></li>
-<li><strong>验证</strong>：<br>打开浏览器访问<code>http://localhost:4000</code>，在“文章”列表中找到《我的第一篇Hexo博客》，点击进入查看格式、图片、链接是否正常显示。</li>
-<li><strong>关闭预览</strong>：<br>在Git Bash中按<code>Ctrl+C</code>终止服务。</li>
+<li><p><strong>操作</strong>：<br>在Git Bash的Hexo项目目录下，输入命令启动本地服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean  <span class="comment"># 先清理旧缓存（可选，但建议执行）</span></span><br><span class="line">hexo s      <span class="comment"># 启动本地预览</span></span><br></pre></td></tr></table></figure></li>
+<li><p><strong>验证</strong>：<br>打开浏览器访问<code>http://localhost:4000</code>，在“文章”列表中找到《我的第一篇Hexo博客》，点击进入查看格式、图片、链接是否正常显示。</p>
+</li>
+<li><p><strong>关闭预览</strong>：<br>在Git Bash中按<code>Ctrl+C</code>终止服务。</p>
+</li>
 </ul>
 <h5 id="4-发布新博客到线上"><a href="#4-发布新博客到线上" class="headerlink" title="4. 发布新博客到线上"></a>4. 发布新博客到线上</h5><ul>
 <li><p><strong>操作</strong>：<br>在Git Bash的Hexo项目目录下，依次执行命令（更新线上博客）：</p>
@@ -265,7 +268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/01/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2/" data-id="cuidxfvT1dWBgusU79A9T0gZX" data-title="学习用Hexo写博客" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/01/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2/" data-id="cuidi82rw04iUAfXbIfot4HEA" data-title="学习用Hexo写博客" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -306,204 +309,221 @@
     <div class="e-content article-entry" itemprop="articleBody">
       
         <h4 id="一、环境与工具准备"><a href="#一、环境与工具准备" class="headerlink" title="一、环境与工具准备"></a>一、环境与工具准备</h4><ol>
-<li><p>安装Anaconda&#x2F;Miniconda：官网下载默认路径安装，自动配置环境变量。</p>
-</li>
-<li><p>安装Git：下载Git for Windows，勾选「Git Bash Here」选项（确保Git Bash支持<code>wget</code>命令）。</p>
-</li>
-<li><p>创建Conda环境：打开Anaconda Prompt，执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda create -n worldmem python=3.10</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>激活Conda环境（Anaconda Prompt中）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda activate worldmem</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>安装带CUDA的PyTorch：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip uninstall torch torchvision torchaudio -y</span><br><span class="line">pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>验证CUDA生效：执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c <span class="string">&quot;import torch; print(torch.cuda.is_available())&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>输出<code>True</code>即可。</p>
-</li>
-<li><p>Git克隆项目代码（GitHub原链接）：打开Git Bash，切换到桌面目录，执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /c/Users/13062/Desktop  <span class="comment"># 切换到桌面</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zeqixiao/worldmem-video-demo.git  <span class="comment"># GitHub原链接克隆</span></span><br></pre></td></tr></table></figure>
-
-<p>克隆后项目路径：<code>C:\Users\13062\Desktop\worldmem-video-demo\WorldMem</code>。</p>
-</li>
+<li>安装Anaconda&#x2F;Miniconda：官网下载默认路径安装，自动配置环境变量（后续Conda命令全局可用）。</li>
+<li>安装Git：下载Git for Windows，勾选「Git Bash Here」选项（确保Git Bash支持<code>wget</code>命令，后续统一用Git Bash操作）。</li>
+<li>创建Conda环境：打开Anaconda Prompt，执行以下命令创建专属环境（避免依赖冲突）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda create -n worldmem python=3.10 -y</span><br></pre></td></tr></table></figure></li>
+<li>激活Conda环境（Anaconda Prompt中）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda activate worldmem</span><br></pre></td></tr></table></figure></li>
+<li>安装带CUDA的PyTorch（核心依赖，GPU加速必备）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip uninstall torch torchvision torchaudio -y  <span class="comment"># 卸载可能存在的CPU版本</span></span><br><span class="line">pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118</span><br></pre></td></tr></table></figure></li>
+<li>验证CUDA生效：执行以下命令，输出<code>True</code>说明GPU适配成功：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c <span class="string">&quot;import torch; print(torch.cuda.is_available())&quot;</span></span><br></pre></td></tr></table></figure></li>
+<li>Git克隆项目代码：打开Git Bash（右键桌面→「Git Bash Here」），执行克隆命令（无需提前激活环境，仅下载代码）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /c/Users/13062/Desktop  <span class="comment"># 切换到桌面目录</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zeqixiao/worldmem-video-demo.git  <span class="comment"># 克隆项目</span></span><br></pre></td></tr></table></figure>
+克隆后项目路径：<code>C:\Users\13062\Desktop\worldmem-video-demo\WorldMem</code>（后续所有操作均基于此路径）。</li>
 </ol>
-<h4 id="二、项目依赖安装（Conda环境内安装）"><a href="#二、项目依赖安装（Conda环境内安装）" class="headerlink" title="二、项目依赖安装（Conda环境内安装）"></a>二、项目依赖安装（Conda环境内安装）</h4><ol>
-<li><p>确保已激活<code>worldmem</code>环境（终端显示<code>(worldmem)</code>），切换到项目根目录：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /c/Users/13062/Desktop/worldmem-video-demo/WorldMem  <span class="comment"># Git Bash</span></span><br><span class="line"><span class="comment"># 或 Anaconda Prompt：cd C:\Users\13062\Desktop\worldmem-video-demo\WorldMem</span></span><br></pre></td></tr></table></figure>
+<h4 id="二、Git-Bash配置Conda环境（核心前提：统一终端-激活环境）"><a href="#二、Git-Bash配置Conda环境（核心前提：统一终端-激活环境）" class="headerlink" title="二、Git Bash配置Conda环境（核心前提：统一终端+激活环境）"></a>二、Git Bash配置Conda环境（核心前提：统一终端+激活环境）</h4><blockquote>
+<p>关键逻辑：所有后续操作（安装依赖、下载资源、执行脚本）均需在<code>worldmem</code>环境中进行，Git Bash默认不支持Conda激活，必须先配置，否则依赖安装、命令执行都会失效。</p>
+</blockquote>
+<ol>
+<li>配置Git Bash加载Conda脚本：<ul>
+<li>右键项目文件夹（<code>worldmem-video-demo\WorldMem</code>）→「Git Bash Here」，打开Git Bash终端；</li>
+<li>执行以下命令创建并编辑配置文件：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">touch</span> ~/.bashrc  <span class="comment"># 创建Conda配置文件</span></span><br><span class="line">nano ~/.bashrc    <span class="comment"># 打开编辑器</span></span><br></pre></td></tr></table></figure></li>
+<li>在编辑器中粘贴以下内容（Conda脚本默认路径，若Anaconda安装路径修改需对应调整）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /c/Users/13062/anaconda3/etc/profile.d/conda.sh</span><br></pre></td></tr></table></figure></li>
+<li>保存退出：按<code>Ctrl+O</code>→回车确认文件名→按<code>Ctrl+X</code>退出编辑器。</li>
+</ul>
 </li>
-<li><p>实际安装依赖步骤（按项目提示逐步安装，非一次性复制所有命令）：</p>
-<ul>
-<li><p>先尝试安装项目requirements.txt（若项目包含该文件）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>运行项目&#x2F;脚本时，遇到「ModuleNotFoundError」，逐个补充缺失依赖（核心依赖如下）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按报错顺序逐步安装，实际操作中可能分多次执行</span></span><br><span class="line">pip install hydra-core</span><br><span class="line">pip install lpips</span><br><span class="line">pip install gradio</span><br><span class="line">pip install wandb</span><br><span class="line">pip install torchvision</span><br><span class="line">pip install pillow numpy scipy opencv-python</span><br></pre></td></tr></table></figure>
-
-<p>（注：所有依赖均安装在Anaconda的<code>worldmem</code>环境内，路径：<code>C:\Users\13062\anaconda3\envs\worldmem\Lib\site-packages</code>，不影响系统Python）</p>
-</li>
+<li>生效配置并激活<code>worldmem</code>环境：<ul>
+<li>执行以下命令加载配置：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure></li>
+<li>激活<code>worldmem</code>环境（终端左侧显示<code>(worldmem)</code>即成功）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda activate worldmem</span><br></pre></td></tr></table></figure></li>
+<li>验证环境：执行<code>python --version</code>，输出<code>Python 3.10.x</code>（与创建环境时指定版本一致），说明环境配置完成。</li>
 </ul>
 </li>
 </ol>
-<h4 id="三、本地资源准备-代码修改"><a href="#三、本地资源准备-代码修改" class="headerlink" title="三、本地资源准备+代码修改"></a>三、本地资源准备+代码修改</h4><h5 id="1-镜像站下载案例文件（case1-npz-case4-npz，正确有效链接）"><a href="#1-镜像站下载案例文件（case1-npz-case4-npz，正确有效链接）" class="headerlink" title="1. 镜像站下载案例文件（case1.npz~case4.npz，正确有效链接）"></a>1. 镜像站下载案例文件（<code>case1.npz~case4.npz</code>，正确有效链接）</h5><p>打开Git Bash，切换到项目<code>assets/examples</code>目录（先创建目录），执行以下下载代码：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 创建案例文件目录</span></span><br><span class="line"><span class="built_in">cd</span> /c/Users/13062/Desktop/worldmem-video-demo/WorldMem</span><br><span class="line"><span class="built_in">mkdir</span> -p assets/examples &amp;&amp; <span class="built_in">cd</span> assets/examples</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 实际使用的镜像站下载链接（可直接下载，无超时）</span></span><br><span class="line">wget https://hf-mirror.com/yslan/worldmem/resolve/main/assets/examples/case1.npz</span><br><span class="line">wget https://hf-mirror.com/yslan/worldmem/resolve/main/assets/examples/case2.npz</span><br><span class="line">wget https://hf-mirror.com/yslan/worldmem/resolve/main/assets/examples/case3.npz</span><br><span class="line">wget https://hf-mirror.com/yslan/worldmem/resolve/main/assets/examples/case4.npz</span><br></pre></td></tr></table></figure>
-
-<p>下载完成后，4个<code>.npz</code>文件自动存入<code>assets/examples</code>目录。</p>
-<h5 id="2-修改app-py跳过自动下载"><a href="#2-修改app-py跳过自动下载" class="headerlink" title="2. 修改app.py跳过自动下载"></a>2. 修改<code>app.py</code>跳过自动下载</h5><p>打开<code>WorldMem/app.py</code>，找到<code>download_assets_if_needed()</code>函数，修改如下（实际修改可能有差异）：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download_assets_if_needed</span>():</span><br><span class="line">    asset_dir = <span class="string">&quot;assets/examples&quot;</span></span><br><span class="line">    os.makedirs(asset_dir, exist_ok=<span class="literal">True</span>)</span><br><span class="line">    cases = [<span class="string">&quot;case1.npz&quot;</span>, <span class="string">&quot;case2.npz&quot;</span>, <span class="string">&quot;case3.npz&quot;</span>, <span class="string">&quot;case4.npz&quot;</span>]</span><br><span class="line">    <span class="keyword">for</span> <span class="keyword">case</span> <span class="keyword">in</span> cases:</span><br><span class="line">        local_path = os.path.join(asset_dir, <span class="keyword">case</span>)</span><br><span class="line">        <span class="comment"># 你实际的修改：本地有文件就跳过，无则执行原下载（仅注释原下载逻辑避免超时）</span></span><br><span class="line">        <span class="keyword">if</span> os.path.exists(local_path):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;✅ 本地已找到 <span class="subst">&#123;<span class="keyword">case</span>&#125;</span>，跳过下载&quot;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="comment"># 实际操作：直接注释掉原下载代码，不删除</span></span><br><span class="line">        <span class="comment"># url = f&quot;https://huggingface.co/spaces/yslan/worldmem/resolve/main/assets/examples/&#123;case&#125;&quot;</span></span><br><span class="line">        <span class="comment"># print(f&quot;Downloading &#123;case&#125;...&quot;)</span></span><br><span class="line">        <span class="comment"># resp = requests.get(url, timeout=30)</span></span><br><span class="line">        <span class="comment"># with open(local_path, &quot;wb&quot;) as f:</span></span><br><span class="line">        <span class="comment">#     f.write(resp.content)</span></span><br></pre></td></tr></table></figure>
-
-<p>保存文件即可生效。</p>
-<h5 id="3-镜像站下载模型权重（针对核心权重文件缺失问题）"><a href="#3-镜像站下载模型权重（针对核心权重文件缺失问题）" class="headerlink" title="3. 镜像站下载模型权重（针对核心权重文件缺失问题）"></a>3. 镜像站下载模型权重（针对核心权重文件缺失问题）</h5><p>打开Git Bash，切换到项目<code>assets/checkpoints</code>目录，执行以下下载代码：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 创建权重文件目录</span></span><br><span class="line"><span class="built_in">cd</span> /c/Users/13062/Desktop/worldmem-video-demo/WorldMem</span><br><span class="line"><span class="built_in">mkdir</span> -p assets/checkpoints &amp;&amp; <span class="built_in">cd</span> assets/checkpoints</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 实际使用的镜像站下载链接（可直接下载，无缺失）</span></span><br><span class="line">wget https://hf-mirror.com/zeqixiao/worldmem_checkpoints/resolve/main/diffusion_only.ckpt</span><br><span class="line">wget https://hf-mirror.com/zeqixiao/worldmem_checkpoints/resolve/main/vae_only.ckpt</span><br><span class="line">wget https://hf-mirror.com/zeqixiao/worldmem_checkpoints/resolve/main/pose_prediction_model_only.ckpt</span><br></pre></td></tr></table></figure>
-
-<p>下载完成后，3个<code>.ckpt</code>文件自动存入<code>assets/checkpoints</code>目录。</p>
-<h5 id="4-修改配置文件路径"><a href="#4-修改配置文件路径" class="headerlink" title="4. 修改配置文件路径"></a>4. 修改配置文件路径</h5><p>打开<code>WorldMem/configurations/huggingface.yaml</code>，将权重路径改为本地目录，修改后如下：</p>
+<h4 id="三、项目依赖安装（Conda环境内统一执行）"><a href="#三、项目依赖安装（Conda环境内统一执行）" class="headerlink" title="三、项目依赖安装（Conda环境内统一执行）"></a>三、项目依赖安装（Conda环境内统一执行）</h4><blockquote>
+<p>前置条件：已在Git Bash中激活<code>worldmem</code>环境（终端显示<code>(worldmem)</code>），所有依赖均安装在该环境内，不影响系统Python。</p>
+</blockquote>
+<ol>
+<li>切换到项目根目录（Git Bash中）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /c/Users/13062/Desktop/worldmem-video-demo/WorldMem</span><br></pre></td></tr></table></figure></li>
+<li>安装项目依赖（按顺序执行，避免遗漏）：<ul>
+<li>先安装<code>requirements.txt</code>（若项目包含该文件，一次性安装基础依赖）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure></li>
+<li>按报错补充缺失依赖（运行项目时若提示「ModuleNotFoundError」，逐个安装以下核心依赖）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install hydra-core lpips gradio wandb  <span class="comment"># 核心功能依赖</span></span><br><span class="line">pip install torchvision pillow numpy scipy opencv-python  <span class="comment"># 数据处理依赖</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li>验证依赖安装：执行<code>pip list | grep gradio</code>（或其他依赖名），能看到对应版本即安装成功。</li>
+</ol>
+<h4 id="四、本地资源准备-代码修改（依赖已就绪，补充项目资源）"><a href="#四、本地资源准备-代码修改（依赖已就绪，补充项目资源）" class="headerlink" title="四、本地资源准备+代码修改（依赖已就绪，补充项目资源）"></a>四、本地资源准备+代码修改（依赖已就绪，补充项目资源）</h4><h5 id="1-镜像站下载案例文件（case1-npz-case4-npz）"><a href="#1-镜像站下载案例文件（case1-npz-case4-npz）" class="headerlink" title="1. 镜像站下载案例文件（case1.npz~case4.npz）"></a>1. 镜像站下载案例文件（<code>case1.npz~case4.npz</code>）</h5><p>在Git Bash（已激活<code>worldmem</code>环境）中执行以下命令，创建目录并下载文件（避免境外链接超时）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 创建案例文件目录（项目根目录下）</span></span><br><span class="line"><span class="built_in">mkdir</span> -p assets/examples &amp;&amp; <span class="built_in">cd</span> assets/examples</span><br><span class="line"><span class="comment"># 2. 镜像站下载（直接执行，自动存入当前目录）</span></span><br><span class="line">wget https://hf-mirror.com/yslan/worldmem/resolve/main/assets/examples/case1.npz</span><br><span class="line">wget https://hf-mirror.com/yslan/worldmem/resolve/main/assets/examples/case2.npz</span><br><span class="line">wget https://hf-mirror.com/yslan/worldmem/resolve/main/assets/examples/case3.npz</span><br><span class="line">wget https://hf-mirror.com/yslan/worldmem/resolve/main/assets/examples/case4.npz</span><br></pre></td></tr></table></figure>
+<p>下载完成后，4个<code>.npz</code>文件存入<code>assets/examples</code>目录，终端显示下载进度条及完成提示。</p>
+<h5 id="2-修改app-py跳过自动下载（避免重复下载-超时）"><a href="#2-修改app-py跳过自动下载（避免重复下载-超时）" class="headerlink" title="2. 修改app.py跳过自动下载（避免重复下载&#x2F;超时）"></a>2. 修改<code>app.py</code>跳过自动下载（避免重复下载&#x2F;超时）</h5><p>打开项目根目录下的<code>app.py</code>文件，找到<code>download_assets_if_needed()</code>函数，修改如下（仅注释原下载逻辑，保留本地检查）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download_assets_if_needed</span>():</span><br><span class="line">    asset_dir = <span class="string">&quot;assets/examples&quot;</span></span><br><span class="line">    os.makedirs(asset_dir, exist_ok=<span class="literal">True</span>)</span><br><span class="line">    cases = [<span class="string">&quot;case1.npz&quot;</span>, <span class="string">&quot;case2.npz&quot;</span>, <span class="string">&quot;case3.npz&quot;</span>, <span class="string">&quot;case4.npz&quot;</span>]</span><br><span class="line">    <span class="keyword">for</span> <span class="keyword">case</span> <span class="keyword">in</span> cases:</span><br><span class="line">        local_path = os.path.join(asset_dir, <span class="keyword">case</span>)</span><br><span class="line">        <span class="keyword">if</span> os.path.exists(local_path):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;✅ 本地已找到 <span class="subst">&#123;<span class="keyword">case</span>&#125;</span>，跳过下载&quot;</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="comment"># 注释原下载逻辑（已手动下载，避免超时）</span></span><br><span class="line">        <span class="comment"># url = f&quot;https://huggingface.co/spaces/yslan/worldmem/resolve/main/assets/examples/&#123;case&#125;&quot;</span></span><br><span class="line">        <span class="comment"># resp = requests.get(url, timeout=30)</span></span><br><span class="line">        <span class="comment"># with open(local_path, &quot;wb&quot;) as f:</span></span><br><span class="line">        <span class="comment">#     f.write(resp.content)</span></span><br></pre></td></tr></table></figure>
+<p>保存文件即可生效，后续启动项目时会自动跳过下载步骤。</p>
+<h5 id="3-镜像站下载模型权重（diffusion-only-ckpt等3个文件）"><a href="#3-镜像站下载模型权重（diffusion-only-ckpt等3个文件）" class="headerlink" title="3. 镜像站下载模型权重（diffusion_only.ckpt等3个文件）"></a>3. 镜像站下载模型权重（<code>diffusion_only.ckpt</code>等3个文件）</h5><p>在Git Bash中切换到权重目录，执行下载命令（模型权重是核心，必须完整下载）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 回到项目根目录，创建权重目录</span></span><br><span class="line"><span class="built_in">cd</span> /c/Users/13062/Desktop/worldmem-video-demo/WorldMem</span><br><span class="line"><span class="built_in">mkdir</span> -p assets/checkpoints &amp;&amp; <span class="built_in">cd</span> assets/checkpoints</span><br><span class="line"><span class="comment"># 2. 镜像站下载权重文件</span></span><br><span class="line">wget https://hf-mirror.com/zeqixiao/worldmem_checkpoints/resolve/main/diffusion_only.ckpt</span><br><span class="line">wget https://hf-mirror.com/zeqixiao/worldmem_checkpoints/resolve/main/vae_only.ckpt</span><br><span class="line">wget https://hf-mirror.com/zeqixiao/worldmem_checkpoints/resolve/main/pose_prediction_model_only.ckpt</span><br></pre></td></tr></table></figure>
+<p>下载完成后，3个<code>.ckpt</code>文件存入<code>assets/checkpoints</code>目录（总大小约5GB，确保磁盘空间充足）。</p>
+<h5 id="4-修改配置文件路径（指向本地权重）"><a href="#4-修改配置文件路径（指向本地权重）" class="headerlink" title="4. 修改配置文件路径（指向本地权重）"></a>4. 修改配置文件路径（指向本地权重）</h5><p>打开项目根目录下<code>configurations/huggingface.yaml</code>文件，将权重路径改为本地目录（确保项目能找到下载的权重）：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">diffusion_path:</span> <span class="string">assets/checkpoints/diffusion_only.ckpt</span></span><br><span class="line"><span class="attr">vae_path:</span> <span class="string">assets/checkpoints/vae_only.ckpt</span></span><br><span class="line"><span class="attr">pose_prediction_path:</span> <span class="string">assets/checkpoints/pose_prediction_model_only.ckpt</span></span><br></pre></td></tr></table></figure>
-
-<p>保存配置文件。</p>
-<h4 id="四、启动项目"><a href="#四、启动项目" class="headerlink" title="四、启动项目"></a>四、启动项目</h4><ol>
-<li><p>保持CUDA配置：<code>WorldMem/app.py</code>中<code>worldmem.to(&quot;cuda&quot;).eval()</code>无需修改。</p>
-</li>
-<li><p>启动项目：在Anaconda Prompt中激活<code>worldmem</code>环境，切换到项目目录，执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> C:\Users\13062\Desktop\worldmem-video-demo\WorldMem</span><br><span class="line">python app.py</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>访问项目：浏览器输入<code>http://127.0.0.1:7860</code>，成功进入界面。</p>
-</li>
-</ol>
-<h4 id="五、训练脚本执行（统一终端操作）"><a href="#五、训练脚本执行（统一终端操作）" class="headerlink" title="五、训练脚本执行（统一终端操作）"></a>五、训练脚本执行（统一终端操作）</h4><ol>
-<li><p>配置Git Bash支持Conda（带环境名）：</p>
-<ul>
-<li><p>打开Git Bash（右键项目文件夹→「Git Bash Here」），执行<code>touch ~/.bashrc</code>创建配置文件；</p>
-</li>
-<li><p>用<code>nano ~/.bashrc</code>打开，添加：<code>source /c/Users/13062/anaconda3/etc/profile.d/conda.sh</code>，保存后执行<code>source ~/.bashrc</code>生效；</p>
-</li>
-<li><p>激活环境（明确带环境名）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda activate worldmem  <span class="comment"># 终端显示(worldmem)即成功</span></span><br></pre></td></tr></table></figure></li>
+<p>保存文件，配置修改完成。</p>
+<h4 id="五、首次启动app-py（界面成功，视频生成功能缺失）"><a href="#五、首次启动app-py（界面成功，视频生成功能缺失）" class="headerlink" title="五、首次启动app.py（界面成功，视频生成功能缺失）"></a>五、首次启动app.py（界面成功，视频生成功能缺失）</h4><ol>
+<li>启动命令（Git Bash中，已激活<code>worldmem</code>环境，项目根目录下）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python app.py</span><br></pre></td></tr></table></figure></li>
+<li>运行现象：<ul>
+<li>终端日志正常输出「✅ 本地已找到 case1.npz」「🚀 初始化设备: cuda」「✅ 所有模型切换到eval模式」；</li>
+<li>浏览器自动弹出<code>http://127.0.0.1:7860</code>，成功进入Gradio界面，可选择场景、输入动作序列；</li>
+<li>点击「🎬 Generate!」按钮后，界面卡住无视频输出，终端无额外日志（无报错）。</li>
 </ul>
 </li>
-<li><p>补充安装训练依赖（若之前未安装）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install wandb</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>修复训练脚本配置：打开<code>train_stage_1.sh</code>，将<code>algorithm.metrics=[lpips,psnr]</code>改为<code>+algorithm.metrics=[lpips,psnr]</code>。</p>
-</li>
-<li><p>执行训练脚本：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /c/Users/13062/Desktop/worldmem-video-demo/WorldMem</span><br><span class="line">sh train_stage_1.sh</span><br></pre></td></tr></table></figure></li>
+<li>问题原因：视频生成依赖<code>ffmpeg</code>工具进行帧序列转MP4格式，本地未安装<code>ffmpeg</code>，项目无法调用该工具，导致视频生成功能加载失败。</li>
+<li>关闭项目：按<code>Ctrl+C</code>终止终端进程，关闭浏览器。</li>
 </ol>
-<h4 id="六、常用代码总结"><a href="#六、常用代码总结" class="headerlink" title="六、常用代码总结"></a>六、常用代码总结</h4><table>
+<h4 id="六、ffmpeg下载与安装配置（补全视频生成依赖）"><a href="#六、ffmpeg下载与安装配置（补全视频生成依赖）" class="headerlink" title="六、ffmpeg下载与安装配置（补全视频生成依赖）"></a>六、ffmpeg下载与安装配置（补全视频生成依赖）</h4><h5 id="1-推荐安装路径（Windows系统必看）"><a href="#1-推荐安装路径（Windows系统必看）" class="headerlink" title="1. 推荐安装路径（Windows系统必看）"></a>1. 推荐安装路径（Windows系统必看）</h5><p>必须安装在「无中文、无空格」的目录，否则环境变量配置失败，项目无法调用：</p>
+<ul>
+<li>首选路径：<code>C:\Program Files\ffmpeg</code>（解压后文件夹命名为<code>ffmpeg</code>，内部包含<code>bin</code>&#x2F;<code>doc</code>等子目录）；</li>
+<li>备选路径：<code>D:\Tools\ffmpeg</code>（C盘空间不足时使用，同样确保路径无中文&#x2F;空格）。</li>
+</ul>
+<h5 id="2-安装与配置步骤"><a href="#2-安装与配置步骤" class="headerlink" title="2. 安装与配置步骤"></a>2. 安装与配置步骤</h5><ol>
+<li>下载ffmpeg：<ul>
+<li>访问ffmpeg官网（<a target="_blank" rel="noopener" href="https://ffmpeg.org/download.html%EF%BC%89%EF%BC%8C%E9%80%89%E6%8B%A9Windows%E3%80%8CFull">https://ffmpeg.org/download.html），选择Windows「Full</a> Build」版本；</li>
+<li>或通过国内镜像站下载（避免境外超时），下载后得到压缩包（如<code>ffmpeg-7.0-full_build.7z</code>）。</li>
+</ul>
+</li>
+<li>解压安装：用7-Zip等工具将压缩包解压到上述推荐路径（如<code>C:\Program Files\ffmpeg</code>）。</li>
+<li>配置环境变量（关键步骤）：<ul>
+<li>右键「此电脑」→「属性」→「高级系统设置」→「环境变量」；</li>
+<li>在「系统变量」中找到「Path」→「编辑」→「新建」，添加<code>ffmpeg</code>的<code>bin</code>目录路径（如<code>C:\Program Files\ffmpeg\bin</code>）；</li>
+<li>点击「确定」保存，<strong>关闭所有Git Bash终端</strong>（环境变量需重启终端生效）。</li>
+</ul>
+</li>
+<li>验证生效：打开新的Git Bash（自动激活<code>worldmem</code>环境），执行：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -version</span><br></pre></td></tr></table></figure>
+终端输出ffmpeg版本信息（如「ffmpeg version 7.0 Copyright (c) 2000-2023」），说明安装配置成功。</li>
+</ol>
+<h4 id="七、重新启动app-py（视频生成加载成功，内存不足失败）"><a href="#七、重新启动app-py（视频生成加载成功，内存不足失败）" class="headerlink" title="七、重新启动app.py（视频生成加载成功，内存不足失败）"></a>七、重新启动app.py（视频生成加载成功，内存不足失败）</h4><ol>
+<li>启动命令（新打开的Git Bash中，项目根目录下）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python app.py</span><br></pre></td></tr></table></figure></li>
+<li>运行现象：<ul>
+<li>终端日志正常初始化，视频生成组件加载成功（终端显示「ffmpeg相关初始化日志」）；</li>
+<li>加载<code>diffusion_model</code>权重（3605MB）时，终端卡住，随后输出「Segmentation fault」，进程终止；</li>
+<li>任务管理器显示：CPU内存占用飙升至15.0GB+（总物理内存15.22GB），剩余可用内存不足200MB，触发内存溢出。</li>
+</ul>
+</li>
+<li>问题原因：<code>ffmpeg</code>安装后，视频生成组件初始化增加了内存占用，叠加3.6GB的模型权重加载，16GB物理内存不足以承载，导致段错误。</li>
+</ol>
+<h4 id="八、训练脚本执行（Git-Bash环境下，流程无阻碍）"><a href="#八、训练脚本执行（Git-Bash环境下，流程无阻碍）" class="headerlink" title="八、训练脚本执行（Git Bash环境下，流程无阻碍）"></a>八、训练脚本执行（Git Bash环境下，流程无阻碍）</h4><ol>
+<li>补充训练依赖（若之前未安装）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install wandb  <span class="comment"># 训练日志监控依赖</span></span><br></pre></td></tr></table></figure></li>
+<li>修复训练脚本配置：打开项目根目录下<code>train_stage_1.sh</code>文件，将<code>algorithm.metrics=[lpips,psnr]</code>改为<code>+algorithm.metrics=[lpips,psnr]</code>（适配Hydra配置语法，避免报错）。</li>
+<li>执行训练脚本（Git Bash中，项目根目录下）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh train_stage_1.sh</span><br></pre></td></tr></table></figure>
+（注：若内存充足，脚本会正常启动训练；若内存不足，会出现与启动app.py类似的内存溢出报错）</li>
+</ol>
+<h4 id="九、常用命令速查表（统一Git-Bash环境，直接复制执行）"><a href="#九、常用命令速查表（统一Git-Bash环境，直接复制执行）" class="headerlink" title="九、常用命令速查表（统一Git Bash环境，直接复制执行）"></a>九、常用命令速查表（统一Git Bash环境，直接复制执行）</h4><table>
 <thead>
 <tr>
 <th>操作目的</th>
-<th>执行代码</th>
+<th>执行命令</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>激活Conda环境</td>
-<td><code>conda activate worldmem</code>（Anaconda Prompt&#x2F;Git Bash均适用）</td>
+<td>激活Conda环境（Git Bash）</td>
+<td>打开Git Bash自动激活（或<code>conda activate worldmem</code>）</td>
 </tr>
 <tr>
-<td>切换到项目根目录（Git Bash）</td>
+<td>切换到项目根目录</td>
 <td><code>cd /c/Users/13062/Desktop/worldmem-video-demo/WorldMem</code></td>
 </tr>
 <tr>
-<td>切换到项目根目录（CMD）</td>
-<td><code>cd C:\Users\13062\Desktop\worldmem-video-demo\WorldMem</code></td>
-</tr>
-<tr>
 <td>启动项目</td>
-<td><code>python app.py</code>（需激活环境+切换到项目目录）</td>
+<td><code>python app.py</code></td>
 </tr>
 <tr>
 <td>执行训练脚本</td>
-<td><code>sh train_stage_1.sh</code>（Git Bash+激活环境+项目目录）</td>
+<td><code>sh train_stage_1.sh</code></td>
 </tr>
 <tr>
 <td>安装缺失依赖</td>
-<td><code>pip install [依赖名]</code>（如<code>pip install wandb</code>，遇到报错时执行）</td>
+<td><code>pip install [依赖名]</code>（如<code>pip install gradio</code>）</td>
 </tr>
 <tr>
-<td>验证CUDA是否生效</td>
+<td>验证CUDA生效</td>
 <td><code>python -c &quot;import torch; print(torch.cuda.is_available())&quot;</code></td>
 </tr>
 <tr>
-<td>克隆GitHub项目</td>
+<td>验证ffmpeg生效</td>
+<td><code>ffmpeg -version</code></td>
+</tr>
+<tr>
+<td>克隆项目代码</td>
 <td><code>git clone https://github.com/zeqixiao/worldmem-video-demo.git</code></td>
 </tr>
 <tr>
 <td>镜像站下载文件（通用）</td>
-<td><code>wget [镜像站链接]</code>（需在Git Bash中执行，创建对应目录后使用）</td>
+<td><code>wget [镜像站链接]</code>（需在对应目录下执行）</td>
 </tr>
 </tbody></table>
-<h4 id="遇到的问题概括"><a href="#遇到的问题概括" class="headerlink" title="遇到的问题概括"></a>遇到的问题概括</h4><ol>
-<li>境外资源下载超时：GitHub克隆项目+镜像站有效链接下载文件，修改<code>app.py</code>新增本地检查跳过自动下载。</li>
-<li>模型权重缺失：用正确镜像站链接下载3个权重文件，修改配置文件指向本地目录。</li>
-<li>CUDA不兼容：卸载CPU版本PyTorch，重装带CUDA的版本并验证生效。</li>
-<li>Git Bash激活Conda失败：配置<code>.bashrc</code>加载Conda脚本，明确带环境名激活。</li>
-<li>依赖缺失：按项目运行报错，逐步在Conda环境内补充安装依赖。</li>
-<li>Hydra配置报错：在<code>algorithm.metrics</code>参数前加<code>+</code>，适配Hydra配置语法。</li>
+<h4 id="十、核心问题与解决方案汇总（按遇到顺序排列）"><a href="#十、核心问题与解决方案汇总（按遇到顺序排列）" class="headerlink" title="十、核心问题与解决方案汇总（按遇到顺序排列）"></a>十、核心问题与解决方案汇总（按遇到顺序排列）</h4><table>
+<thead>
+<tr>
+<th>问题现象</th>
+<th>根本原因</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Git Bash无法激活Conda环境</td>
+<td>Git Bash默认不加载Conda脚本</td>
+<td>配置<code>.bashrc</code>文件，添加Conda脚本路径，生效后自动激活</td>
+</tr>
+<tr>
+<td>项目依赖安装失败&#x2F;缺失</td>
+<td>未在<code>worldmem</code>环境中执行安装命令</td>
+<td>切换到项目根目录，在激活环境的Git Bash中执行<code>pip install</code>命令</td>
+</tr>
+<tr>
+<td>境外资源下载超时</td>
+<td>GitHub&#x2F; Hugging Face境外链接访问不稳定</td>
+<td>使用镜像站链接下载案例文件和模型权重</td>
+</tr>
+<tr>
+<td>首次启动视频生成功能加载失败</td>
+<td>未安装<code>ffmpeg</code>，视频格式转换依赖该工具</td>
+<td>按指定路径安装<code>ffmpeg</code>，配置环境变量并验证生效</td>
+</tr>
+<tr>
+<td>训练脚本Hydra配置报错</td>
+<td><code>algorithm.metrics</code>参数语法不符合Hydra要求</td>
+<td>在参数前加<code>+</code>，改为<code>+algorithm.metrics=[lpips,psnr]</code></td>
+</tr>
+<tr>
+<td>重新启动app.py内存溢出</td>
+<td>16GB物理内存不足以承载模型权重（3.6GB）+视频处理组件</td>
+<td>扩展虚拟内存（20-40GB）或升级物理内存（≥32GB）</td>
+</tr>
+</tbody></table>
+<h4 id="十一、项目核心用途总结"><a href="#十一、项目核心用途总结" class="headerlink" title="十一、项目核心用途总结"></a>十一、项目核心用途总结</h4><p>WorldMem 是一个「基于动作交互的3D世界模拟与长视频生成工具」，核心价值是解决“单张场景图→上下文连贯长视频”的创作痛点，具体功能与场景如下：</p>
+<ol>
+<li>核心功能：<ul>
+<li>6种预设场景（向日葵平原、沙漠、冰原等），支持任意场景作为初始帧；</li>
+<li>动作交互（W&#x2F;A&#x2F;S&#x2F;D&#x2F;Q&#x2F;E等按键组合），可实现转向、移动、使用物品等操作；</li>
+<li>长视频生成：连续点击「Generate」扩展视频长度，自动维护场景3D结构、物体位置的一致性（新帧用红框标记）；</li>
+<li>模型训练：通过<code>train_stage_1.sh</code>脚本训练自定义模型，优化生成效果。</li>
+</ul>
+</li>
+<li>应用场景：<ul>
+<li>游戏开发：快速生成开放世界视频片段，无需手动建模动画；</li>
+<li>虚拟模拟：基于简单指令模拟虚拟环境视角移动与交互；</li>
+<li>内容创作：为动画、影视领域提供低成本场景扩展工具。</li>
+</ul>
+</li>
+</ol>
+<h4 id="关键注意事项（避坑核心）"><a href="#关键注意事项（避坑核心）" class="headerlink" title="关键注意事项（避坑核心）"></a>关键注意事项（避坑核心）</h4><ol>
+<li>流程逻辑优先级：必须先配置Git Bash的Conda环境，再安装依赖、下载资源——无环境则所有依赖安装、命令执行都会失效，这是最关键的前置步骤。</li>
+<li><code>ffmpeg</code>安装红线：路径必须无中文、无空格，环境变量必须指向<code>bin</code>目录，否则视频生成功能始终加载失败。</li>
+<li>内存是核心瓶颈：16GB物理内存仅能满足基础界面启动，视频生成+模型权重加载需≥32GB物理内存，或扩展20-40GB虚拟内存。</li>
+<li>终端统一原则：全程使用Git Bash操作，避免切换Anaconda Prompt&#x2F;CMD导致环境不一致，减少报错概率。</li>
+<li>资源完整性：案例文件（4个<code>.npz</code>）和模型权重（3个<code>.ckpt</code>）必须完整下载，缺失任一文件会导致项目启动失败。</li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/01/24/WorldMem%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/" data-id="cuidYu928LvYNK14aennDwbps" data-title="WorldMem项目部署记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/01/24/WorldMem%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/" data-id="cuidP00TGJYS3DPMwzf2CssHc" data-title="WorldMem项目部署记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E9%95%BF%E8%A7%86%E9%A2%91/" rel="tag">上下文长视频</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" rel="tag">项目部署</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/01/24/hello-world/" class="article-date">
-  <time class="dt-published" datetime="2026-01-24T10:03:36.178Z" itemprop="datePublished">2026-01-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/01/24/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/01/24/hello-world/" data-id="cuidW3vth_YAuOq8ujvl-bTkS" data-title="Hello World" class="article-share-link"><span class="fa fa-share">分享</span></a>
-      
-      
-      
     </footer>
   </div>
   
@@ -569,10 +589,6 @@
         
           <li>
             <a href="/2026/01/24/WorldMem%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/">WorldMem项目部署记录</a>
-          </li>
-        
-          <li>
-            <a href="/2026/01/24/hello-world/">Hello World</a>
           </li>
         
       </ul>

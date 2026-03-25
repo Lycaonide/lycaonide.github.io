@@ -105,8 +105,7 @@
 
 
 
-
-
+<p>&nbsp;</p>
 <h4 id="二、编辑博客内容"><a href="#二、编辑博客内容" class="headerlink" title="二、编辑博客内容"></a>二、编辑博客内容</h4><p><strong>操作</strong>：<br>打开文章文件：用任意 Markdown 编辑器打开 <code>source/_posts/你的博客标题.md</code> 文件。<br>配置文章信息：文件开头的「Front-matter」是 Hexo 识别文章属性的区域（必须保留），<strong>格式说明</strong>：</p>
 <ul>
 <li><code>---</code>：固定开头和结尾标记，不可省略</li>
@@ -119,13 +118,13 @@
 
 
 
-
-
+<p>&nbsp;</p>
 <h4 id="三、本地预览博客效果"><a href="#三、本地预览博客效果" class="headerlink" title="三、本地预览博客效果"></a>三、本地预览博客效果</h4><p><strong>操作</strong>：<br>在 Git Bash 的 Hexo 项目目录下，输入命令启动本地服务：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean  <span class="comment"># 先清理旧缓存（建议执行）</span></span><br><span class="line">hexo s      <span class="comment"># 启动本地预览</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>验证</strong>：<br>打开浏览器访问 <code>http://localhost:4000</code>，在「文章」列表中找到对应文章，点击进入查看格式、图片、链接是否正常显示。</p>
 <p><strong>关闭预览</strong>：<br>在 Git Bash 中按 <code>Ctrl+C</code> 终止服务。</p>
+<p>&nbsp;</p>
 <h4 id="四、发布新博客到线上"><a href="#四、发布新博客到线上" class="headerlink" title="四、发布新博客到线上"></a>四、发布新博客到线上</h4><h5 id="🔍-为什么要修改原步骤？"><a href="#🔍-为什么要修改原步骤？" class="headerlink" title="🔍 为什么要修改原步骤？"></a>🔍 为什么要修改原步骤？</h5><p><strong>核心原因</strong>：国内网络环境对 GitHub 存在访问限制，直接执行 <code>hexo d</code> 会出现「连接失败、无法解析主机」等错误，导致部署失败。<br><strong>解决方案</strong>：使用「红岸加速器」来绕过网络限制，因此需要手动配置 Git 代理，让 Git 走加速器的本地端口（<code>7892</code>），才能正常推送代码到 GitHub。</p>
 <h5 id="✅-修改后的完整操作步骤"><a href="#✅-修改后的完整操作步骤" class="headerlink" title="✅ 修改后的完整操作步骤"></a>✅ 修改后的完整操作步骤</h5><p>在 Git Bash 的 Hexo 项目目录下，依次执行以下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 清空旧代理配置（避免之前残留的错误端口影响）</span></span><br><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br><span class="line">git config --global --<span class="built_in">unset</span> https.proxy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 配置红岸加速器代理（本地端口为 7892，与加速器配置一致）</span></span><br><span class="line">git config --global http.proxy http://127.0.0.1:7892</span><br><span class="line">git config --global https.proxy http://127.0.0.1:7892</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 清理本地缓存 + 生成静态文件 + 部署到 GitHub</span></span><br><span class="line">hexo clean  <span class="comment"># 清理本地缓存，确保生成最新文件</span></span><br><span class="line">hexo g      <span class="comment"># 重新生成包含新文章的静态页面</span></span><br><span class="line">hexo d      <span class="comment"># 部署到 GitHub 仓库</span></span><br></pre></td></tr></table></figure>
@@ -138,16 +137,17 @@
 <h5 id="🧩-一键部署模板（推荐保存为-deploy-sh）"><a href="#🧩-一键部署模板（推荐保存为-deploy-sh）" class="headerlink" title="🧩 一键部署模板（推荐保存为 deploy.sh）"></a>🧩 一键部署模板（推荐保存为 <code>deploy.sh</code>）</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># 清空旧代理</span></span><br><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br><span class="line">git config --global --<span class="built_in">unset</span> https.proxy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置红岸加速器代理</span></span><br><span class="line">git config --global http.proxy http://127.0.0.1:7892</span><br><span class="line">git config --global https.proxy http://127.0.0.1:7892</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行部署</span></span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br><span class="line"></span><br><span class="line"><span class="comment"># 部署完成后取消代理（可选）</span></span><br><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br><span class="line">git config --global --<span class="built_in">unset</span> https.proxy</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;部署完成！访问 https://lycaonide.github.io 查看效果&quot;</span></span><br></pre></td></tr></table></figure>
 
 <p>代理说明：仅在部署到 GitHub 时需要配置代理，本地预览（<code>hexo s</code>）无需代理。</p>
+<p>&nbsp;</p>
 <h4 id="五、验证线上效果"><a href="#五、验证线上效果" class="headerlink" title="五、验证线上效果"></a>五、验证线上效果</h4><p>等待 1–3 分钟后，打开浏览器访问 <code>https://lycaonide.github.io</code>，刷新页面后即可看到新发布&#x2F;修改的博客文章出现在文章列表中。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/03/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2%E4%BF%AE%E6%94%B9%E7%89%88/" data-id="cuidXlZ4SuAfCMZkjegSJ7R0h" data-title="学习用Hexo写博客修改版" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/03/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2%E4%BF%AE%E6%94%B9%E7%89%88/" data-id="cuidjsssXuppamOHWdNKZFTg-" data-title="学习用Hexo写博客修改版" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo%EF%BC%8C%E5%8D%9A%E5%AE%A2/" rel="tag">Hexo，博客</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag">博客</a></li></ul>
 
     </footer>
   </div>
@@ -269,7 +269,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/03/25/ROS2%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%8A%9F%E8%83%BD%E5%8C%85%E6%93%8D%E4%BD%9C%E8%BF%87%E7%A8%8B/" data-id="cuidgI1jn-_rCD2AYMRTRKmom" data-title="ROS2目标检测功能包操作过程" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/03/25/ROS2%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%8A%9F%E8%83%BD%E5%8C%85%E6%93%8D%E4%BD%9C%E8%BF%87%E7%A8%8B/" data-id="cuiduZcSoXOpRYT_hup138Ujy" data-title="ROS2目标检测功能包操作过程" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -480,7 +480,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/01/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2/" data-id="cuidDBqiSIZbJtwHpgadJdmbg" data-title="学习用Hexo写博客" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/01/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2/" data-id="cuidIWD2XSGDJLOtlkYO8bcqk" data-title="学习用Hexo写博客" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -738,7 +738,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/01/24/WorldMem%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/" data-id="cuidLXY2ZPrxQYn-zkROYl8wK" data-title="WorldMem项目部署记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/01/24/WorldMem%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/" data-id="cuidS33pplteDK1p5B4YDJwY4" data-title="WorldMem项目部署记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -772,7 +772,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo%EF%BC%8C%E5%8D%9A%E5%AE%A2/" rel="tag">Hexo，博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MediaPipe/" rel="tag">MediaPipe</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ROS2/" rel="tag">ROS2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E9%95%BF%E8%A7%86%E9%A2%91/" rel="tag">上下文长视频</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag">目标检测</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" rel="tag">项目部署</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MediaPipe/" rel="tag">MediaPipe</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ROS2/" rel="tag">ROS2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E9%95%BF%E8%A7%86%E9%A2%91/" rel="tag">上下文长视频</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2/" rel="tag">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag">目标检测</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" rel="tag">项目部署</a></li></ul>
     </div>
   </div>
 
@@ -782,7 +782,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Hexo%EF%BC%8C%E5%8D%9A%E5%AE%A2/" style="font-size: 10px;">Hexo，博客</a> <a href="/tags/MediaPipe/" style="font-size: 10px;">MediaPipe</a> <a href="/tags/ROS2/" style="font-size: 10px;">ROS2</a> <a href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E9%95%BF%E8%A7%86%E9%A2%91/" style="font-size: 10px;">上下文长视频</a> <a href="/tags/%E5%8D%9A%E5%AE%A2/" style="font-size: 10px;">博客</a> <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" style="font-size: 10px;">目标检测</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" style="font-size: 20px;">项目部署</a>
+      <a href="/tags/Hexo/" style="font-size: 20px;">Hexo</a> <a href="/tags/MediaPipe/" style="font-size: 10px;">MediaPipe</a> <a href="/tags/ROS2/" style="font-size: 10px;">ROS2</a> <a href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E9%95%BF%E8%A7%86%E9%A2%91/" style="font-size: 10px;">上下文长视频</a> <a href="/tags/%E5%8D%9A%E5%AE%A2/" style="font-size: 20px;">博客</a> <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" style="font-size: 10px;">目标检测</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/" style="font-size: 20px;">项目部署</a>
     </div>
   </div>
 

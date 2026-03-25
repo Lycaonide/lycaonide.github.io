@@ -97,9 +97,8 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h4 id="1-远程传输所有工程文件到虚拟机工作空间"><a href="#1-远程传输所有工程文件到虚拟机工作空间" class="headerlink" title="1. 远程传输所有工程文件到虚拟机工作空间"></a>1. 远程传输所有工程文件到虚拟机工作空间</h4><p>将 <code>object_detect_service</code>、<code>msg_srv</code> 功能包传输至虚拟机 <code>~/first_ws/src/</code> 目录。</p>
-<hr>
-<h4 id="2-编写-camera-node-py-和-detect-node-py，在-setup-py-中注册节点"><a href="#2-编写-camera-node-py-和-detect-node-py，在-setup-py-中注册节点" class="headerlink" title="2. 编写 camera_node.py 和 detect_node.py，在 setup.py 中注册节点"></a>2. 编写 <code>camera_node.py</code> 和 <code>detect_node.py</code>，在 <code>setup.py</code> 中注册节点</h4><ul>
+        <h4 id="一、远程传输所有工程文件到虚拟机工作空间"><a href="#一、远程传输所有工程文件到虚拟机工作空间" class="headerlink" title="一、远程传输所有工程文件到虚拟机工作空间"></a>一、远程传输所有工程文件到虚拟机工作空间</h4><p>将 <code>object_detect_service</code>、<code>msg_srv</code> 功能包传输至虚拟机 <code>~/first_ws/src/</code> 目录。</p>
+<h4 id="二、编写-camera-node-py-和-detect-node-py，在-setup-py-中注册节点"><a href="#二、编写-camera-node-py-和-detect-node-py，在-setup-py-中注册节点" class="headerlink" title="二、编写 camera_node.py 和 detect_node.py，在 setup.py 中注册节点"></a>二、编写 <code>camera_node.py</code> 和 <code>detect_node.py</code>，在 <code>setup.py</code> 中注册节点</h4><ul>
 <li><p><strong><code>camera_node.py</code></strong>：实现等待目标检测服务、打开摄像头、读取图像帧、调用服务、显示图像的功能。</p>
 </li>
 <li><p><strong><code>detect_node.py</code></strong>：实现提供目标检测服务、接收图像请求、运行 MediaPipe 检测、返回结果的功能。</p>
@@ -107,24 +106,19 @@
 <li><p><strong><code>setup.py</code> 配置 <code>entry_points</code></strong>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">entry_points=&#123;</span><br><span class="line">    <span class="string">&#x27;console_scripts&#x27;</span>: [</span><br><span class="line">        <span class="string">&#x27;camera_node = object_detect_service.camera_node:main&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;detect_node = object_detect_service.detect_node:main&#x27;</span>,</span><br><span class="line">    ],</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure></li>
 </ul>
-<hr>
-<h4 id="3-安装依赖"><a href="#3-安装依赖" class="headerlink" title="3. 安装依赖"></a>3. 安装依赖</h4><p>在终端依次执行以下命令，安装指定版本依赖库：</p>
+<h4 id="三、安装依赖"><a href="#三、安装依赖" class="headerlink" title="三、安装依赖"></a>三、安装依赖</h4><p>在终端依次执行以下命令，安装指定版本依赖库：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install <span class="string">&quot;numpy&lt;2.0&quot;</span></span><br><span class="line">pip install <span class="string">&quot;opencv-python==4.10.0.84&quot;</span> <span class="string">&quot;opencv-contrib-python==4.10.0.84&quot;</span></span><br><span class="line">pip install mediapipe</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h4 id="4-安装摄像头测试工具"><a href="#4-安装摄像头测试工具" class="headerlink" title="4. 安装摄像头测试工具"></a>4. 安装摄像头测试工具</h4><p>执行命令安装 <code>cheese</code> 摄像头硬件测试工具：</p>
+<h4 id="四、安装摄像头测试工具"><a href="#四、安装摄像头测试工具" class="headerlink" title="四、安装摄像头测试工具"></a>四、安装摄像头测试工具</h4><p>执行命令安装 <code>cheese</code> 摄像头硬件测试工具：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install cheese -y</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h4 id="5-编译功能包"><a href="#5-编译功能包" class="headerlink" title="5. 编译功能包"></a>5. 编译功能包</h4><p>进入工作空间根目录，先编译消息服务包，再编译目标检测功能包：</p>
+<h4 id="五、编译功能包"><a href="#五、编译功能包" class="headerlink" title="五、编译功能包"></a>五、编译功能包</h4><p>进入工作空间根目录，先编译消息服务包，再编译目标检测功能包：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/first_ws</span><br><span class="line">colcon build --packages-select msg_srv</span><br><span class="line">colcon build --packages-select object_detect_service</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h4 id="6-加载环境变量"><a href="#6-加载环境变量" class="headerlink" title="6. 加载环境变量"></a>6. 加载环境变量</h4><p>每次新开终端，均需执行以下命令加载编译后的环境变量：</p>
+<h4 id="六、加载环境变量"><a href="#六、加载环境变量" class="headerlink" title="六、加载环境变量"></a>六、加载环境变量</h4><p>每次新开终端，均需执行以下命令加载编译后的环境变量：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> install/setup.bash</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h4 id="7-配置虚拟机-USB-兼容性与摄像头连接"><a href="#7-配置虚拟机-USB-兼容性与摄像头连接" class="headerlink" title="7. 配置虚拟机 USB 兼容性与摄像头连接"></a>7. 配置虚拟机 USB 兼容性与摄像头连接</h4><h5 id="7-1-初次测试摄像头（失败）"><a href="#7-1-初次测试摄像头（失败）" class="headerlink" title="7.1 初次测试摄像头（失败）"></a>7.1 初次测试摄像头（失败）</h5><p>连接摄像头后，授予权限：</p>
+<h4 id="七、配置虚拟机-USB-兼容性与摄像头连接"><a href="#七、配置虚拟机-USB-兼容性与摄像头连接" class="headerlink" title="七、配置虚拟机 USB 兼容性与摄像头连接"></a>七、配置虚拟机 USB 兼容性与摄像头连接</h4><h5 id="7-1-初次测试摄像头（失败）"><a href="#7-1-初次测试摄像头（失败）" class="headerlink" title="7.1 初次测试摄像头（失败）"></a>7.1 初次测试摄像头（失败）</h5><p>连接摄像头后，授予权限：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> 777 /dev/video*</span><br></pre></td></tr></table></figure>
 
 <p>使用 <code>cheese</code> 测试：</p>
@@ -142,8 +136,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> install/setup.bash</span><br><span class="line">cheese</span><br></pre></td></tr></table></figure>
 
 <p>（此时 <code>cheese</code> 成功弹出摄像头实时画面，硬件连接与警告问题解决）</p>
-<hr>
-<h4 id="8-改进：修改-camera-node-py-代码适配虚拟机环境"><a href="#8-改进：修改-camera-node-py-代码适配虚拟机环境" class="headerlink" title="8. 改进：修改 camera_node.py 代码适配虚拟机环境"></a>8. 改进：修改 <code>camera_node.py</code> 代码适配虚拟机环境</h4><h5 id="8-1-关键修改：指定-V4L-后端"><a href="#8-1-关键修改：指定-V4L-后端" class="headerlink" title="8.1 关键修改：指定 V4L 后端"></a>8.1 关键修改：指定 V4L 后端</h5><p>在 <code>camera_node.py</code> 中修改摄像头初始化代码，指定 V4L 后端适配虚拟机：</p>
+<h4 id="八、改进：修改-camera-node-py-代码适配虚拟机环境"><a href="#八、改进：修改-camera-node-py-代码适配虚拟机环境" class="headerlink" title="八、改进：修改 camera_node.py 代码适配虚拟机环境"></a>八、改进：修改 <code>camera_node.py</code> 代码适配虚拟机环境</h4><h5 id="8-1-关键修改：指定-V4L-后端"><a href="#8-1-关键修改：指定-V4L-后端" class="headerlink" title="8.1 关键修改：指定 V4L 后端"></a>8.1 关键修改：指定 V4L 后端</h5><p>在 <code>camera_node.py</code> 中修改摄像头初始化代码，指定 V4L 后端适配虚拟机：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 原代码：self.cap = cv2.VideoCapture(0)</span></span><br><span class="line"><span class="comment"># 【关键改动】添加 cv2.CAP_V4L 后端，设备号根据实际情况修改</span></span><br><span class="line"><span class="variable language_">self</span>.cap = cv2.VideoCapture(<span class="number">0</span> + cv2.CAP_V4L)</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>.cap.isOpened():</span><br><span class="line">    <span class="variable language_">self</span>.get_logger().error(<span class="string">&quot;无法打开摄像头&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
 
 <h5 id="8-2-简化版自动遍历（可选，应对设备号变化）"><a href="#8-2-简化版自动遍历（可选，应对设备号变化）" class="headerlink" title="8.2 简化版自动遍历（可选，应对设备号变化）"></a>8.2 简化版自动遍历（可选，应对设备号变化）</h5><p>若设备号频繁变化，在 <code>camera_node.py</code> 中添加简化遍历逻辑：</p>
@@ -152,8 +145,7 @@
 <p>重新编译：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">colcon build --packages-select object_detect_service</span><br><span class="line"><span class="built_in">source</span> install/setup.bash</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h4 id="9-解决-Qt-平台插件报错"><a href="#9-解决-Qt-平台插件报错" class="headerlink" title="9. 解决 Qt 平台插件报错"></a>9. 解决 Qt 平台插件报错</h4><p>启动 <code>camera_node</code> 时出现 <code>qt.qpa.xcb: could not connect to display</code> 错误，可选择以下两种方式之一解决：</p>
+<h4 id="九、解决-Qt-平台插件报错"><a href="#九、解决-Qt-平台插件报错" class="headerlink" title="九、解决 Qt 平台插件报错"></a>九、解决 Qt 平台插件报错</h4><p>启动 <code>camera_node</code> 时出现 <code>qt.qpa.xcb: could not connect to display</code> 错误，可选择以下两种方式之一解决：</p>
 <h5 id="方式一：终端临时设置环境变量（推荐，不修改代码）"><a href="#方式一：终端临时设置环境变量（推荐，不修改代码）" class="headerlink" title="方式一：终端临时设置环境变量（推荐，不修改代码）"></a>方式一：终端临时设置环境变量（推荐，不修改代码）</h5><p>在启动 <code>camera_node</code> 前执行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> DISPLAY=:0</span><br></pre></td></tr></table></figure>
 
@@ -164,8 +156,7 @@
 <p>修改后重新编译：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">colcon build --packages-select object_detect_service</span><br><span class="line"><span class="built_in">source</span> install/setup.bash</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h4 id="10-节点启动顺序（关键）"><a href="#10-节点启动顺序（关键）" class="headerlink" title="10. 节点启动顺序（关键）"></a>10. 节点启动顺序（关键）</h4><h5 id="10-1-启动-detect-node（服务端）"><a href="#10-1-启动-detect-node（服务端）" class="headerlink" title="10.1 启动 detect_node（服务端）"></a>10.1 启动 <code>detect_node</code>（服务端）</h5><p>新开终端，执行：</p>
+<h4 id="十、节点启动顺序（关键）"><a href="#十、节点启动顺序（关键）" class="headerlink" title="十、节点启动顺序（关键）"></a>十、节点启动顺序（关键）</h4><h5 id="10-1-启动-detect-node（服务端）"><a href="#10-1-启动-detect-node（服务端）" class="headerlink" title="10.1 启动 detect_node（服务端）"></a>10.1 启动 <code>detect_node</code>（服务端）</h5><p>新开终端，执行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> install/setup.bash</span><br><span class="line">ros2 run object_detect_service detect_node</span><br></pre></td></tr></table></figure>
 
 <p>服务端启动后无输出或打印「检测服务已启动」日志，代表服务正常运行。</p>
@@ -183,8 +174,7 @@
 <li><p>服务上线后，打开摄像头（使用 V4L 后端），弹出 <code>frame</code> 窗口显示实时画面，开始采集图像并调用检测服务</p>
 </li>
 </ul>
-<hr>
-<h4 id="11-结果"><a href="#11-结果" class="headerlink" title="11. 结果"></a>11. 结果</h4><p>（一开始 <code>cheese</code> 未成功，且终端出现 <code>select() timeout</code> 警告；修改 USB 兼容性为 3.1 后，再次用 <code>cheese</code> 测试意外成功弹出画面）</p>
+<h4 id="十一、结果"><a href="#十一、结果" class="headerlink" title="十一、结果"></a>十一、结果</h4><p>（一开始 <code>cheese</code> 未成功，且终端出现 <code>select() timeout</code> 警告；修改 USB 兼容性为 3.1 后，再次用 <code>cheese</code> 测试意外成功弹出画面）</p>
 <ul>
 <li><code>detect_node</code> 服务后台稳定运行，<code>camera_node</code> 成功连接服务并打开摄像头</li>
 <li>弹出 <code>frame</code> 窗口显示实时画面，完成「服务等待 → 图像采集 → 服务调用 → 图像显示」完整流程</li>
@@ -193,7 +183,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/03/25/ROS2%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%8A%9F%E8%83%BD%E5%8C%85%E6%93%8D%E4%BD%9C%E8%BF%87%E7%A8%8B/" data-id="cuidoWkw_GrGTK0_7pcmAjYjp" data-title="ROS2目标检测功能包操作过程" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/03/25/ROS2%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%8A%9F%E8%83%BD%E5%8C%85%E6%93%8D%E4%BD%9C%E8%BF%87%E7%A8%8B/" data-id="cuid5wirM4tdyAvZFh9Jep-3P" data-title="ROS2目标检测功能包操作过程" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -404,7 +394,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/01/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2/" data-id="cuid0ZMdvKUAKRDDgVoAY7laG" data-title="学习用Hexo写博客" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/01/25/%E5%AD%A6%E4%B9%A0%E7%94%A8Hexo%E5%86%99%E5%8D%9A%E5%AE%A2/" data-id="cuidmV_GYylVd67jwNvoZKRuB" data-title="学习用Hexo写博客" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -662,7 +652,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://lycaonide.github.io/2026/01/24/WorldMem%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/" data-id="cuid-9DviDobLKOtlWtz_WKES" data-title="WorldMem项目部署记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://lycaonide.github.io/2026/01/24/WorldMem%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/" data-id="cuid8PD6THJo6spn0VQmYpUFh" data-title="WorldMem项目部署记录" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       

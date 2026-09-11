@@ -1,0 +1,261 @@
+---
+draft: false
+title: 从Hexo迁移到Astro部署记录
+published: 2026-09-11
+description: 记录本站从 Hexo 迁移到 Astro 的全过程：技术选型、双站并存、字体本地化、站点美化、Giscus 评论接入与 GitHub Actions 自动部署。
+image: /assets/blog-migrate/home.png
+tags: [Astro, Hexo, 博客, 部署, GitHub Pages]
+category: 技术笔记
+---
+
+#### 一、为什么从 Hexo 迁移到 Astro
+
+原来这个博客是用 **Hexo** 搭的（另一篇《学习用Hexo写博客》记录了完整过程），部署在 GitHub Pages 上，用起来没问题。但用久了有几个痛点：
+
+- **主题老旧**：Hexo 生态里好看的现代主题不多，定制麻烦；
+- **性能一般**：页面是整站生成，JS 和 CSS 越来越重；
+- **想折腾**：Astro 是当下内容站的主流方案，静态输出、组件化、生态活跃。
+
+最终选型：
+
+| 项目 | 选择 | 理由 |
+| --- | --- | --- |
+| 框架 | Astro 7 | 内容驱动、默认零 JS、构建快 |
+| 主题 | Firefly | 基于 Fuwari 二次开发，二次元风格、功能全 |
+| 托管 | GitHub Pages | 免费、和仓库联动 |
+| 部署 | GitHub Actions | push 即自动构建发布 |
+
+![本站首页效果](/assets/blog-migrate/home.png)
+
+#### 二、搭建项目与本地预览
+
+Firefly 主题的仓库地址：[CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)。克隆后安装依赖：
+
+```bash
+# 克隆模板（我的目录是 my-firefly-blog）
+git clone https://github.com/CuteLeaf/Firefly.git my-firefly-blog
+cd my-firefly-blog
+
+# 安装依赖并启动本地预览
+pnpm install
+pnpm dev
+```
+
+浏览器打开 `http://localhost:4321` 即可看到站点。之后每次改配置，本地跑 `pnpm build` + `pnpm preview` 验证，确认无误再推送。
+
+#### 三、双站并存：旧博客不丢
+
+迁移期间新站还没完全就绪，旧站不能直接关。方案是**双站并存**：
+
+- **新站（Astro）**：部署在 `lycaonide.github.io` 仓库，即主站 `https://lycaonide.github.io`；
+- **旧站（Hexo）**：保留原内容，作为项目页部署到 `https://lycaonide.github.io/hexo-blog/`。
+
+等新站内容补齐后，再逐步把旧站文章迁过来，最后下线旧站即可。迁移过程零停服，随时可以回滚。
+
+#### 四、字体本地化（最大的坑：jsdelivr 被墙）
+
+这是迁移过程中最折腾的一环。主题默认从 **jsdelivr CDN** 下载 3 个在线字体（Zen Maru Gothic / Inter / JetBrains Mono），而 jsdelivr 在国内**经常被墙**，导致：
+
+- 构建卡在字体下载、超时失败；
+- 线上页面字体加载不出来，回退成默认字体，很丑。
+
+试过的方案和结论：
+
+| 方案 | 结果 |
+| --- | --- |
+| 全局字体改系统字体 | 横幅标题、代码块仍引用在线字体 |
+| 把字体装成 npm 包，provider 改 npm | Astro 7 的 npm provider **依然走 jsdelivr** |
+| local provider | 集成静默失效，复制了字体但没生成 `@font-face` |
+| **手动 `@font-face` + 本地 woff2** ✅ | **成功**，完全离线构建 |
+
+最终做法：
+
+1. 把 4 个 woff2 字体文件放进 `public/assets/fonts/`；
+2. 新建 `src/styles/local-fonts.css`，手写 `@font-face`：
+
+```css
+/* src/styles/local-fonts.css */
+@font-face {
+  font-family: "LXGW WenKai";
+  src: url("/assets/fonts/lxgw-wenkai-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/assets/fonts/space-grotesk-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/jetbrains-mono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/jetbrains-mono-700.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+```
+
+3. `fontConfig.ts` 里把 selected 设为 `["system"]`，让全局走系统字体；
+4. 写了个子集化脚本（`pnpm subset-fonts`），只保留常用字符，**字体体积从 7MB 压到 160.8KB**，页面加载快了很多。
+
+> 结论：jsdelivr 在国内基本无解，**能本地化的资源一律本地化**，构建和线上都稳。
+
+#### 五、站点美化：装饰总开关
+
+主题本身是二次元风格，加了几个装饰效果：**樱花飘落、Live2D 看板娘、水波纹背景、卡片立体感**。为了让它们可管理，我统一收敛到一个配置文件 `src/config/decorationConfig.ts`：
+
+```ts
+// src/config/decorationConfig.ts
+export const decorationConfig = {
+  sakura: true,   // 樱花飘落
+  live2d: true,   // 看板娘
+  waves: true,    // 背景水波纹
+  card3d: true,   // 卡片立体感
+};
+```
+
+想换"极简技术风"时，全部改成 `false` 就行，不用到处找开关。
+
+#### 六、评论系统：Giscus
+
+评论用的是 **Giscus**（基于 GitHub Discussions，免费、无广告、数据在自己仓库里）。接入步骤：
+
+1. **开启 Discussions**：仓库 `Settings → Features → Discussions` 勾选开启；
+2. **安装 giscus App**：[giscus.app](https://giscus.app) → Install，授权给博客仓库；
+3. **生成配置**：填仓库名，选分类（我用 Announcements，防垃圾），复制 repoId / categoryId；
+4. **写入主题配置** `src/config/commentConfig.ts`：
+
+```ts
+// src/config/commentConfig.ts
+export const commentConfig = {
+  type: "giscus",
+  repo: "lycaonide/lycaonide.github.io",
+  repoId: "R_kgDORApdOw",
+  category: "Announcements",
+  categoryId: "DIC_kwDORApdO84DFWdq",
+  mapping: "title",        // 按文章标题匹配讨论
+  reactionsEnabled: "1",
+  inputPosition: "top",
+  lang: "zh-CN",
+  loading: "lazy",
+};
+```
+
+![文章评论区（Giscus）](/assets/blog-migrate/comments.png)
+
+文章底部就会出现 GitHub 风格评论区，读者用 GitHub 账号即可登录评论，评论内容存在仓库的 Discussions 里，完全可控。
+
+#### 七、友链页面
+
+主题自带了友链页，只是默认关闭。开启方法：
+
+```ts
+// src/config/siteConfig.ts
+friends: true,   // 原来是 false
+```
+
+同时新建 `src/content/spec/friends.md` 写入友链说明（本站信息、申请方式、小要求），页面底部就会显示：
+
+![友链页面](/assets/blog-migrate/friends.png)
+
+注意：友链内容页缺失会导致构建报错 `friends page content not found`，所以 **开关和内容文件要一起建**。
+
+#### 八、GitHub Actions 自动部署
+
+推送后自动构建发布，用的是 Actions workflow（`.github/workflows/deploy.yml`），这是本站实际在用的完整配置：
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+# Pages 部署需要的权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 确保只有一个部署任务同时运行
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.22.0
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build site
+        run: pnpm run build
+
+      - name: Create .nojekyll file
+        run: touch dist/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist  # Astro默认构建输出目录
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+几个关键点：
+
+- **`touch dist/.nojekyll`**：GitHub Pages 默认用 Jekyll 处理，不建这个文件会把 `_astro` 这类目录忽略掉，页面会白屏；
+- **`concurrency`**：防止多次 push 时部署任务互相打架；
+- **`workflow_dispatch`**：想手动触发重新部署时，Actions 页面点一下即可。
+
+以后写文章只需要：
+
+```bash
+git add .
+git commit -m "新文章"
+git push
+```
+
+等待 3-4 分钟，Actions 构建部署完成，线上自动更新，全程不用手动操作。
+
+#### 九、总结
+
+这次迁移的核心经验：
+
+1. **能本地化就本地化**：jsdelivr 在国内不可靠，字体、JS 库尽量走本地，构建和线上都稳；
+2. **配置收敛**：装饰、评论、友链等开关集中在 config 文件里，方便统一管理；
+3. **双站过渡**：新旧站并存，内容迁完再下线，风险可控；
+4. **自动化部署**：GitHub Actions 让发布变成"push 就完事"。
+
+最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题 + GitHub Pages，樱花、看板娘、评论、友链齐全，加载快还免费。

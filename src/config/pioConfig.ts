@@ -93,7 +93,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 春人（偶像大师 SideM，帅气男生）
 			path: "https://model.hacxy.cn/haruto/haruto.model.json",
 			volume: 0,
-			scale: 1,
+			scale: 0.07,
 			x: 0,
 			y: 0,
 		},
@@ -101,7 +101,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 响（偶像大师 SideM，帅气男生）
 			path: "https://model.hacxy.cn/hibiki/hibiki.model.json",
 			volume: 0,
-			scale: 1,
+			scale: 0.056,
 			x: 0,
 			y: 0,
 		},
@@ -109,7 +109,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 小黑猫
 			path: "https://model.hacxy.cn/cat-black/model.json",
 			volume: 0,
-			scale: 1,
+			scale: 0.056,
 			x: 0,
 			y: 0,
 		},
@@ -117,7 +117,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// HK416（少女前线）
 			path: "https://model.hacxy.cn/HK416-1-normal/model.json",
 			volume: 0,
-			scale: 1,
+			scale: 0.028,
 			x: 0,
 			y: 0,
 		},
@@ -125,7 +125,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// HK416 二形态（少女前线，帅气）
 			path: "https://model.hacxy.cn/HK416-2-normal/model.json",
 			volume: 0,
-			scale: 1,
+			scale: 0.028,
 			x: 0,
 			y: 0,
 		},
@@ -135,7 +135,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,
 	// 画布尺寸（px）
-	size: { width: 200, height: 200 },
+	size: { width: 280, height: 280 },
 	// 主题色，用于菜单、状态条等 UI 元素的背景色，默认 'rgba(96,165,250,0.9)'
 	primaryColor: "var(--l2d-msg-bg)",
 	// 入场/退场动画时长（ms）

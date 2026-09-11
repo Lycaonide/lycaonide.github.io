@@ -320,7 +320,10 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			},
 		});
 	
-		// 状态条跟随人物：锚定在人物头顶上方（模型加载后按实际高度修正）
+					// 禁用库内置时段问候（早上好/晚上好等），只显示我们自己的欢迎语
+			if (oml2d.tips) oml2d.tips.welcome = () => {};
+
+// 状态条跟随人物：锚定在人物头顶上方（模型加载后按实际高度修正）
 		// 状态栏固定位置（所有模型一致，未拖动不乱动）
 		function syncStatusBarPos() {
 			const sb = container.querySelector("#oml2d-statusBar");

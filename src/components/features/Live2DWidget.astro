@@ -111,351 +111,371 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 <script>
 	import { loadOml2d } from "oh-my-live2d";
 
-	// ---- 读容器配置（由 pioConfig.ts 序列化而来） ----
-	const container = document.getElementById("l2d-widget-container");
-	if (!container) {
-		throw new Error("l2d-widget-container not found");
-	}
-	const models = JSON.parse(container.dataset.models || "[]");
-	const menus = JSON.parse(container.dataset.menus || "{}");
-	const tips = JSON.parse(container.dataset.tips || "{}");
-	const responsive = JSON.parse(container.dataset.responsive || "{}");
-	const position = container.dataset.position || "bottom-left";
-	const primaryColor = container.dataset.primaryColor || "#67c23a";
-
-	// 响应式：移动端隐藏
-	function applyResponsive() {
-		if (responsive.hideOnMobile) {
-			const bp = responsive.mobileBreakpoint || 768;
-			container.style.display =
-				window.innerWidth <= bp ? "none" : "";
-		} else {
-			container.style.display = "";
+	// Swup 无刷新导航后组件 DOM 被替换，需重新初始化；旧 window 监听因容器断开自动失效
+	let lastWidgetContainer: HTMLElement | null = null;
+	function initWidget() {
+	
+	
+		// ---- 读容器配置（由 pioConfig.ts 序列化而来） ----
+		const container = document.getElementById("l2d-widget-container");
+		if (!container) {
+			throw new Error("l2d-widget-container not found");
 		}
-	}
-	applyResponsive();
-
-	// ---- 模型转换（oh-my-live2d 格式） ----
-	// l2d-widget 的 scale=1 表示原始大小；oh-my-live2d 默认 0.1，舞台 200px 下 scale>=1 会导致渲染异常，
-	// 因此把 >=0.5 的 scale 统一归一为 0.07（比默认更小一号，适配小尺寸观感），小 scale 保留原值
-	const omlModels = models.map((m: any) => ({
-		name: m.path.split("/").pop() || m.path,
-		path: m.path,
-		scale: m.scale && m.scale < 0.5 ? m.scale : 0.07,
-		// 窄视口(<768px)走 mobileScale，桌面走 scale；两处保持一致才能在任何宽度下人物大小统一
-		mobileScale: m.scale && m.scale < 0.5 ? m.scale : 0.07,
-		position: m.offset || [0, 0],
-		volume: m.volume ?? 0.5,
-		motionPreloadStrategy: "ALL" as const,
-	}));
-
-	// 内置 iconfont 图标（oh-my-live2d）
-	const ICONS: Record<string, string> = {
-		home: "icon-about",
-		scrollToTop: "icon-setting",
-		sleep: "icon-rest",
-		switchModel: "icon-switch",
-		github: "icon-like",
-	};
-
-	// 菜单动作
-	const actions: Record<string, (oml2d: any) => void> = {
-		home: () => {
-			// 已在首页：不重复跳转（避免刷新白屏）
-			if (window.location.pathname === "/") return;
-			// Swup 无刷新导航会导致看板娘组件不重建而消失，改用淡出过渡 + 整页跳转
-			document.body.style.transition = "opacity 0.2s ease";
-			document.body.style.opacity = "0";
-			window.setTimeout(() => {
-				window.location.href = "/";
-			}, 200);
-		},
-		scrollToTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
-		sleep: (oml2d) => {
-			oml2d.stageSlideOut();
-			oml2d.statusBarPopup("休息中", 10000, primaryColor);
-			oml2d.setStatusBarClickEvent(() => {
-				oml2d.stageSlideIn();
-				oml2d.statusBarClose("", 0, primaryColor);
-				oml2d.statusBarClearEvents();
-			});
-		},
-		github: () => window.open("https://github.com/lycaonide", "_blank"),
-		switchModel: async (oml2d) => {
-			const n = omlModels.length;
-			if (n <= 1) return;
-			let idx = Math.floor(Math.random() * n);
-			if (idx === oml2d.modelIndex) idx = (idx + 1) % n;
-			await oml2d.loadModelByIndex(idx);
-			syncStatusBarPos();
-		},
-	};
-
-	const menuItems = (menus.items || []).map((item: any) => ({
-		id: item.action,
-		title: item.label,
-		icon: ICONS[item.action] || "icon-about",
-		onClick: (oml2d: any) => actions[item.action]?.(oml2d),
-	}));
-
-	// ---- 提示气泡（闲置消息；欢迎语在 onLoad 成功后手动显示） ----
-	const tipsConfig: any = {};
-	if (tips.enable !== false) {
-		if (tips.messages && tips.messages.length) {
-			tipsConfig.idleTips = {
-				message: tips.messages,
-				duration: tips.duration || 3000,
-				interval: tips.interval || 8000,
-			};
+		const models = JSON.parse(container.dataset.models || "[]");
+		const menus = JSON.parse(container.dataset.menus || "{}");
+		const tips = JSON.parse(container.dataset.tips || "{}");
+		const responsive = JSON.parse(container.dataset.responsive || "{}");
+		const position = container.dataset.position || "bottom-left";
+		const primaryColor = container.dataset.primaryColor || "#67c23a";
+	
+		// 响应式：移动端隐藏
+		function applyResponsive() {
+			if (responsive.hideOnMobile) {
+				const bp = responsive.mobileBreakpoint || 768;
+				container.style.display =
+					window.innerWidth <= bp ? "none" : "";
+			} else {
+				container.style.display = "";
+			}
 		}
-	}
-
-	// ---- 初始化 ----
-	const oml2d = loadOml2d({
-		parentElement: container,
-		dockedPosition: position === "bottom-right" ? "right" : "left",
-		primaryColor,
-		transitionTime: 500,
-		// mobileDisplay: 移动端显隐已由上方 applyResponsive（hideOnMobile）控制容器，
-		// 库侧固定 true，避免窄视口下舞台被静默隐藏（canvas 高度为 0）
-		mobileDisplay: true,
-		models: omlModels,
-		menus: {
-			items: menuItems,
-			// 按键：相对舞台右移出界，离人物更远
-			style: {
-				right: "-20px",
+		applyResponsive();
+	
+		// ---- 模型转换（oh-my-live2d 格式） ----
+		// l2d-widget 的 scale=1 表示原始大小；oh-my-live2d 默认 0.1，舞台 200px 下 scale>=1 会导致渲染异常，
+		// 因此把 >=0.5 的 scale 统一归一为 0.07（比默认更小一号，适配小尺寸观感），小 scale 保留原值
+		const omlModels = models.map((m: any) => ({
+			name: m.path.split("/").pop() || m.path,
+			path: m.path,
+			scale: m.scale && m.scale < 0.5 ? m.scale : 0.07,
+			// 窄视口(<768px)走 mobileScale，桌面走 scale；两处保持一致才能在任何宽度下人物大小统一
+			mobileScale: m.scale && m.scale < 0.5 ? m.scale : 0.07,
+			position: m.offset || [0, 0],
+			volume: m.volume ?? 0.5,
+			motionPreloadStrategy: "ALL" as const,
+		}));
+	
+		// 内置 iconfont 图标（oh-my-live2d）
+		const ICONS: Record<string, string> = {
+			home: "icon-about",
+			scrollToTop: "icon-setting",
+			sleep: "icon-rest",
+			switchModel: "icon-switch",
+			github: "icon-like",
+		};
+	
+		// 菜单动作
+		const actions: Record<string, (oml2d: any) => void> = {
+			home: () => {
+				// 已在首页：不重复跳转（避免刷新白屏）
+				if (window.location.pathname === "/") return;
+				// Swup 无刷新导航会导致看板娘组件不重建而消失，改用淡出过渡 + 整页跳转
+				document.body.style.transition = "opacity 0.2s ease";
+				document.body.style.opacity = "0";
+				window.setTimeout(() => {
+					window.location.href = "/";
+				}, 200);
 			},
-			mobileStyle: {
-				right: "-20px",
+			scrollToTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
+			sleep: (oml2d) => {
+				oml2d.stageSlideOut();
+				oml2d.statusBarPopup("休息中", 10000, primaryColor);
+				oml2d.setStatusBarClickEvent(() => {
+					oml2d.stageSlideIn();
+					oml2d.statusBarClose("", 0, primaryColor);
+					oml2d.statusBarClearEvents();
+				});
 			},
-			// 按钮：30px 圆形，图标同比例
-			itemStyle: {
-				width: "30px",
-				height: "30px",
-				fontSize: "16px",
-				borderRadius: "50%",
-			},
-			mobileItemStyle: {
-				width: "30px",
-				height: "30px",
-				fontSize: "16px",
-				borderRadius: "50%",
-			},
-		},
-		tips: {
-			...tipsConfig,
-			// 气泡：圆角胶囊、更短更窄、上移避免被人物/动物遮挡
-			style: {
-				fontSize: "12px",
-				minHeight: "56px",
-				maxWidth: "200px",
-				padding: "6px 14px",
-				lineHeight: "1.5",
-				borderRadius: "20px",
-				marginTop: "-80px",
-			},
-			mobileStyle: {
-				fontSize: "12px",
-				minHeight: "56px",
-				maxWidth: "200px",
-				padding: "6px 14px",
-				lineHeight: "1.5",
-				borderRadius: "20px",
-				marginTop: "-80px",
-			},
-		},
-		statusBar: {
-			loadingMessage: "加载中",
-			loadSuccessMessage: "加载完成",
-			loadFailMessage: "加载失败，点击重试",
-			restMessage: "休息中",
-			switchingMessage: "切换中",
-			// 状态条：更小更圆
-			style: {
-				fontSize: "12px",
-				minHeight: "26px",
-				padding: "2px 10px",
-				borderRadius: "13px",
-				bottom: "190px",
-				left: "0px",
-			},
-			mobileStyle: {
-				fontSize: "12px",
-				minHeight: "26px",
-				padding: "2px 10px",
-				borderRadius: "13px",
-				bottom: "190px",
-				left: "0px",
-			},
-		},
-	});
-
-	// 状态条跟随人物：锚定在人物头顶上方（模型加载后按实际高度修正）
-	function syncStatusBarPos() {
-		const sb = container.querySelector("#oml2d-statusBar");
-		const stage = container.querySelector("#oml2d-stage");
-		if (!sb || !stage) return;
-		const h = stage.offsetHeight || 200;
-		sb.style.bottom = (h + 2) + "px";
-		sb.style.left = "0px";
-		sb.style.top = "auto";
-		sb.style.right = "auto";
-	}
-	// 欢迎语：模型加载成功后随机显示一条；同时把状态条锚到人物头顶
-	if (tips.enable !== false && tips.welcomeMessage && tips.welcomeMessage.length) {
-		oml2d.onLoad((status: string) => {
-			if (status === "success") {
-				const msg =
-					tips.welcomeMessage[Math.floor(Math.random() * tips.welcomeMessage.length)];
-				oml2d.tipsMessage(msg, 4000, 10);
+			github: () => window.open("https://github.com/lycaonide", "_blank"),
+			switchModel: async (oml2d) => {
+				const n = omlModels.length;
+				if (n <= 1) return;
+				let idx = Math.floor(Math.random() * n);
+				if (idx === oml2d.modelIndex) idx = (idx + 1) % n;
+				await oml2d.loadModelByIndex(idx);
 				syncStatusBarPos();
+			},
+		};
+	
+		const menuItems = (menus.items || []).map((item: any) => ({
+			id: item.action,
+			title: item.label,
+			icon: ICONS[item.action] || "icon-about",
+			onClick: (oml2d: any) => actions[item.action]?.(oml2d),
+		}));
+	
+		// ---- 提示气泡（闲置消息；欢迎语在 onLoad 成功后手动显示） ----
+		const tipsConfig: any = {};
+		if (tips.enable !== false) {
+			if (tips.messages && tips.messages.length) {
+				tipsConfig.idleTips = {
+					message: tips.messages,
+					duration: tips.duration || 3000,
+					interval: tips.interval || 8000,
+				};
 			}
+		}
+	
+		// ---- 初始化 ----
+		const oml2d = loadOml2d({
+			parentElement: container,
+			dockedPosition: position === "bottom-right" ? "right" : "left",
+			primaryColor,
+			transitionTime: 500,
+			// mobileDisplay: 移动端显隐已由上方 applyResponsive（hideOnMobile）控制容器，
+			// 库侧固定 true，避免窄视口下舞台被静默隐藏（canvas 高度为 0）
+			mobileDisplay: true,
+			models: omlModels,
+			menus: {
+				items: menuItems,
+				// 按键：相对舞台右移出界，离人物更远
+				style: {
+					right: "-30px",
+				},
+				mobileStyle: {
+					right: "-30px",
+				},
+				// 按钮：30px 圆形，图标同比例
+				itemStyle: {
+					width: "30px",
+					height: "30px",
+					fontSize: "16px",
+					borderRadius: "50%",
+				},
+				mobileItemStyle: {
+					width: "30px",
+					height: "30px",
+					fontSize: "16px",
+					borderRadius: "50%",
+				},
+			},
+			tips: {
+				...tipsConfig,
+				// 气泡：圆角胶囊、更短更窄、上移避免被人物/动物遮挡
+				style: {
+					fontSize: "12px",
+					minHeight: "56px",
+					maxWidth: "240px",
+					padding: "6px 14px",
+					lineHeight: "1.5",
+					borderRadius: "20px",
+					marginTop: "-100px",
+				},
+				mobileStyle: {
+					fontSize: "12px",
+					minHeight: "56px",
+					maxWidth: "240px",
+					padding: "6px 14px",
+					lineHeight: "1.5",
+					borderRadius: "20px",
+					marginTop: "-100px",
+				},
+			},
+			statusBar: {
+				loadingMessage: "加载中",
+				loadSuccessMessage: "加载完成",
+				loadFailMessage: "加载失败，点击重试",
+				restMessage: "休息中",
+				switchingMessage: "切换中",
+				// 状态条：更小更圆
+				style: {
+					fontSize: "12px",
+					minHeight: "26px",
+					padding: "2px 10px",
+					borderRadius: "13px",
+					bottom: "140px",
+					left: "0px",
+				},
+				mobileStyle: {
+					fontSize: "12px",
+					minHeight: "26px",
+					padding: "2px 10px",
+					borderRadius: "13px",
+					bottom: "140px",
+					left: "0px",
+				},
+			},
 		});
-	}
-
-	// 窗口尺寸变化时重新判断移动端隐藏
-	window.addEventListener("resize", () => applyResponsive());
-
-	// ---- 人物可移动：按住人物/气泡/提示区域拖动，舞台、菜单、气泡、状态条整体平移 ----
-	// 不拦截菜单按钮点击；位移超过阈值才视为拖动（保留模型点击交互）
-	let dragState: {
-		els: { el: HTMLElement; left: number; top: number }[];
-		startX: number;
-		startY: number;
-		active: boolean;
-	} | null = null;
-	const DRAG_THRESHOLD = 6;
-
-	function collectDragEls(): { el: HTMLElement; left: number; top: number }[] {
-		const ids = ["oml2d-stage", "oml2d-menus", "oml2d-tips", "oml2d-statusBar"];
-		return ids
-			.map((id) => container.querySelector<HTMLElement>(`#${id}`))
-			.filter((el): el is HTMLElement => !!el)
-			.map((el) => {
-				const r = el.getBoundingClientRect();
-				return { el, left: r.left, top: r.top };
+	
+		// 状态条跟随人物：锚定在人物头顶上方（模型加载后按实际高度修正）
+		function syncStatusBarPos() {
+			const sb = container.querySelector("#oml2d-statusBar");
+			const stage = container.querySelector("#oml2d-stage");
+			if (!sb || !stage) return;
+			const h = stage.offsetHeight || 200;
+			sb.style.bottom = Math.round(h * 0.6) + "px";
+			sb.style.left = "0px";
+			sb.style.top = "auto";
+			sb.style.right = "auto";
+		}
+		// 欢迎语：模型加载成功后随机显示一条；同时把状态条锚到人物头顶
+		if (tips.enable !== false && tips.welcomeMessage && tips.welcomeMessage.length) {
+			oml2d.onLoad((status: string) => {
+				if (status === "success") {
+					const msg =
+						tips.welcomeMessage[Math.floor(Math.random() * tips.welcomeMessage.length)];
+					oml2d.tipsMessage(msg, 4000, 10);
+					syncStatusBarPos();
+				}
 			});
-	}
-
-	// 整体平移（拖动 / 方向键共用）
-	function moveWidgets(dx: number, dy: number) {
-		for (const it of collectDragEls()) {
-			it.el.style.left = `${it.left + dx}px`;
-			it.el.style.top = `${it.top + dy}px`;
-			it.el.style.right = "auto";
-			it.el.style.bottom = "auto";
 		}
-	}
-
-	// 拖动期间强制菜单保持显示
-	// 库的隐藏逻辑绑定在 stage 元素上（stage.onmouseout → 菜单隐藏），拖动时鼠标可能移出 stage 触发隐藏
-	let savedMenusOut: ((ev: MouseEvent) => void) | null = null;
-	function forceMenusVisible() {
-		const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
-		if (!stageEl) return;
-		savedMenusOut = stageEl.onmouseout;
-		stageEl.onmouseout = null;
-		// 菜单本身若已隐藏，强制显示
-		const menusEl = container.querySelector<HTMLElement>("#oml2d-menus");
-		if (menusEl) {
-			menusEl.style.opacity = "1";
-			menusEl.style.visibility = "visible";
+	
+		// 窗口尺寸变化时重新判断移动端隐藏
+		window.addEventListener("resize", () => applyResponsive());
+	
+		// ---- 人物可移动：按住人物/气泡/提示区域拖动，舞台、菜单、气泡、状态条整体平移 ----
+		// 不拦截菜单按钮点击；位移超过阈值才视为拖动（保留模型点击交互）
+		let dragState: {
+			els: { el: HTMLElement; left: number; top: number }[];
+			startX: number;
+			startY: number;
+			active: boolean;
+		} | null = null;
+		const DRAG_THRESHOLD = 6;
+	
+		function collectDragEls(): { el: HTMLElement; left: number; top: number }[] {
+			const ids = ["oml2d-stage", "oml2d-menus", "oml2d-tips", "oml2d-statusBar"];
+			return ids
+				.map((id) => container.querySelector<HTMLElement>(`#${id}`))
+				.filter((el): el is HTMLElement => !!el)
+				.map((el) => {
+					const r = el.getBoundingClientRect();
+					return { el, left: r.left, top: r.top };
+				});
 		}
-	}
-	function restoreMenus() {
-		const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
-		if (!stageEl) return;
-		stageEl.onmouseout = savedMenusOut;
-		savedMenusOut = null;
-	}
-
-	// 方向键控制上下左右移动（10px/步）；输入框聚焦时不响应
-	const MOVE_STEP = 10;
-	window.addEventListener("keydown", (e) => {
-		const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
-		if (!keys.includes(e.key)) return;
-		const active = document.activeElement as HTMLElement | null;
-		const tag = (active?.tagName || "").toLowerCase();
-		if (tag === "input" || tag === "textarea" || active?.isContentEditable) return;
-		e.preventDefault();
-		let dx = 0;
-		let dy = 0;
-		if (e.key === "ArrowUp") dy = -MOVE_STEP;
-		else if (e.key === "ArrowDown") dy = MOVE_STEP;
-		else if (e.key === "ArrowLeft") dx = -MOVE_STEP;
-		else if (e.key === "ArrowRight") dx = MOVE_STEP;
-		moveWidgets(dx, dy);
-	});
-
-	// 捕获阶段：即使元素 fixed 定位超出容器视觉边界也能收到事件
-	container.addEventListener(
-		"pointerdown",
-		(e) => {
-			if ((e.target as HTMLElement).closest("#oml2d-menus")) return;
-			dragState = {
-				startX: e.clientX,
-				startY: e.clientY,
-				active: false,
-				els: collectDragEls(),
-			};
-		},
-		true,
-	);
-
-	window.addEventListener(
-		"pointermove",
-		(e) => {
-			if (!dragState || !dragState.els.length) return;
-			const dx = e.clientX - dragState.startX;
-			const dy = e.clientY - dragState.startY;
-			if (!dragState.active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
-				dragState.active = true;
-				forceMenusVisible();
-			}
-			if (!dragState.active) return;
-			for (const it of dragState.els) {
+	
+		// 整体平移（拖动 / 方向键共用）
+		function moveWidgets(dx: number, dy: number) {
+			for (const it of collectDragEls()) {
 				it.el.style.left = `${it.left + dx}px`;
 				it.el.style.top = `${it.top + dy}px`;
 				it.el.style.right = "auto";
 				it.el.style.bottom = "auto";
 			}
-			e.preventDefault();
-		},
-		{ passive: false },
-	);
-
-	function endDrag() {
-		if (dragState?.active) restoreMenus();
-		dragState = null;
-	}
-	window.addEventListener("pointerup", endDrag);
-	window.addEventListener("pointercancel", endDrag);
-
-	// 双击人物：锁定/解锁按钮栏显示（库默认悬停才显示，拖动时易消失）
-	let menusLocked = false;
-	let lockedMenusOut: ((ev: MouseEvent) => void) | null = null;
-	container.addEventListener(
-		"dblclick",
-		(e) => {
-			if ((e.target as HTMLElement).closest("#oml2d-menus")) return;
+		}
+	
+		// 拖动期间强制菜单保持显示
+		// 库的隐藏逻辑绑定在 stage 元素上（stage.onmouseout → 菜单隐藏），拖动时鼠标可能移出 stage 触发隐藏
+		let savedMenusOut: ((ev: MouseEvent) => void) | null = null;
+		function forceMenusVisible() {
 			const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
+			if (!stageEl) return;
+			savedMenusOut = stageEl.onmouseout;
+			stageEl.onmouseout = null;
+			// 菜单本身若已隐藏，强制显示
 			const menusEl = container.querySelector<HTMLElement>("#oml2d-menus");
-			if (!stageEl || !menusEl) return;
-			if (!menusLocked) {
-				menusLocked = true;
-				lockedMenusOut = stageEl.onmouseout;
-				stageEl.onmouseout = null;
+			if (menusEl) {
 				menusEl.style.opacity = "1";
 				menusEl.style.visibility = "visible";
-			} else {
-				menusLocked = false;
-				stageEl.onmouseout = lockedMenusOut;
-				lockedMenusOut = null;
-				menusEl.style.opacity = "0";
-				menusEl.style.visibility = "hidden";
 			}
-		},
-		true,
-	);
+		}
+		function restoreMenus() {
+			const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
+			if (!stageEl) return;
+			stageEl.onmouseout = savedMenusOut;
+			savedMenusOut = null;
+		}
+	
+		// 方向键控制上下左右移动（10px/步）；输入框聚焦时不响应
+		const MOVE_STEP = 10;
+		window.addEventListener("keydown", (e) => {
+			const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+			if (!keys.includes(e.key)) return;
+			const active = document.activeElement as HTMLElement | null;
+			const tag = (active?.tagName || "").toLowerCase();
+			if (tag === "input" || tag === "textarea" || active?.isContentEditable) return;
+			e.preventDefault();
+			let dx = 0;
+			let dy = 0;
+			if (e.key === "ArrowUp") dy = -MOVE_STEP;
+			else if (e.key === "ArrowDown") dy = MOVE_STEP;
+			else if (e.key === "ArrowLeft") dx = -MOVE_STEP;
+			else if (e.key === "ArrowRight") dx = MOVE_STEP;
+			moveWidgets(dx, dy);
+		});
+	
+		// 捕获阶段：即使元素 fixed 定位超出容器视觉边界也能收到事件
+		container.addEventListener(
+			"pointerdown",
+			(e) => {
+				if ((e.target as HTMLElement).closest("#oml2d-menus")) return;
+				dragState = {
+					startX: e.clientX,
+					startY: e.clientY,
+					active: false,
+					els: collectDragEls(),
+				};
+			},
+			true,
+		);
+	
+		window.addEventListener(
+			"pointermove",
+			(e) => {
+				if (!dragState || !dragState.els.length) return;
+				const dx = e.clientX - dragState.startX;
+				const dy = e.clientY - dragState.startY;
+				if (!dragState.active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+					dragState.active = true;
+					forceMenusVisible();
+				}
+				if (!dragState.active) return;
+				for (const it of dragState.els) {
+					it.el.style.left = `${it.left + dx}px`;
+					it.el.style.top = `${it.top + dy}px`;
+					it.el.style.right = "auto";
+					it.el.style.bottom = "auto";
+				}
+				e.preventDefault();
+			},
+			{ passive: false },
+		);
+	
+		function endDrag() {
+			if (dragState?.active) restoreMenus();
+			dragState = null;
+		}
+		window.addEventListener("pointerup", endDrag);
+		window.addEventListener("pointercancel", endDrag);
+	
+		// 双击人物：锁定/解锁按钮栏显示（库默认悬停才显示，拖动时易消失）
+		let menusLocked = false;
+		let lockedMenusOut: ((ev: MouseEvent) => void) | null = null;
+		container.addEventListener(
+			"dblclick",
+			(e) => {
+				if ((e.target as HTMLElement).closest("#oml2d-menus")) return;
+				const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
+				const menusEl = container.querySelector<HTMLElement>("#oml2d-menus");
+				if (!stageEl || !menusEl) return;
+				if (!menusLocked) {
+					menusLocked = true;
+					lockedMenusOut = stageEl.onmouseout;
+					stageEl.onmouseout = null;
+					menusEl.style.opacity = "1";
+					menusEl.style.visibility = "visible";
+				} else {
+					menusLocked = false;
+					stageEl.onmouseout = lockedMenusOut;
+					lockedMenusOut = null;
+					menusEl.style.opacity = "0";
+					menusEl.style.visibility = "hidden";
+				}
+			},
+			true,
+		);
+	
+	}
+
+	// 初次加载立即初始化；Swup 导航（astro:page-load）后重建
+	if (document.getElementById("l2d-widget-container")) {
+		initWidget();
+		lastWidgetContainer = document.getElementById("l2d-widget-container");
+	}
+	document.addEventListener("astro:page-load", () => {
+		const c = document.getElementById("l2d-widget-container");
+		if (c && c !== lastWidgetContainer) {
+			lastWidgetContainer = c;
+			initWidget();
+		}
+	});
 </script>

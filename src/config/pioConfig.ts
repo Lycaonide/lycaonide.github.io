@@ -129,6 +129,38 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			x: 0,
 			y: 0,
 		},
+		{
+			// HK416 二形态（少女前线，帅气）
+			path: "https://model.hacxy.cn/HK416-2-normal/model.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
+		{
+			// Kar98k（少女前线，帅气）
+			path: "https://model.hacxy.cn/Kar98k-normal/model.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
+		{
+			// Mark（偶像，帅气）
+			path: "https://model.hacxy.cn/Mark/Mark.model3.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
+		{
+			// Haru（官方示例，元气）
+			path: "https://model.hacxy.cn/Haru/Haru.model3.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,

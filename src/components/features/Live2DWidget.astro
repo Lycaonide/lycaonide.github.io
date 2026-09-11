@@ -137,11 +137,11 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 
 	// ---- 模型转换（oh-my-live2d 格式） ----
 	// l2d-widget 的 scale=1 表示原始大小；oh-my-live2d 默认 0.1，舞台 200px 下 scale>=1 会导致渲染异常，
-	// 因此把 >=0.5 的 scale 统一归一为 0.1，小 scale 保留原值
+	// 因此把 >=0.5 的 scale 统一归一为 0.07（比默认更小一号，适配小尺寸观感），小 scale 保留原值
 	const omlModels = models.map((m: any) => ({
 		name: m.path.split("/").pop() || m.path,
 		path: m.path,
-		scale: m.scale && m.scale < 0.5 ? m.scale : 0.1,
+		scale: m.scale && m.scale < 0.5 ? m.scale : 0.07,
 		position: m.offset || [0, 0],
 		volume: m.volume ?? 0.5,
 		motionPreloadStrategy: "ALL" as const,
@@ -208,14 +208,37 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		// 库侧固定 true，避免窄视口下舞台被静默隐藏（canvas 高度为 0）
 		mobileDisplay: true,
 		models: omlModels,
-		menus: { items: menuItems },
-		tips: tipsConfig,
+		menus: {
+			items: menuItems,
+			// 按钮缩小：默认 36px → 26px，图标同步缩小
+			itemStyle: {
+				width: "26px",
+				height: "26px",
+				fontSize: "14px",
+				borderRadius: "50%",
+			},
+			// 菜单整体贴边并微缩
+			style: { transform: "scale(0.85)", transformOrigin: "left bottom" },
+		},
+		tips: {
+			...tipsConfig,
+			// 气泡缩小：字号 12px、最小高度 60px、窄宽度
+			style: {
+				fontSize: "12px",
+				minHeight: "60px",
+				maxWidth: "160px",
+				padding: "6px 12px",
+				lineHeight: "1.5",
+			},
+		},
 		statusBar: {
 			loadingMessage: "加载中…",
 			loadSuccessMessage: "加载完成",
 			loadFailMessage: "加载失败，点击重试",
 			restMessage: "看板娘休息中…",
 			switchingMessage: "切换中…",
+			// 状态条缩小：默认最小高 40px → 26px
+			style: { fontSize: "12px", minHeight: "26px", padding: "2px 8px" },
 		},
 	});
 

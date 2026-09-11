@@ -161,6 +161,14 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			x: 0,
 			y: 0,
 		},
+		{
+			// Xisitina（西丝缇娜，红裙性感御姐）
+			path: "https://model.hacxy.cn/xisitina/model.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,

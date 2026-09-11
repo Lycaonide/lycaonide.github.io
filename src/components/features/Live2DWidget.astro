@@ -432,45 +432,71 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			{ passive: false },
 		);
 	
+		// 拖动结束后菜单保持显示一段时间，避免鼠标离开人物瞬间按钮栏消失
+		let keepTimer: number | null = null;
+		function keepMenusVisible(ms: number) {
+			const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
+			if (!stageEl) return;
+			if (savedMenusOut === null && stageEl.onmouseout) {
+				savedMenusOut = stageEl.onmouseout;
+				stageEl.onmouseout = null;
+			}
+			const menusEl = container.querySelector<HTMLElement>("#oml2d-menus");
+			if (menusEl) {
+				menusEl.style.opacity = "1";
+				menusEl.style.visibility = "visible";
+			}
+			if (keepTimer) window.clearTimeout(keepTimer);
+			keepTimer = window.setTimeout(() => {
+				restoreMenus();
+				keepTimer = null;
+			}, ms);
+		}
 		function endDrag() {
-			if (dragState?.active) restoreMenus();
+			if (dragState?.active) keepMenusVisible(3000);
 			dragState = null;
 		}
 		window.addEventListener("pointerup", endDrag);
 		window.addEventListener("pointercancel", endDrag);
 	
-		// 双击人物：锁定/解锁按钮栏显示（库默认悬停才显示，拖动时易消失）
+		// 双击人物（mousedown 计数，350ms 内两次按下）：锁定/解锁按钮栏显示
 		let menusLocked = false;
 		let lockedMenusOut: ((ev: MouseEvent) => void) | null = null;
 		let lockedTimer: number | null = null;
+		let lastPointerDown = 0;
 		container.addEventListener(
-			"dblclick",
+			"mousedown",
 			(e) => {
 				if ((e.target as HTMLElement).closest("#oml2d-menus")) return;
-				const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
-				const menusEl = container.querySelector<HTMLElement>("#oml2d-menus");
-				if (!stageEl || !menusEl) return;
-				if (!menusLocked) {
-					menusLocked = true;
-					lockedMenusOut = stageEl.onmouseout;
-					stageEl.onmouseout = null;
-					menusEl.style.opacity = "1";
-					menusEl.style.visibility = "visible";
-					// 库可能在模型加载/样式重载时重置菜单，锁定期间定时强制保持显示
-					if (lockedTimer) { window.clearInterval(lockedTimer); }
-					lockedTimer = window.setInterval(() => {
-						if (menusLocked) {
-							menusEl.style.opacity = "1";
-							menusEl.style.visibility = "visible";
-						}
-					}, 400);
+				const now = Date.now();
+				if (now - lastPointerDown < 350) {
+					lastPointerDown = 0;
+					const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
+					const menusEl = container.querySelector<HTMLElement>("#oml2d-menus");
+					if (!stageEl || !menusEl) return;
+					if (!menusLocked) {
+						menusLocked = true;
+						lockedMenusOut = stageEl.onmouseout;
+						stageEl.onmouseout = null;
+						menusEl.style.opacity = "1";
+						menusEl.style.visibility = "visible";
+						if (lockedTimer) window.clearInterval(lockedTimer);
+						lockedTimer = window.setInterval(() => {
+							if (menusLocked) {
+								menusEl.style.opacity = "1";
+								menusEl.style.visibility = "visible";
+							}
+						}, 400);
+					} else {
+						menusLocked = false;
+						if (lockedTimer) { window.clearInterval(lockedTimer); lockedTimer = null; }
+						stageEl.onmouseout = lockedMenusOut;
+						lockedMenusOut = null;
+						menusEl.style.opacity = "0";
+						menusEl.style.visibility = "hidden";
+					}
 				} else {
-					menusLocked = false;
-					if (lockedTimer) { window.clearInterval(lockedTimer); lockedTimer = null; }
-					stageEl.onmouseout = lockedMenusOut;
-					lockedMenusOut = null;
-					menusEl.style.opacity = "0";
-					menusEl.style.visibility = "hidden";
+					lastPointerDown = now;
 				}
 			},
 			true,

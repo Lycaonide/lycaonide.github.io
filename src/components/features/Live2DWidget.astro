@@ -299,21 +299,38 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 	// 热切换：新模型在隐藏实例中加载完成后再替换当前实例，全程无空窗
 	async function hotSwitch(targetIdx: number) {
 		if (!mainWidget || !availableModels.length) return false;
+		let swapW: any = null;
 		try {
+			const target = { ...availableModels[targetIdx] };
 			// 后台预取目标模型资源（加速切换）
-			await prefetchModel(availableModels[targetIdx]);
-			// 创建隐藏实例 B，后台加载目标模型
-			const { widget: swapW, doms: swapDoms } = createTracked(buildBaseOptions(availableModels));
-			hideAll(swapDoms);
-			await swapW.switchModel(targetIdx);
+			await prefetchModel(target);
+			// 创建隐藏实例 B，只加载目标模型（首次加载即目标模型）
+			const tracked = createTracked(buildBaseOptions([target]));
+			swapW = tracked.widget;
+			hideAll(tracked.doms);
+			// 等待目标模型加载完成（loaded 事件）；失败/超时则放弃并保持当前模型
+			await new Promise((resolve, reject) => {
+				const to = setTimeout(() => reject(new Error("swap load timeout")), 15000);
+				swapW.l2d.on("loaded", () => {
+					clearTimeout(to);
+					resolve(undefined);
+				});
+			});
 			// 目标模型已完全加载：销毁当前实例，显示新实例
 			await mainWidget.destroy().catch(() => {});
-			showAll(swapDoms);
+			showAll(tracked.doms);
 			mainWidget = swapW;
-			mainDoms = swapDoms;
+			mainDoms = tracked.doms;
 			return true;
 		} catch (e) {
 			console.warn("Hot switch failed, keeping current model", e);
+			// 清理残留的隐藏实例（最多等 3 秒，避免卡死）
+			if (swapW) {
+				await Promise.race([
+					swapW.destroy().catch(() => {}),
+					new Promise((r) => setTimeout(r, 3000)),
+				]);
+			}
 			return false;
 		}
 	}

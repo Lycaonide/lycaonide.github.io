@@ -62,6 +62,11 @@ const { config } = Astro.props;
 const models = Array.isArray(config.model) ? config.model : [config.model];
 const resolvePath = (p: string) => (/^https?:\/\//.test(p) ? p : url(p));
 
+// 容器尺寸（oh-my-live2d 舞台尺寸）：number 视为正方形，对象取宽高
+const sizeRaw = config.size ?? 300;
+const sizeW = typeof sizeRaw === "number" ? sizeRaw : sizeRaw.width ?? 300;
+const sizeH = typeof sizeRaw === "number" ? sizeRaw : sizeRaw.height ?? 300;
+
 const modelConfigs = models.map((m) => ({
 	path: resolvePath(m.path),
 	...(m.volume !== undefined && { volume: m.volume }),
@@ -90,7 +95,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 
 <div
 	id="l2d-widget-container"
-	style="position: fixed; z-index: 999;"
+	style={`position: fixed; left: 0; bottom: 0; z-index: 999; width: ${sizeW}px; height: ${sizeH}px;`}
 	data-models={JSON.stringify(modelConfigs)}
 	data-position={config.position || "bottom-left"}
 	data-size={JSON.stringify(config.size || 300)}
@@ -104,432 +109,127 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 </div>
 
 <script>
-	import { createWidget } from "l2d-widget";
+	import { loadOml2d } from "oh-my-live2d";
 
-	// 修复 l2d-widget 气泡 不会自动换行
-	// l2d-widget 使用行内样式，CSS 无法覆盖，需用 JS 修改
-	function patchTipBubble(el: HTMLElement) {
-		if (el.style.whiteSpace === "nowrap") {
-			el.style.whiteSpace = "normal";
-			el.style.width = "190px";
+	// ---- 读容器配置（由 pioConfig.ts 序列化而来） ----
+	const container = document.getElementById("l2d-widget-container");
+	if (!container) {
+		throw new Error("l2d-widget-container not found");
+	}
+	const models = JSON.parse(container.dataset.models || "[]");
+	const menus = JSON.parse(container.dataset.menus || "{}");
+	const tips = JSON.parse(container.dataset.tips || "{}");
+	const responsive = JSON.parse(container.dataset.responsive || "{}");
+	const position = container.dataset.position || "bottom-left";
+	const primaryColor = container.dataset.primaryColor || "#67c23a";
+
+	// 响应式：移动端隐藏
+	function applyResponsive() {
+		if (responsive.hideOnMobile) {
+			const bp = responsive.mobileBreakpoint || 768;
+			container.style.display =
+				window.innerWidth <= bp ? "none" : "";
+		} else {
+			container.style.display = "";
 		}
 	}
+	applyResponsive();
 
-	const tipObserver = new MutationObserver((mutations) => {
-		for (const m of mutations) {
-			for (const node of m.addedNodes) {
-				if (node instanceof HTMLElement) {
-					if (node.style.whiteSpace === "nowrap") patchTipBubble(node);
-					node.querySelectorAll<HTMLElement>('*').forEach(patchTipBubble);
-				}
-			}
-		}
-	});
-	tipObserver.observe(document.body, { childList: true, subtree: true });
+	// ---- 模型转换（oh-my-live2d 格式） ----
+	// l2d-widget 的 scale=1 表示原始大小；oh-my-live2d 默认 0.1，舞台 200px 下 scale>=1 会导致渲染异常，
+	// 因此把 >=0.5 的 scale 统一归一为 0.1，小 scale 保留原值
+	const omlModels = models.map((m: any) => ({
+		name: m.path.split("/").pop() || m.path,
+		path: m.path,
+		scale: m.scale && m.scale < 0.5 ? m.scale : 0.1,
+		position: m.offset || [0, 0],
+		volume: m.volume ?? 0.5,
+		motionPreloadStrategy: "ALL" as const,
+	}));
 
-	// 预检模型可用性：本地模型直接可用，外部模型并行探测，失败自动剔除
-	async function probeModels(models: any[]) {
-		const results = await Promise.all(
-			models.map(async (m) => {
-				if (m.path.startsWith("/")) return { m, ok: true };
-				try {
-					const ctrl = new AbortController();
-					const timer = setTimeout(() => ctrl.abort(), 6000);
-					const res = await fetch(m.path, { method: "GET", signal: ctrl.signal });
-					clearTimeout(timer);
-					return { m, ok: res.ok };
-				} catch {
-					return { m, ok: false };
-				}
-			}),
-		);
-		return results.filter((r) => r.ok).map((r) => r.m);
-	}
+	// 内置 iconfont 图标（oh-my-live2d）
+	const ICONS: Record<string, string> = {
+		home: "icon-about",
+		scrollToTop: "icon-setting",
+		sleep: "icon-rest",
+		switchModel: "icon-switch",
+		github: "icon-like",
+	};
 
-	// 预取模型资源（model.json + 贴图 + 动作），写入浏览器内存缓存，切换时秒加载
-	async function prefetchModel(m: any) {
-		if (m.path.startsWith("/")) return true;
-		try {
-			const ctrl = new AbortController();
-			const timer = setTimeout(() => ctrl.abort(), 8000);
-			const res = await fetch(m.path, { method: "GET", signal: ctrl.signal });
-			if (!res.ok) {
-				clearTimeout(timer);
-				return false;
-			}
-			try {
-				const json = await res.json();
-				const base = m.path.slice(0, m.path.lastIndexOf("/") + 1);
-				const urls: string[] = [];
-				const pushUrl = (u: any) => {
-					if (typeof u === "string" && u)
-						urls.push(u.startsWith("http") ? u : base + u);
-				};
-				const collect = (obj: any, keys: string[]) => {
-					for (const k of keys) {
-						const v = obj[k];
-						if (typeof v === "string") pushUrl(v);
-						else if (Array.isArray(v)) v.forEach(pushUrl);
-					}
-				};
-				if (json.FileReferences) {
-					collect(json.FileReferences, ["Textures"]);
-					const mo = json.FileReferences.Motions;
-					if (mo && typeof mo === "object") {
-						for (const key of Object.keys(mo)) {
-							const arr = mo[key];
-							if (Array.isArray(arr))
-								arr.forEach((it: any) => it && pushUrl(it.File));
-						}
-					}
-				} else {
-					collect(json, ["textures", "physics"]);
-					const mo = json.motions;
-					if (mo && typeof mo === "object") {
-						for (const key of Object.keys(mo)) {
-							const arr = mo[key];
-							if (Array.isArray(arr))
-								arr.forEach((it: any) => it && pushUrl(it.file));
-						}
-					}
-				}
-				await Promise.all(
-					urls.slice(0, 15).map((u) =>
-						fetch(u, { method: "GET", signal: ctrl.signal }).catch(() => {}),
-					),
-				);
-			} catch {}
-			clearTimeout(timer);
-			return true;
-		} catch {
-			return false;
-		}
-	}
-
-	// ---- 双实例热切换：旧模型保持显示，新模型后台加载完成后再瞬间替换 ----
-
-	let currentModelIndex = 0;
-	let availableModels: any[] = [];
-	let mainWidget: any = null; // 当前显示的实例
-	let mainDoms: HTMLElement[] = []; // 当前实例的 DOM（容器 + 状态条）
-
-	// 创建实例并记录它插入 body 的 DOM
-	function createTracked(options: any) {
-		const before = document.body.childElementCount;
-		const w = createWidget(options);
-		const doms: HTMLElement[] = [];
-		for (let i = before; i < document.body.childElementCount; i++) {
-			doms.push(document.body.children[i] as HTMLElement);
-		}
-		return { widget: w, doms };
-	}
-
-	function hideAll(doms: HTMLElement[]) {
-		doms.forEach((d) => (d.style.display = "none"));
-	}
-	function showAll(doms: HTMLElement[]) {
-		doms.forEach((d) => (d.style.display = ""));
-	}
-
-	// 构建基础 options（从容器 data 属性）
-	function buildBaseOptions(usableModels: any[]) {
-		const container = document.getElementById("l2d-widget-container")!;
-		const position = container.dataset.position || "bottom-left";
-		const size = JSON.parse(container.dataset.size || "300");
-		const primaryColor = container.dataset.primaryColor || undefined;
-		const transitionDuration = container.dataset.transitionDuration
-			? parseInt(container.dataset.transitionDuration)
-			: undefined;
-		const transitionType = container.dataset.transitionType || undefined;
-		const menus = JSON.parse(container.dataset.menus || "{}");
-		const tips = JSON.parse(container.dataset.tips || "{}");
-
-		const options: any = {
-			model: usableModels.length === 1 ? usableModels[0] : usableModels,
-			position: position,
-			size: size,
-		};
-		if (primaryColor) options.primaryColor = primaryColor;
-		if (transitionDuration) options.transitionDuration = transitionDuration;
-		if (transitionType) options.transitionType = transitionType;
-
-		// 菜单配置 - 将 action 字符串映射为实际函数
-		if (menus.items || (menus.extraItems && menus.extraItems.length > 0)) {
-			options.menus = {};
-			if (menus.items) {
-				options.menus.items = menus.items.map((item: any) => ({
-					icon: item.icon,
-					label: item.label,
-					onClick: menuActions[item.action] || (() => {}),
-				}));
-			}
-			if (menus.extraItems) {
-				options.menus.extraItems = menus.extraItems.map((item: any) => ({
-					icon: item.icon,
-					label: item.label,
-					onClick: menuActions[item.action] || (() => {}),
-				}));
-			}
-			if (menus.align) {
-				options.menus.align = menus.align;
-			}
-		}
-
-		// 提示配置
-		if (tips) {
-			const tipsConfig = tips.enable === false ? false : {
-				...(tips.welcomeMessage && { welcomeMessage: tips.welcomeMessage }),
-				...(tips.messages && { messages: tips.messages }),
-				...(tips.duration !== undefined && { duration: tips.duration }),
-				...(tips.interval !== undefined && { interval: tips.interval }),
-				...(tips.offset && { offset: tips.offset }),
-				...(tips.typing && { typing: tips.typing }),
-			};
-			if (tipsConfig === false || Object.keys(tipsConfig).length > 0) {
-				if (Array.isArray(options.model)) {
-					options.model.forEach((m: any) => (m.tips = tipsConfig));
-				} else {
-					options.model.tips = tipsConfig;
-				}
-			}
-		}
-		return options;
-	}
-
-	// 切换中提示：绿底白字竖排，与"正在休息"状态条同位置（屏幕左下角 bottom=画布高一半），不遮挡模型和气泡
-	let switchTipEl: HTMLElement | null = null;
-	let tipShownAt = 0;
-	function getTipBottom() {
-		const container = document.getElementById("l2d-widget-container");
-		const raw = container?.dataset.size || "200";
-		try {
-			const size = JSON.parse(raw);
-			return (typeof size === "number" ? size : size.height || 200) / 2;
-		} catch {
-			return 100;
-		}
-	}
-	function showSwitchingTip() {
-		tipShownAt = Date.now();
-		if (!switchTipEl) {
-			switchTipEl = document.createElement("div");
-			switchTipEl.textContent = "切换中…";
-			Object.assign(switchTipEl.style, {
-				position: "fixed",
-				left: "0",
-				bottom: getTipBottom() + "px",
-				transform: "translateY(50%)",
-				zIndex: "10000",
-				writingMode: "vertical-rl",
-				textOrientation: "upright",
-				background: "var(--l2d-msg-bg)",
-				color: "#fff",
-				padding: "10px 6px",
-				borderRadius: "0 8px 8px 0",
-				fontSize: "13px",
-				lineHeight: "1.5",
-				letterSpacing: "4px",
-				pointerEvents: "none",
-				transition: "opacity 0.25s",
-			});
-			document.body.appendChild(switchTipEl);
-		}
-		switchTipEl.style.display = "";
-		switchTipEl.style.opacity = "1";
-	}
-	// 保证提示至少显示 350ms，避免快速切换时闪烁
-	async function hideSwitchingTip() {
-		const wait = Math.max(0, 350 - (Date.now() - tipShownAt));
-		if (wait) await new Promise((r) => setTimeout(r, wait));
-		if (switchTipEl) {
-			switchTipEl.style.opacity = "0";
-			switchTipEl.style.display = "none";
-		}
-	}
-
-	// 热切换：新模型在隐藏实例中加载完成后再替换当前实例，全程无空窗
-	let switching = false; // 互斥锁：防止连续点击导致多实例并存
-	async function hotSwitch(targetIdx: number) {
-		if (!mainWidget || !availableModels.length) return false;
-		if (switching) return false; // 正在切换，忽略新的请求
-		switching = true;
-		showSwitchingTip();
-		let swapW: any = null;
-		let swapDoms: HTMLElement[] = [];
-		try {
-			const target = { ...availableModels[targetIdx] };
-			// 后台预取目标模型资源（不阻塞切换；后台全量预取已做，这里命中缓存秒级完成）
-			prefetchModel(target).catch(() => {});
-			// 创建隐藏实例 B，只加载目标模型（首次加载即目标模型）
-			const tracked = createTracked(buildBaseOptions([target]));
-			swapW = tracked.widget;
-			swapDoms = tracked.doms;
-			hideAll(swapDoms);
-			// 等待目标模型加载完成（loaded 事件）；失败/超时则放弃并保持当前模型
-			// loaded 后再等几帧 + 60ms，确保贴图上传完成、首帧已渲染，避免显示瞬间白屏
-			await new Promise((resolve, reject) => {
-				const to = setTimeout(() => reject(new Error("swap load timeout")), 10000);
-				swapW.l2d.on("loaded", () => {
-					clearTimeout(to);
-					requestAnimationFrame(() =>
-						requestAnimationFrame(() => setTimeout(resolve, 60)),
-					);
-				});
-			});
-			// 目标模型已完全加载：
-			// 1) 旧模型立即隐藏并强制释放其 WebGL（防 context 泄漏导致切换变慢/白屏）
-			// 2) 新模型立即显示（无空窗）
-			// 3) 后台销毁旧实例，最多等 2 秒，不阻塞切换
-			hideAll(mainDoms);
-			forceFreeWebGL(mainDoms);
-			removeDoms(mainDoms);
-			showAll(swapDoms);
-			const oldWidget = mainWidget;
-			mainWidget = swapW;
-			mainDoms = swapDoms;
-			Promise.race([
-				oldWidget.destroy().catch(() => {}),
-				new Promise((r) => setTimeout(r, 2000)),
-			]);
-			await hideSwitchingTip();
-			return true;
-		} catch (e) {
-			console.warn("Hot switch failed, keeping current model", e);
-			await hideSwitchingTip();
-			// 清理残留的隐藏实例（最多等 3 秒，避免卡死）
-			if (swapW) {
-				await Promise.race([
-					swapW.destroy().catch(() => {}),
-					new Promise((r) => setTimeout(r, 3000)),
-				]);
-			}
-			forceFreeWebGL(swapDoms);
-			removeDoms(swapDoms);
-			return false;
-		} finally {
-			switching = false;
-		}
-	}
-
-	// 强制释放实例 DOM 中 canvas 的 WebGL 上下文（防止多次切换后 context 耗尽导致加载变慢/白屏）
-	function forceFreeWebGL(doms: HTMLElement[]) {
-		for (const d of doms) {
-			try {
-				const canvases: HTMLCanvasElement[] = d.tagName === "CANVAS"
-					? [d as HTMLCanvasElement]
-					: Array.from(d.querySelectorAll("canvas"));
-				for (const c of canvases) {
-					const gl = c.getContext("webgl") || c.getContext("experimental-webgl");
-					if (gl && gl.getExtension) {
-						const ext = gl.getExtension("WEBGL_lose_context");
-						if (ext) ext.loseContext();
-					}
-				}
-			} catch {}
-		}
-	}
-
-	// 强制从 DOM 移除实例相关节点（不依赖 destroy 的 removeChild）
-	function removeDoms(doms: HTMLElement[]) {
-		doms.forEach((d) => {
-			if (d.parentNode) d.parentNode.removeChild(d);
-		});
-	}
-
-	// 菜单动作映射（作用于当前显示实例）
-	const menuActions: Record<string, (widget: any) => void> = {
+	// 菜单动作
+	const actions: Record<string, (oml2d: any) => void> = {
 		home: () => (window.location.href = "/"),
 		scrollToTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
-		sleep: (widget) => widget.sleep(),
+		sleep: (oml2d) => {
+			oml2d.stageSlideOut();
+			oml2d.statusBarPopup("看板娘休息中…", 10000, primaryColor);
+			oml2d.setStatusBarClickEvent(() => {
+				oml2d.stageSlideIn();
+				oml2d.statusBarClose("", 0, primaryColor);
+				oml2d.statusBarClearEvents();
+			});
+		},
 		github: () => window.open("https://github.com/lycaonide", "_blank"),
-		switchModel: async () => {
-			if (!availableModels.length) return;
-			// 随机挑选一个不同于当前的模型；失败自动换下一个，全部失败保持当前
-			const maxTries = Math.min(availableModels.length, 6);
-			for (let i = 0; i < maxTries; i++) {
-				const idx = Math.floor(Math.random() * availableModels.length);
-				if (idx === currentModelIndex) continue;
-				if (await hotSwitch(idx)) {
-					currentModelIndex = idx;
-					return;
-				}
-			}
-			console.warn("No available model to switch, keeping current");
+		switchModel: async (oml2d) => {
+			const n = omlModels.length;
+			if (n <= 1) return;
+			let idx = Math.floor(Math.random() * n);
+			if (idx === oml2d.modelIndex) idx = (idx + 1) % n;
+			await oml2d.loadModelByIndex(idx);
 		},
 	};
 
-	async function initWidget() {
-		const container = document.getElementById("l2d-widget-container");
-		if (!container) return;
+	const menuItems = (menus.items || []).map((item: any) => ({
+		id: item.action,
+		title: item.label,
+		icon: ICONS[item.action] || "icon-about",
+		onClick: (oml2d: any) => actions[item.action]?.(oml2d),
+	}));
 
-		try {
-			const models = JSON.parse(container.dataset.models || "[]");
-			const responsive = JSON.parse(container.dataset.responsive || "{}");
-
-			// 响应式检查：移动端隐藏
-			if (responsive.hideOnMobile) {
-				const breakpoint = responsive.mobileBreakpoint || 768;
-				if (window.innerWidth <= breakpoint) {
-					container.style.display = "none";
-					return;
-				}
-			}
-
-			if (models.length === 0) {
-				console.warn("No Live2D models configured");
-				return;
-			}
-
-			// 预检可用模型：外部模型失败会自动剔除，本地模型始终保留
-			const usableModels = await probeModels(models);
-			if (usableModels.length === 0) {
-				console.warn("All Live2D models unavailable");
-				return;
-			}
-			availableModels = usableModels;
-			currentModelIndex = 0;
-
-			// 创建主实例（正常显示第一个可用模型）
-			const { widget, doms } = createTracked(buildBaseOptions(availableModels));
-			mainWidget = widget;
-			mainDoms = doms;
-
-			// 后台预取所有可用模型资源（限流 3 并发），切换时全部命中缓存、秒级完成
-			let fetchIdx = 0;
-			const pump = async () => {
-				while (fetchIdx < availableModels.length) {
-					const m = availableModels[fetchIdx++];
-					await prefetchModel(m).catch(() => {});
-				}
+	// ---- 提示气泡（闲置消息；欢迎语在 onLoad 成功后手动显示） ----
+	const tipsConfig: any = {};
+	if (tips.enable !== false) {
+		if (tips.messages && tips.messages.length) {
+			tipsConfig.idleTips = {
+				message: tips.messages,
+				duration: tips.duration || 3000,
+				interval: tips.interval || 8000,
 			};
-			Array.from({ length: 3 }, () => pump());
-		} catch (e) {
-			console.error("Failed to initialize Live2D widget:", e);
 		}
 	}
 
-	// 确保只初始化一次
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", initWidget);
-	} else {
-		initWidget();
-	}
+	// ---- 初始化 ----
+	const oml2d = loadOml2d({
+		parentElement: container,
+		dockedPosition: position === "bottom-right" ? "right" : "left",
+		primaryColor,
+		transitionTime: 500,
+		// mobileDisplay: 移动端显隐已由上方 applyResponsive（hideOnMobile）控制容器，
+		// 库侧固定 true，避免窄视口下舞台被静默隐藏（canvas 高度为 0）
+		mobileDisplay: true,
+		models: omlModels,
+		menus: { items: menuItems },
+		tips: tipsConfig,
+		statusBar: {
+			loadingMessage: "加载中…",
+			loadSuccessMessage: "加载完成",
+			loadFailMessage: "加载失败，点击重试",
+			restMessage: "看板娘休息中…",
+			switchingMessage: "切换中…",
+		},
+	});
 
-	// 响应式处理：窗口大小变化时显示/隐藏
-	function handleResponsive() {
-		const container = document.getElementById("l2d-widget-container");
-		if (!container) return;
-
-		const responsive = JSON.parse(container.dataset.responsive || "{}");
-		if (responsive.hideOnMobile) {
-			const breakpoint = responsive.mobileBreakpoint || 768;
-			if (window.innerWidth <= breakpoint) {
-				container.style.display = "none";
-			} else {
-				container.style.display = "";
+	// 欢迎语：模型加载成功后随机显示一条
+	if (tips.enable !== false && tips.welcomeMessage && tips.welcomeMessage.length) {
+		oml2d.onLoad((status: string) => {
+			if (status === "success") {
+				const msg =
+					tips.welcomeMessage[Math.floor(Math.random() * tips.welcomeMessage.length)];
+				oml2d.tipsMessage(msg, 4000, 10);
 			}
-		}
+		});
 	}
 
-	window.addEventListener("resize", handleResponsive);
+	// 窗口尺寸变化时重新判断移动端隐藏
+	window.addEventListener("resize", () => applyResponsive());
 </script>

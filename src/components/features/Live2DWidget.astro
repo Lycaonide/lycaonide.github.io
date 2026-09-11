@@ -127,22 +127,41 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 	});
 	tipObserver.observe(document.body, { childList: true, subtree: true });
 
+	// 预检模型可用性：本地模型直接可用，外部模型并行探测，失败自动剔除
+	async function probeModels(models: any[]) {
+		const results = await Promise.all(
+			models.map(async (m) => {
+				if (m.path.startsWith("/")) return { m, ok: true };
+				try {
+					const ctrl = new AbortController();
+					const timer = setTimeout(() => ctrl.abort(), 6000);
+					const res = await fetch(m.path, { method: "GET", signal: ctrl.signal });
+					clearTimeout(timer);
+					return { m, ok: res.ok };
+				} catch {
+					return { m, ok: false };
+				}
+			}),
+		);
+		return results.filter((r) => r.ok).map((r) => r.m);
+	}
+
 	// 菜单动作映射
 	let currentModelIndex = 0;
+	let availableModels: any[] = [];
 	const menuActions: Record<string, (widget: any) => void> = {
 		home: () => (window.location.href = "/"),
 		scrollToTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
 		sleep: (widget) => widget.sleep(),
 		github: () => window.open("https://github.com/lycaonide", "_blank"),
 		switchModel: (widget) => {
-			const container = document.getElementById("l2d-widget-container");
-			const models = JSON.parse(container?.dataset.models || "[]");
-			currentModelIndex = (currentModelIndex + 1) % models.length;
+			if (!availableModels.length) return;
+			currentModelIndex = (currentModelIndex + 1) % availableModels.length;
 			widget.switchModel(currentModelIndex);
 		},
 	};
 
-	function initWidget() {
+	async function initWidget() {
 		const container = document.getElementById("l2d-widget-container");
 		if (!container) return;
 
@@ -173,8 +192,17 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				return;
 			}
 
+			// 预检可用模型：外部模型失败会自动剔除，本地模型始终保留
+			const usableModels = await probeModels(models);
+			if (usableModels.length === 0) {
+				console.warn("All Live2D models unavailable");
+				return;
+			}
+			availableModels = usableModels;
+			currentModelIndex = 0;
+
 			const options: any = {
-				model: models.length === 1 ? models[0] : models,
+				model: usableModels.length === 1 ? usableModels[0] : usableModels,
 				position: position,
 				size: size,
 			};

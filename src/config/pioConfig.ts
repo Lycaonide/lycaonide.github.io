@@ -90,18 +90,45 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 	// 模型配置，支持单个模型或数组（多模型切换）
 	model: [
 		{
-			// Live2D模型本地文件路径
+			// 本地模型（保底，始终可用）
 			path: "/pio/models/live2d/snow_miku/model.json",
-			// 动作声音音量 范围0~1，默认 0（静音）
 			volume: 0,
-			// 模型缩放比例
 			scale: 1,
-			// X轴偏移，范围 -2~2，正值向右
 			x: 0,
-			// Y轴偏移，范围 -2~2，正值向上
 			y: 0,
 		},
-
+		{
+			// 紫发少女 shizuku（官方示例，Cubism2）
+			path: "https://model.hacxy.cn/shizuku/shizuku.model.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
+		{
+			// 药剂师 Pio（超可爱）
+			path: "https://model.hacxy.cn/potion-Maker-Pio/index.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
+		{
+			// 小黑猫
+			path: "https://model.hacxy.cn/cat-black/model.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
+		{
+			// HK416（少女前线）
+			path: "https://model.hacxy.cn/HK416-1-normal/model.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,

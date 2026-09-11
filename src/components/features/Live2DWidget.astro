@@ -278,7 +278,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				style: {
 					fontSize: "12px",
 					minHeight: "72px",
-					maxWidth: "190px",
+					maxWidth: "260px",
 					padding: "8px 12px",
 					lineHeight: "1.5",
 					borderRadius: "20px",
@@ -287,7 +287,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				mobileStyle: {
 					fontSize: "12px",
 					minHeight: "72px",
-					maxWidth: "190px",
+					maxWidth: "260px",
 					padding: "8px 12px",
 					lineHeight: "1.5",
 					borderRadius: "20px",
@@ -341,7 +341,17 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				// 欢迎语：模型加载成功后随机显示一条；同时把状态条锚到人物头顶
 		if (tips.enable !== false && tips.welcomeMessage && tips.welcomeMessage.length) {
 			oml2d.onLoad((status: string) => {
-				if (status === "success") {
+				if (status === "loading") {
+					// 加载中：清除气泡避免位置乱动，状态栏锁定初始位置
+					oml2d.clearTips();
+					const sbL = container.querySelector<HTMLElement>("#oml2d-statusBar");
+					if (sbL) {
+						sbL.style.bottom = "140px";
+						sbL.style.left = "0px";
+						sbL.style.top = "auto";
+						sbL.style.right = "auto";
+					}
+				} else if (status === "success") {
 					const msg =
 						tips.welcomeMessage[Math.floor(Math.random() * tips.welcomeMessage.length)];
 					oml2d.tipsMessage(msg, 4000, 10);

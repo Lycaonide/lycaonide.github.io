@@ -296,9 +296,19 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		return options;
 	}
 
-	// 切换中提示：绿底白字（与其他提示气泡一致），竖排在屏幕左下角，不悬在模型上方
+	// 切换中提示：绿底白字竖排，与"正在休息"状态条同位置（屏幕左下角 bottom=画布高一半），不遮挡模型和气泡
 	let switchTipEl: HTMLElement | null = null;
 	let tipShownAt = 0;
+	function getTipBottom() {
+		const container = document.getElementById("l2d-widget-container");
+		const raw = container?.dataset.size || "200";
+		try {
+			const size = JSON.parse(raw);
+			return (typeof size === "number" ? size : size.height || 200) / 2;
+		} catch {
+			return 100;
+		}
+	}
 	function showSwitchingTip() {
 		tipShownAt = Date.now();
 		if (!switchTipEl) {
@@ -306,15 +316,16 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			switchTipEl.textContent = "切换中…";
 			Object.assign(switchTipEl.style, {
 				position: "fixed",
-				left: "6px",
-				bottom: "12px",
+				left: "0",
+				bottom: getTipBottom() + "px",
+				transform: "translateY(50%)",
 				zIndex: "10000",
 				writingMode: "vertical-rl",
 				textOrientation: "upright",
 				background: "var(--l2d-msg-bg)",
 				color: "#fff",
 				padding: "10px 6px",
-				borderRadius: "10px",
+				borderRadius: "0 8px 8px 0",
 				fontSize: "13px",
 				lineHeight: "1.5",
 				letterSpacing: "4px",
@@ -355,19 +366,22 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			swapDoms = tracked.doms;
 			hideAll(swapDoms);
 			// 等待目标模型加载完成（loaded 事件）；失败/超时则放弃并保持当前模型
-			// loaded 后再等两帧，确保首帧已渲染，避免显示瞬间白屏
+			// loaded 后再等几帧 + 60ms，确保贴图上传完成、首帧已渲染，避免显示瞬间白屏
 			await new Promise((resolve, reject) => {
 				const to = setTimeout(() => reject(new Error("swap load timeout")), 10000);
 				swapW.l2d.on("loaded", () => {
 					clearTimeout(to);
-					requestAnimationFrame(() => requestAnimationFrame(resolve));
+					requestAnimationFrame(() =>
+						requestAnimationFrame(() => setTimeout(resolve, 60)),
+					);
 				});
 			});
 			// 目标模型已完全加载：
-			// 1) 旧模型立即隐藏并移除 DOM（释放 WebGL，防止新实例白屏/多实例并存）
+			// 1) 旧模型立即隐藏并强制释放其 WebGL（防 context 泄漏导致切换变慢/白屏）
 			// 2) 新模型立即显示（无空窗）
 			// 3) 后台销毁旧实例，最多等 2 秒，不阻塞切换
 			hideAll(mainDoms);
+			forceFreeWebGL(mainDoms);
 			removeDoms(mainDoms);
 			showAll(swapDoms);
 			const oldWidget = mainWidget;
@@ -389,10 +403,29 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					new Promise((r) => setTimeout(r, 3000)),
 				]);
 			}
+			forceFreeWebGL(swapDoms);
 			removeDoms(swapDoms);
 			return false;
 		} finally {
 			switching = false;
+		}
+	}
+
+	// 强制释放实例 DOM 中 canvas 的 WebGL 上下文（防止多次切换后 context 耗尽导致加载变慢/白屏）
+	function forceFreeWebGL(doms: HTMLElement[]) {
+		for (const d of doms) {
+			try {
+				const canvases: HTMLCanvasElement[] = d.tagName === "CANVAS"
+					? [d as HTMLCanvasElement]
+					: Array.from(d.querySelectorAll("canvas"));
+				for (const c of canvases) {
+					const gl = c.getContext("webgl") || c.getContext("experimental-webgl");
+					if (gl && gl.getExtension) {
+						const ext = gl.getExtension("WEBGL_lose_context");
+						if (ext) ext.loseContext();
+					}
+				}
+			} catch {}
 		}
 	}
 

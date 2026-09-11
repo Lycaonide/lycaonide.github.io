@@ -187,16 +187,36 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				});
 			},
 			github: () => window.open("https://github.com/lycaonide", "_blank"),
-			switchModel: async (oml2d) => {
-				const n = omlModels.length;
-				if (n <= 1) return;
-				let idx = Math.floor(Math.random() * n);
-				if (idx === oml2d.modelIndex) idx = (idx + 1) % n;
-				await oml2d.loadModelByIndex(idx);
-				syncStatusBarPos();
-				syncMenusPos();
-				syncMenusPos();
-			},
+							switchModel: async (oml2d) => {
+					const n = omlModels.length;
+					if (n <= 1) return;
+					let idx = Math.floor(Math.random() * n);
+					if (idx === oml2d.modelIndex) idx = (idx + 1) % n;
+					// 记录拖动状态与四元素位置快照：切换模型后保持整体位置不跳回初始
+					const stage0 = container.querySelector<HTMLElement>("#oml2d-stage");
+					const dragged = !!(stage0 && stage0.style.left);
+					const snap: Record<string, { left: string; top: string; bottom: string; right: string }> = {};
+					for (const id of ["oml2d-stage", "oml2d-menus", "oml2d-tips", "oml2d-statusBar"]) {
+						const el = container.querySelector<HTMLElement>(`#${id}`);
+						if (el) snap[id] = { left: el.style.left, top: el.style.top, bottom: el.style.bottom, right: el.style.right };
+					}
+					await oml2d.loadModelByIndex(idx);
+					if (dragged) {
+						// 拖动过：恢复整体位置（库 reloadStyle 会重置样式，切换后拉回快照）
+						for (const [id, st] of Object.entries(snap)) {
+							const el = container.querySelector<HTMLElement>(`#${id}`);
+							if (!el) continue;
+							if (st.left) el.style.left = st.left;
+							if (st.top) el.style.top = st.top;
+							if (st.bottom) el.style.bottom = st.bottom;
+							if (st.right) el.style.right = st.right;
+						}
+					} else {
+						// 未拖动：正常锚定（状态栏腰部、按钮栏最右）
+						syncStatusBarPos();
+						syncMenusPos();
+					}
+				}
 		};
 	
 		const menuItems = (menus.items || []).map((item: any) => ({

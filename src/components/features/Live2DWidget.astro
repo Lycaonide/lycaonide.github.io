@@ -206,25 +206,133 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		}
 	}
 
-	// 菜单动作映射
+	// ---- 双实例热切换：旧模型保持显示，新模型后台加载完成后再瞬间替换 ----
+
 	let currentModelIndex = 0;
 	let availableModels: any[] = [];
+	let mainWidget: any = null; // 当前显示的实例
+	let mainDoms: HTMLElement[] = []; // 当前实例的 DOM（容器 + 状态条）
+
+	// 创建实例并记录它插入 body 的 DOM
+	function createTracked(options: any) {
+		const before = document.body.childElementCount;
+		const w = createWidget(options);
+		const doms: HTMLElement[] = [];
+		for (let i = before; i < document.body.childElementCount; i++) {
+			doms.push(document.body.children[i] as HTMLElement);
+		}
+		return { widget: w, doms };
+	}
+
+	function hideAll(doms: HTMLElement[]) {
+		doms.forEach((d) => (d.style.display = "none"));
+	}
+	function showAll(doms: HTMLElement[]) {
+		doms.forEach((d) => (d.style.display = ""));
+	}
+
+	// 构建基础 options（从容器 data 属性）
+	function buildBaseOptions(usableModels: any[]) {
+		const container = document.getElementById("l2d-widget-container")!;
+		const position = container.dataset.position || "bottom-left";
+		const size = JSON.parse(container.dataset.size || "300");
+		const primaryColor = container.dataset.primaryColor || undefined;
+		const transitionDuration = container.dataset.transitionDuration
+			? parseInt(container.dataset.transitionDuration)
+			: undefined;
+		const transitionType = container.dataset.transitionType || undefined;
+		const menus = JSON.parse(container.dataset.menus || "{}");
+		const tips = JSON.parse(container.dataset.tips || "{}");
+
+		const options: any = {
+			model: usableModels.length === 1 ? usableModels[0] : usableModels,
+			position: position,
+			size: size,
+		};
+		if (primaryColor) options.primaryColor = primaryColor;
+		if (transitionDuration) options.transitionDuration = transitionDuration;
+		if (transitionType) options.transitionType = transitionType;
+
+		// 菜单配置 - 将 action 字符串映射为实际函数
+		if (menus.items || (menus.extraItems && menus.extraItems.length > 0)) {
+			options.menus = {};
+			if (menus.items) {
+				options.menus.items = menus.items.map((item: any) => ({
+					icon: item.icon,
+					label: item.label,
+					onClick: menuActions[item.action] || (() => {}),
+				}));
+			}
+			if (menus.extraItems) {
+				options.menus.extraItems = menus.extraItems.map((item: any) => ({
+					icon: item.icon,
+					label: item.label,
+					onClick: menuActions[item.action] || (() => {}),
+				}));
+			}
+			if (menus.align) {
+				options.menus.align = menus.align;
+			}
+		}
+
+		// 提示配置
+		if (tips) {
+			const tipsConfig = tips.enable === false ? false : {
+				...(tips.welcomeMessage && { welcomeMessage: tips.welcomeMessage }),
+				...(tips.messages && { messages: tips.messages }),
+				...(tips.duration !== undefined && { duration: tips.duration }),
+				...(tips.interval !== undefined && { interval: tips.interval }),
+				...(tips.offset && { offset: tips.offset }),
+				...(tips.typing && { typing: tips.typing }),
+			};
+			if (tipsConfig === false || Object.keys(tipsConfig).length > 0) {
+				if (Array.isArray(options.model)) {
+					options.model.forEach((m: any) => (m.tips = tipsConfig));
+				} else {
+					options.model.tips = tipsConfig;
+				}
+			}
+		}
+		return options;
+	}
+
+	// 热切换：新模型在隐藏实例中加载完成后再替换当前实例，全程无空窗
+	async function hotSwitch(targetIdx: number) {
+		if (!mainWidget || !availableModels.length) return false;
+		try {
+			// 后台预取目标模型资源（加速切换）
+			await prefetchModel(availableModels[targetIdx]);
+			// 创建隐藏实例 B，后台加载目标模型
+			const { widget: swapW, doms: swapDoms } = createTracked(buildBaseOptions(availableModels));
+			hideAll(swapDoms);
+			await swapW.switchModel(targetIdx);
+			// 目标模型已完全加载：销毁当前实例，显示新实例
+			await mainWidget.destroy().catch(() => {});
+			showAll(swapDoms);
+			mainWidget = swapW;
+			mainDoms = swapDoms;
+			return true;
+		} catch (e) {
+			console.warn("Hot switch failed, keeping current model", e);
+			return false;
+		}
+	}
+
+	// 菜单动作映射（作用于当前显示实例）
 	const menuActions: Record<string, (widget: any) => void> = {
 		home: () => (window.location.href = "/"),
 		scrollToTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
 		sleep: (widget) => widget.sleep(),
 		github: () => window.open("https://github.com/lycaonide", "_blank"),
-		switchModel: async (widget) => {
+		switchModel: async () => {
 			if (!availableModels.length) return;
-			// 随机挑选一个不同于当前、且预取成功的模型；预取失败则保持当前模型不消失
+			// 随机挑选一个不同于当前的模型；失败自动换下一个，全部失败保持当前
 			const maxTries = Math.min(availableModels.length, 6);
 			for (let i = 0; i < maxTries; i++) {
 				const idx = Math.floor(Math.random() * availableModels.length);
 				if (idx === currentModelIndex) continue;
-				const ok = await prefetchModel(availableModels[idx]);
-				if (ok) {
+				if (await hotSwitch(idx)) {
 					currentModelIndex = idx;
-					await widget.switchModel(idx);
 					return;
 				}
 			}
@@ -238,15 +346,6 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 
 		try {
 			const models = JSON.parse(container.dataset.models || "[]");
-			const position = container.dataset.position || "bottom-left";
-			const size = JSON.parse(container.dataset.size || "300");
-			const primaryColor = container.dataset.primaryColor || undefined;
-			const transitionDuration = container.dataset.transitionDuration
-				? parseInt(container.dataset.transitionDuration)
-				: undefined;
-			const transitionType = container.dataset.transitionType || undefined;
-			const menus = JSON.parse(container.dataset.menus || "{}");
-			const tips = JSON.parse(container.dataset.tips || "{}");
 			const responsive = JSON.parse(container.dataset.responsive || "{}");
 
 			// 响应式检查：移动端隐藏
@@ -272,59 +371,10 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			availableModels = usableModels;
 			currentModelIndex = 0;
 
-			const options: any = {
-				model: usableModels.length === 1 ? usableModels[0] : usableModels,
-				position: position,
-				size: size,
-			};
-
-			if (primaryColor) options.primaryColor = primaryColor;
-			if (transitionDuration) options.transitionDuration = transitionDuration;
-			if (transitionType) options.transitionType = transitionType;
-
-			// 菜单配置 - 将 action 字符串映射为实际函数
-			if (menus.items || (menus.extraItems && menus.extraItems.length > 0)) {
-				options.menus = {};
-				if (menus.items) {
-					options.menus.items = menus.items.map((item: any) => ({
-						icon: item.icon,
-						label: item.label,
-						onClick: menuActions[item.action] || (() => {}),
-					}));
-				}
-				if (menus.extraItems) {
-					options.menus.extraItems = menus.extraItems.map((item: any) => ({
-						icon: item.icon,
-						label: item.label,
-						onClick: menuActions[item.action] || (() => {}),
-					}));
-				}
-				if (menus.align) {
-					options.menus.align = menus.align;
-				}
-			}
-
-			// 提示配置
-			if (tips) {
-				const tipsConfig = tips.enable === false ? false : {
-					...(tips.welcomeMessage && { welcomeMessage: tips.welcomeMessage }),
-					...(tips.messages && { messages: tips.messages }),
-					...(tips.duration !== undefined && { duration: tips.duration }),
-					...(tips.interval !== undefined && { interval: tips.interval }),
-					...(tips.offset && { offset: tips.offset }),
-					...(tips.typing && { typing: tips.typing }),
-				};
-				
-				if (tipsConfig === false || Object.keys(tipsConfig).length > 0) {
-					if (Array.isArray(options.model)) {
-						options.model.forEach((m: any) => m.tips = tipsConfig);
-					} else {
-						options.model.tips = tipsConfig;
-					}
-				}
-			}
-
-			createWidget(options);
+			// 创建主实例（正常显示第一个可用模型）
+			const { widget, doms } = createTracked(buildBaseOptions(availableModels));
+			mainWidget = widget;
+			mainDoms = doms;
 		} catch (e) {
 			console.error("Failed to initialize Live2D widget:", e);
 		}

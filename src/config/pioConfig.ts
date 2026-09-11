@@ -106,14 +106,6 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			y: 0,
 		},
 		{
-			// 小白猫（萌宠）
-			path: "https://model.hacxy.cn/cat-white/model.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
-		{
 			// HK416（少女前线）
 			path: "https://model.hacxy.cn/HK416-1-normal/model.json",
 			volume: 0,

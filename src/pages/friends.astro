@@ -121,7 +121,7 @@ const description =
               target="_blank"
               rel="noopener noreferrer"
               data-tags={item.tags?.join(",")}
-              class="friend-card group flex items-center gap-3 p-3 rounded-xl border border-(--line-divider) hover:border-(--primary) hover:bg-(--card-bg) transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden"
+              class="friend-card group flex items-center gap-3 p-2.5 rounded-xl border border-(--line-divider) hover:border-(--primary) hover:bg-(--card-bg) transition-all duration-300 hover:shadow-lg relative overflow-hidden"
             >
               {/* 背景装饰 - 仅悬停显示 */}
               <div class="absolute inset-0 bg-(--primary) opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none" />
@@ -133,7 +133,7 @@ const description =
               />
 
               {/* 头像 */}
-              <div class="relative w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-black/5 dark:border-white/5 shadow-sm group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
+              <div class="relative w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-black/5 dark:border-white/5 group-hover:scale-105 transition-transform duration-300">
                 <img
                   src={item.imgurl}
                   alt={item.title}
@@ -148,7 +148,7 @@ const description =
                 </div>
 
                 <div
-                  class="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2"
+                  class="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-1"
                   title={item.desc}
                 >
                   {item.desc}
@@ -160,7 +160,7 @@ const description =
                     ? item.tags
                         .slice(0, 3)
                         .map((tag) => (
-                          <span class="text-[0.65rem] px-1.5 py-0.5 rounded bg-(--primary)/10 text-(--primary) transition-colors duration-300">
+                          <span class="text-[0.65rem] px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 transition-colors duration-300">
                             {tag}
                           </span>
                         ))

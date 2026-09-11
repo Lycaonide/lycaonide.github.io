@@ -146,14 +146,6 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			y: 0,
 		},
 		{
-			// Hiyori（官方示例，可爱）
-			path: "https://model.hacxy.cn/Hiyori/Hiyori.model3.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
-		{
 			// Xisitina（西丝缇娜，红裙性感御姐）
 			path: "https://model.hacxy.cn/xisitina/model.json",
 			volume: 0,

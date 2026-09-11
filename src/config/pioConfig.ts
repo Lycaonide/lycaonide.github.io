@@ -121,6 +121,14 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			x: 0,
 			y: 0,
 		},
+		{
+			// Wanko（官方狗狗，萌宠）
+			path: "https://model.hacxy.cn/Wanko/Wanko.model3.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,

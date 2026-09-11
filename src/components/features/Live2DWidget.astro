@@ -296,12 +296,61 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		return options;
 	}
 
+	// 切换中提示：显示在看板娘上方，切换完成后消失（旧模型全程保持显示）
+	let switchTipEl: HTMLElement | null = null;
+	let tipShownAt = 0;
+	function getTipBottom() {
+		const container = document.getElementById("l2d-widget-container");
+		const raw = container?.dataset.size || "300";
+		try {
+			const size = JSON.parse(raw);
+			return (typeof size === "number" ? size : size.height || 300) + 10;
+		} catch {
+			return 310;
+		}
+	}
+	function showSwitchingTip() {
+		tipShownAt = Date.now();
+		if (!switchTipEl) {
+			switchTipEl = document.createElement("div");
+			switchTipEl.textContent = "切换中…";
+			Object.assign(switchTipEl.style, {
+				position: "fixed",
+				left: "16px",
+				bottom: getTipBottom() + "px",
+				zIndex: "10000",
+				background: "rgba(15,15,25,0.62)",
+				color: "#fff",
+				padding: "5px 14px",
+				borderRadius: "999px",
+				fontSize: "13px",
+				lineHeight: "1.4",
+				letterSpacing: "0.5px",
+				pointerEvents: "none",
+				transition: "opacity 0.25s",
+			});
+			document.body.appendChild(switchTipEl);
+		}
+		switchTipEl.style.display = "";
+		switchTipEl.style.opacity = "1";
+	}
+	// 保证提示至少显示 350ms，避免快速切换时闪烁
+	async function hideSwitchingTip() {
+		const wait = Math.max(0, 350 - (Date.now() - tipShownAt));
+		if (wait) await new Promise((r) => setTimeout(r, wait));
+		if (switchTipEl) {
+			switchTipEl.style.opacity = "0";
+			switchTipEl.style.display = "none";
+		}
+	}
+
 	// 热切换：新模型在隐藏实例中加载完成后再替换当前实例，全程无空窗
 	let switching = false; // 互斥锁：防止连续点击导致多实例并存
 	async function hotSwitch(targetIdx: number) {
 		if (!mainWidget || !availableModels.length) return false;
 		if (switching) return false; // 正在切换，忽略新的请求
 		switching = true;
+		showSwitchingTip();
 		let swapW: any = null;
 		let swapDoms: HTMLElement[] = [];
 		try {
@@ -335,9 +384,11 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				oldWidget.destroy().catch(() => {}),
 				new Promise((r) => setTimeout(r, 2000)),
 			]);
+			await hideSwitchingTip();
 			return true;
 		} catch (e) {
 			console.warn("Hot switch failed, keeping current model", e);
+			await hideSwitchingTip();
 			// 清理残留的隐藏实例（最多等 3 秒，避免卡死）
 			if (swapW) {
 				await Promise.race([

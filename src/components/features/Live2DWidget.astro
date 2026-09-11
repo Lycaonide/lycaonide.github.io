@@ -163,10 +163,12 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		home: () => {
 			// 已在首页：不重复跳转（避免刷新白屏）
 			if (window.location.pathname === "/") return;
-			// 站点已启用 Swup 无刷新过渡，用 navigate 代替整页跳转，避免白屏
-			const swup = (window as any).swup;
-			if (swup?.navigate) swup.navigate("/");
-			else window.location.href = "/";
+			// Swup 无刷新导航会导致看板娘组件不重建而消失，改用淡出过渡 + 整页跳转
+			document.body.style.transition = "opacity 0.2s ease";
+			document.body.style.opacity = "0";
+			window.setTimeout(() => {
+				window.location.href = "/";
+			}, 200);
 		},
 		scrollToTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
 		sleep: (oml2d) => {
@@ -222,10 +224,10 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			items: menuItems,
 			// 按键：相对舞台右移出界，离人物更远
 			style: {
-				right: "-10px",
+				right: "-20px",
 			},
 			mobileStyle: {
-				right: "-10px",
+				right: "-20px",
 			},
 			// 按钮：30px 圆形，图标同比例
 			itemStyle: {
@@ -247,20 +249,20 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			style: {
 				fontSize: "12px",
 				minHeight: "56px",
-				maxWidth: "180px",
+				maxWidth: "200px",
 				padding: "6px 14px",
 				lineHeight: "1.5",
 				borderRadius: "20px",
-				marginTop: "-60px",
+				marginTop: "-80px",
 			},
 			mobileStyle: {
 				fontSize: "12px",
 				minHeight: "56px",
-				maxWidth: "180px",
+				maxWidth: "200px",
 				padding: "6px 14px",
 				lineHeight: "1.5",
 				borderRadius: "20px",
-				marginTop: "-60px",
+				marginTop: "-80px",
 			},
 		},
 		statusBar: {
@@ -275,7 +277,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				minHeight: "26px",
 				padding: "2px 10px",
 				borderRadius: "13px",
-				bottom: "210px",
+				bottom: "190px",
 				left: "0px",
 			},
 			mobileStyle: {
@@ -283,7 +285,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				minHeight: "26px",
 				padding: "2px 10px",
 				borderRadius: "13px",
-				bottom: "210px",
+				bottom: "190px",
 				left: "0px",
 			},
 		},
@@ -295,7 +297,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		const stage = container.querySelector("#oml2d-stage");
 		if (!sb || !stage) return;
 		const h = stage.offsetHeight || 200;
-		sb.style.bottom = (h + 10) + "px";
+		sb.style.bottom = (h + 2) + "px";
 		sb.style.left = "0px";
 		sb.style.top = "auto";
 		sb.style.right = "auto";
@@ -429,4 +431,31 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 	}
 	window.addEventListener("pointerup", endDrag);
 	window.addEventListener("pointercancel", endDrag);
+
+	// 双击人物：锁定/解锁按钮栏显示（库默认悬停才显示，拖动时易消失）
+	let menusLocked = false;
+	let lockedMenusOut: ((ev: MouseEvent) => void) | null = null;
+	container.addEventListener(
+		"dblclick",
+		(e) => {
+			if ((e.target as HTMLElement).closest("#oml2d-menus")) return;
+			const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
+			const menusEl = container.querySelector<HTMLElement>("#oml2d-menus");
+			if (!stageEl || !menusEl) return;
+			if (!menusLocked) {
+				menusLocked = true;
+				lockedMenusOut = stageEl.onmouseout;
+				stageEl.onmouseout = null;
+				menusEl.style.opacity = "1";
+				menusEl.style.visibility = "visible";
+			} else {
+				menusLocked = false;
+				stageEl.onmouseout = lockedMenusOut;
+				lockedMenusOut = null;
+				menusEl.style.opacity = "0";
+				menusEl.style.visibility = "hidden";
+			}
+		},
+		true,
+	);
 </script>

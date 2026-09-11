@@ -297,9 +297,13 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 	}
 
 	// 热切换：新模型在隐藏实例中加载完成后再替换当前实例，全程无空窗
+	let switching = false; // 互斥锁：防止连续点击导致多实例并存
 	async function hotSwitch(targetIdx: number) {
 		if (!mainWidget || !availableModels.length) return false;
+		if (switching) return false; // 正在切换，忽略新的请求
+		switching = true;
 		let swapW: any = null;
+		let swapDoms: HTMLElement[] = [];
 		try {
 			const target = { ...availableModels[targetIdx] };
 			// 后台预取目标模型资源（加速切换）
@@ -307,7 +311,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			// 创建隐藏实例 B，只加载目标模型（首次加载即目标模型）
 			const tracked = createTracked(buildBaseOptions([target]));
 			swapW = tracked.widget;
-			hideAll(tracked.doms);
+			swapDoms = tracked.doms;
+			hideAll(swapDoms);
 			// 等待目标模型加载完成（loaded 事件）；失败/超时则放弃并保持当前模型
 			await new Promise((resolve, reject) => {
 				const to = setTimeout(() => reject(new Error("swap load timeout")), 15000);
@@ -316,11 +321,20 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					resolve(undefined);
 				});
 			});
-			// 目标模型已完全加载：销毁当前实例，显示新实例
-			await mainWidget.destroy().catch(() => {});
-			showAll(tracked.doms);
+			// 目标模型已完全加载：
+			// 1) 旧模型立即隐藏并移除 DOM（释放 WebGL，防止新实例白屏/多实例并存）
+			// 2) 新模型立即显示（无空窗）
+			// 3) 后台销毁旧实例，最多等 2 秒，不阻塞切换
+			hideAll(mainDoms);
+			removeDoms(mainDoms);
+			showAll(swapDoms);
+			const oldWidget = mainWidget;
 			mainWidget = swapW;
-			mainDoms = tracked.doms;
+			mainDoms = swapDoms;
+			Promise.race([
+				oldWidget.destroy().catch(() => {}),
+				new Promise((r) => setTimeout(r, 2000)),
+			]);
 			return true;
 		} catch (e) {
 			console.warn("Hot switch failed, keeping current model", e);
@@ -331,8 +345,18 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					new Promise((r) => setTimeout(r, 3000)),
 				]);
 			}
+			removeDoms(swapDoms);
 			return false;
+		} finally {
+			switching = false;
 		}
+	}
+
+	// 强制从 DOM 移除实例相关节点（不依赖 destroy 的 removeChild）
+	function removeDoms(doms: HTMLElement[]) {
+		doms.forEach((d) => {
+			if (d.parentNode) d.parentNode.removeChild(d);
+		});
 	}
 
 	// 菜单动作映射（作用于当前显示实例）

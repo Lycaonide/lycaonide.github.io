@@ -160,11 +160,18 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 
 	// 菜单动作
 	const actions: Record<string, (oml2d: any) => void> = {
-		home: () => (window.location.href = "/"),
+		home: () => {
+			// 已在首页：不重复跳转（避免刷新白屏）
+			if (window.location.pathname === "/") return;
+			// 站点已启用 Swup 无刷新过渡，用 navigate 代替整页跳转，避免白屏
+			const swup = (window as any).swup;
+			if (swup?.navigate) swup.navigate("/");
+			else window.location.href = "/";
+		},
 		scrollToTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
 		sleep: (oml2d) => {
 			oml2d.stageSlideOut();
-			oml2d.statusBarPopup("看板娘休息中…", 10000, primaryColor);
+			oml2d.statusBarPopup("休息中", 10000, primaryColor);
 			oml2d.setStatusBarClickEvent(() => {
 				oml2d.stageSlideIn();
 				oml2d.statusBarClose("", 0, primaryColor);
@@ -252,7 +259,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			loadingMessage: "加载中",
 			loadSuccessMessage: "加载完成",
 			loadFailMessage: "加载失败，点击重试",
-			restMessage: "看板娘休息中",
+			restMessage: "休息中",
 			switchingMessage: "切换中",
 			// 状态条：更小更圆
 			style: {
@@ -311,6 +318,56 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			});
 	}
 
+	// 整体平移（拖动 / 方向键共用）
+	function moveWidgets(dx: number, dy: number) {
+		for (const it of collectDragEls()) {
+			it.el.style.left = `${it.left + dx}px`;
+			it.el.style.top = `${it.top + dy}px`;
+			it.el.style.right = "auto";
+			it.el.style.bottom = "auto";
+		}
+	}
+
+	// 拖动期间强制菜单保持显示
+	// 库的隐藏逻辑绑定在 stage 元素上（stage.onmouseout → 菜单隐藏），拖动时鼠标可能移出 stage 触发隐藏
+	let savedMenusOut: ((ev: MouseEvent) => void) | null = null;
+	function forceMenusVisible() {
+		const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
+		if (!stageEl) return;
+		savedMenusOut = stageEl.onmouseout;
+		stageEl.onmouseout = null;
+		// 菜单本身若已隐藏，强制显示
+		const menusEl = container.querySelector<HTMLElement>("#oml2d-menus");
+		if (menusEl) {
+			menusEl.style.opacity = "1";
+			menusEl.style.visibility = "visible";
+		}
+	}
+	function restoreMenus() {
+		const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
+		if (!stageEl) return;
+		stageEl.onmouseout = savedMenusOut;
+		savedMenusOut = null;
+	}
+
+	// 方向键控制上下左右移动（10px/步）；输入框聚焦时不响应
+	const MOVE_STEP = 10;
+	window.addEventListener("keydown", (e) => {
+		const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+		if (!keys.includes(e.key)) return;
+		const active = document.activeElement as HTMLElement | null;
+		const tag = (active?.tagName || "").toLowerCase();
+		if (tag === "input" || tag === "textarea" || active?.isContentEditable) return;
+		e.preventDefault();
+		let dx = 0;
+		let dy = 0;
+		if (e.key === "ArrowUp") dy = -MOVE_STEP;
+		else if (e.key === "ArrowDown") dy = MOVE_STEP;
+		else if (e.key === "ArrowLeft") dx = -MOVE_STEP;
+		else if (e.key === "ArrowRight") dx = MOVE_STEP;
+		moveWidgets(dx, dy);
+	});
+
 	// 捕获阶段：即使元素 fixed 定位超出容器视觉边界也能收到事件
 	container.addEventListener(
 		"pointerdown",
@@ -334,6 +391,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			const dy = e.clientY - dragState.startY;
 			if (!dragState.active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
 				dragState.active = true;
+				forceMenusVisible();
 			}
 			if (!dragState.active) return;
 			for (const it of dragState.els) {
@@ -348,6 +406,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 	);
 
 	function endDrag() {
+		if (dragState?.active) restoreMenus();
 		dragState = null;
 	}
 	window.addEventListener("pointerup", endDrag);

@@ -3,7 +3,7 @@ draft: false
 title: 从Hexo迁移到Astro部署记录
 published: 2026-09-11
 description: 记录本站从 Hexo 迁移到 Astro 的全过程：技术选型、双站并存、字体本地化、站点美化、Giscus 评论接入与 GitHub Actions 自动部署。
-image: /assets/blog-migrate/home.png
+image: /assets/blog-migrate/github-actions.png
 tags: [Astro, Hexo, 博客, 部署, GitHub Pages]
 category: 技术笔记
 ---
@@ -24,8 +24,6 @@ category: 技术笔记
 | 主题 | Firefly | 基于 Fuwari 二次开发，二次元风格、功能全 |
 | 托管 | GitHub Pages | 免费、和仓库联动 |
 | 部署 | GitHub Actions | push 即自动构建发布 |
-
-![本站首页效果](/assets/blog-migrate/home.png)
 
 #### 二、搭建项目与本地预览
 
@@ -126,9 +124,15 @@ export const decorationConfig = {
 
 评论用的是 **Giscus**（基于 GitHub Discussions，免费、无广告、数据在自己仓库里）。接入步骤：
 
-1. **开启 Discussions**：仓库 `Settings → Features → Discussions` 勾选开启；
+1. **开启 Discussions**：仓库 `Settings → Features → Discussions` 勾选开启。开启后仓库导航栏会出现 Discussions 入口：
+
+![步骤1：开启仓库 Discussions](/assets/blog-migrate/discussions.png)
+
 2. **安装 giscus App**：[giscus.app](https://giscus.app) → Install，授权给博客仓库；
-3. **生成配置**：填仓库名，选分类（我用 Announcements，防垃圾），复制 repoId / categoryId；
+3. **生成配置**：在 giscus 配置页填仓库名，页面会校验仓库状态（必须公开、已装 App、已开 Discussions），三项都满足会显示"成功"：
+
+![步骤3：giscus 配置页校验仓库](/assets/blog-migrate/giscus-repo.png)
+
 4. **写入主题配置** `src/config/commentConfig.ts`：
 
 ```ts
@@ -147,9 +151,7 @@ export const commentConfig = {
 };
 ```
 
-![文章评论区（Giscus）](/assets/blog-migrate/comments.png)
-
-文章底部就会出现 GitHub 风格评论区，读者用 GitHub 账号即可登录评论，评论内容存在仓库的 Discussions 里，完全可控。
+> 补充：分类我选了 **Announcements**（公告分类），可以防止陌生人随意开新讨论刷屏。
 
 #### 七、友链页面
 
@@ -160,9 +162,7 @@ export const commentConfig = {
 friends: true,   // 原来是 false
 ```
 
-同时新建 `src/content/spec/friends.md` 写入友链说明（本站信息、申请方式、小要求），页面底部就会显示：
-
-![友链页面](/assets/blog-migrate/friends.png)
+同时新建 `src/content/spec/friends.md` 写入友链说明（本站信息、申请方式、小要求），页面底部就会显示自定义的友链交换说明。
 
 注意：友链内容页缺失会导致构建报错 `friends page content not found`，所以 **开关和内容文件要一起建**。
 
@@ -238,6 +238,10 @@ jobs:
 - **`touch dist/.nojekyll`**：GitHub Pages 默认用 Jekyll 处理，不建这个文件会把 `_astro` 这类目录忽略掉，页面会白屏；
 - **`concurrency`**：防止多次 push 时部署任务互相打架；
 - **`workflow_dispatch`**：想手动触发重新部署时，Actions 页面点一下即可。
+
+每次 push 后，仓库的 Actions 页面会看到构建部署记录（绿色对勾表示成功，点进去能看每步日志）：
+
+![步骤：push 后在 Actions 页面查看部署记录](/assets/blog-migrate/github-actions.png)
 
 以后写文章只需要：
 

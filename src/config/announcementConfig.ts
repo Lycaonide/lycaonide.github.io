@@ -1,11 +1,11 @@
-import type { AnnouncementConfig } from "../types/announcementConfig";
+﻿import type { AnnouncementConfig } from "../types/announcementConfig";
 
 export const announcementConfig: AnnouncementConfig = {
 	// 公告标题，留空则走i18n默认标题
 	title: "",
 
 	// 公告内容
-	content: "欢迎来到我的博客！这是一则示例公告。",
+	content: "本站已从 Hexo 迁移至 Astro，启用了 Giscus 评论和友链页。2028 考研备考中，更新随缘，欢迎交流。",
 
 	// 是否允许用户关闭公告
 	closable: true,
@@ -21,3 +21,4 @@ export const announcementConfig: AnnouncementConfig = {
 		external: false,
 	},
 };
+

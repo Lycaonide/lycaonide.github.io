@@ -1,4 +1,4 @@
-import type { Live2DWidgetConfig, SpineModelConfig } from "../types/pioConfig";
+﻿import type { Live2DWidgetConfig, SpineModelConfig } from "../types/pioConfig";
 import { decorationConfig } from "./decorationConfig";
 
 // Spine 看板娘配置
@@ -101,14 +101,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// Y轴偏移，范围 -2~2，正值向上
 			y: 0,
 		},
-		{
-			// 外部直连模型
-			path: "https://model.hacxy.cn/cat-black/model.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
+
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,
@@ -184,3 +177,4 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 		mobileBreakpoint: 768,
 	},
 };
+

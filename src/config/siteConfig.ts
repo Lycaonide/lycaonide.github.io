@@ -1,4 +1,4 @@
-import type { SiteConfig } from "@/types/siteConfig";
+﻿import type { SiteConfig } from "@/types/siteConfig";
 import { decorationConfig } from "./decorationConfig";
 import { resolvePageToggles } from "../utils/page-toggle-utils";
 import { resolveSiteLang } from "../utils/site-config-utils";
@@ -12,7 +12,7 @@ const pages = resolvePageToggles({
 	// ── 社交 (Social) ──────────────────────────────────
 
 	// 友链页面开关
-	friends: false,
+	friends: true,
 	// 留言板页面开关，需要配置评论系统
 	guestbook: false,
 
@@ -363,3 +363,4 @@ export const siteConfig: SiteConfig = {
 	// 页面开关配置，在本配置文件顶部pages定义
 	pages,
 };
+

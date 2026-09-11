@@ -98,24 +98,16 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			y: 0,
 		},
 		{
-			// 紫发少女 shizuku（官方示例，Cubism2）
-			path: "https://model.hacxy.cn/shizuku/shizuku.model.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
-		{
-			// 药剂师 Pio（超可爱）
-			path: "https://model.hacxy.cn/potion-Maker-Pio/index.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
-		{
 			// 小黑猫
 			path: "https://model.hacxy.cn/cat-black/model.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
+		{
+			// 小白猫（萌宠）
+			path: "https://model.hacxy.cn/cat-white/model.json",
 			volume: 0,
 			scale: 1,
 			x: 0,
@@ -156,6 +148,14 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 		{
 			// Haru（官方示例，元气）
 			path: "https://model.hacxy.cn/Haru/Haru.model3.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
+		{
+			// Hiyori（官方示例，可爱）
+			path: "https://model.hacxy.cn/Hiyori/Hiyori.model3.json",
 			volume: 0,
 			scale: 1,
 			x: 0,

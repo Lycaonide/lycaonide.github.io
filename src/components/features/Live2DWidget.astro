@@ -146,6 +146,66 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		return results.filter((r) => r.ok).map((r) => r.m);
 	}
 
+	// 预取模型资源（model.json + 贴图 + 动作），写入浏览器内存缓存，切换时秒加载
+	async function prefetchModel(m: any) {
+		if (m.path.startsWith("/")) return true;
+		try {
+			const ctrl = new AbortController();
+			const timer = setTimeout(() => ctrl.abort(), 8000);
+			const res = await fetch(m.path, { method: "GET", signal: ctrl.signal });
+			if (!res.ok) {
+				clearTimeout(timer);
+				return false;
+			}
+			try {
+				const json = await res.json();
+				const base = m.path.slice(0, m.path.lastIndexOf("/") + 1);
+				const urls: string[] = [];
+				const pushUrl = (u: any) => {
+					if (typeof u === "string" && u)
+						urls.push(u.startsWith("http") ? u : base + u);
+				};
+				const collect = (obj: any, keys: string[]) => {
+					for (const k of keys) {
+						const v = obj[k];
+						if (typeof v === "string") pushUrl(v);
+						else if (Array.isArray(v)) v.forEach(pushUrl);
+					}
+				};
+				if (json.FileReferences) {
+					collect(json.FileReferences, ["Textures"]);
+					const mo = json.FileReferences.Motions;
+					if (mo && typeof mo === "object") {
+						for (const key of Object.keys(mo)) {
+							const arr = mo[key];
+							if (Array.isArray(arr))
+								arr.forEach((it: any) => it && pushUrl(it.File));
+						}
+					}
+				} else {
+					collect(json, ["textures", "physics"]);
+					const mo = json.motions;
+					if (mo && typeof mo === "object") {
+						for (const key of Object.keys(mo)) {
+							const arr = mo[key];
+							if (Array.isArray(arr))
+								arr.forEach((it: any) => it && pushUrl(it.file));
+						}
+					}
+				}
+				await Promise.all(
+					urls.slice(0, 15).map((u) =>
+						fetch(u, { method: "GET", signal: ctrl.signal }).catch(() => {}),
+					),
+				);
+			} catch {}
+			clearTimeout(timer);
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
 	// 菜单动作映射
 	let currentModelIndex = 0;
 	let availableModels: any[] = [];
@@ -154,10 +214,21 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		scrollToTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
 		sleep: (widget) => widget.sleep(),
 		github: () => window.open("https://github.com/lycaonide", "_blank"),
-		switchModel: (widget) => {
+		switchModel: async (widget) => {
 			if (!availableModels.length) return;
-			currentModelIndex = (currentModelIndex + 1) % availableModels.length;
-			widget.switchModel(currentModelIndex);
+			// 随机挑选一个不同于当前、且预取成功的模型；预取失败则保持当前模型不消失
+			const maxTries = Math.min(availableModels.length, 6);
+			for (let i = 0; i < maxTries; i++) {
+				const idx = Math.floor(Math.random() * availableModels.length);
+				if (idx === currentModelIndex) continue;
+				const ok = await prefetchModel(availableModels[idx]);
+				if (ok) {
+					currentModelIndex = idx;
+					await widget.switchModel(idx);
+					return;
+				}
+			}
+			console.warn("No available model to switch, keeping current");
 		},
 	};
 

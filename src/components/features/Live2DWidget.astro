@@ -210,35 +210,61 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		models: omlModels,
 		menus: {
 			items: menuItems,
-			// 按钮缩小：默认 36px → 26px，图标同步缩小
+			// 按钮：30px 圆形，图标同比例
 			itemStyle: {
-				width: "26px",
-				height: "26px",
-				fontSize: "14px",
+				width: "30px",
+				height: "30px",
+				fontSize: "16px",
 				borderRadius: "50%",
 			},
-			// 菜单整体贴边并微缩
-			style: { transform: "scale(0.85)", transformOrigin: "left bottom" },
+			mobileItemStyle: {
+				width: "30px",
+				height: "30px",
+				fontSize: "16px",
+				borderRadius: "50%",
+			},
 		},
 		tips: {
 			...tipsConfig,
-			// 气泡缩小：字号 12px、最小高度 60px、窄宽度
+			// 气泡：圆角胶囊、更短更窄、上移避免被人物/动物遮挡
 			style: {
 				fontSize: "12px",
-				minHeight: "60px",
-				maxWidth: "160px",
-				padding: "6px 12px",
+				minHeight: "56px",
+				maxWidth: "120px",
+				padding: "6px 14px",
 				lineHeight: "1.5",
+				borderRadius: "20px",
+				marginTop: "-16px",
+			},
+			mobileStyle: {
+				fontSize: "12px",
+				minHeight: "56px",
+				maxWidth: "120px",
+				padding: "6px 14px",
+				lineHeight: "1.5",
+				borderRadius: "20px",
+				marginTop: "-16px",
 			},
 		},
 		statusBar: {
-			loadingMessage: "加载中…",
+			loadingMessage: "加载中",
 			loadSuccessMessage: "加载完成",
 			loadFailMessage: "加载失败，点击重试",
-			restMessage: "看板娘休息中…",
-			switchingMessage: "切换中…",
-			// 状态条缩小：默认最小高 40px → 26px
-			style: { fontSize: "12px", minHeight: "26px", padding: "2px 8px" },
+			restMessage: "看板娘休息中",
+			switchingMessage: "切换中",
+			// 状态条：更小更圆
+			style: {
+				fontSize: "12px",
+				minHeight: "26px",
+				padding: "2px 10px",
+				borderRadius: "13px",
+			},
+			mobileStyle: {
+				fontSize: "12px",
+				minHeight: "26px",
+				padding: "2px 10px",
+				borderRadius: "13px",
+			},
 		},
 	});
 
@@ -255,4 +281,67 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 
 	// 窗口尺寸变化时重新判断移动端隐藏
 	window.addEventListener("resize", () => applyResponsive());
+
+	// ---- 人物可移动：按住人物/气泡/提示区域拖动，舞台、菜单、气泡、状态条整体平移 ----
+	// 不拦截菜单按钮点击；位移超过阈值才视为拖动（保留模型点击交互）
+	let dragState: {
+		els: { el: HTMLElement; left: number; top: number }[];
+		startX: number;
+		startY: number;
+		active: boolean;
+	} | null = null;
+	const DRAG_THRESHOLD = 6;
+
+	function collectDragEls(): { el: HTMLElement; left: number; top: number }[] {
+		const ids = ["oml2d-stage", "oml2d-menus", "oml2d-tips", "oml2d-statusBar"];
+		return ids
+			.map((id) => container.querySelector<HTMLElement>(`#${id}`))
+			.filter((el): el is HTMLElement => !!el)
+			.map((el) => {
+				const r = el.getBoundingClientRect();
+				return { el, left: r.left, top: r.top };
+			});
+	}
+
+	// 捕获阶段：即使元素 fixed 定位超出容器视觉边界也能收到事件
+	container.addEventListener(
+		"pointerdown",
+		(e) => {
+			if ((e.target as HTMLElement).closest("#oml2d-menus")) return;
+			dragState = {
+				startX: e.clientX,
+				startY: e.clientY,
+				active: false,
+				els: collectDragEls(),
+			};
+		},
+		true,
+	);
+
+	window.addEventListener(
+		"pointermove",
+		(e) => {
+			if (!dragState || !dragState.els.length) return;
+			const dx = e.clientX - dragState.startX;
+			const dy = e.clientY - dragState.startY;
+			if (!dragState.active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+				dragState.active = true;
+			}
+			if (!dragState.active) return;
+			for (const it of dragState.els) {
+				it.el.style.left = `${it.left + dx}px`;
+				it.el.style.top = `${it.top + dy}px`;
+				it.el.style.right = "auto";
+				it.el.style.bottom = "auto";
+			}
+			e.preventDefault();
+		},
+		{ passive: false },
+	);
+
+	function endDrag() {
+		dragState = null;
+	}
+	window.addEventListener("pointerup", endDrag);
+	window.addEventListener("pointercancel", endDrag);
 </script>

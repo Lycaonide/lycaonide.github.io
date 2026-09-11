@@ -114,14 +114,6 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			y: 0,
 		},
 		{
-			// Kar98k（少女前线，帅气）
-			path: "https://model.hacxy.cn/Kar98k-normal/model.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
-		{
 			// Mark（偶像，帅气）
 			path: "https://model.hacxy.cn/Mark/Mark.model3.json",
 			volume: 0,

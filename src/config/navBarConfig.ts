@@ -44,6 +44,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		children: [
 			// 关于页面
 			LinkPresets.About,
+
+			// 友链页面
+			LinkPresets.Friends,
 		],
 	});
 

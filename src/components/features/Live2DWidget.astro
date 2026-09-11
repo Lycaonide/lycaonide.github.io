@@ -277,23 +277,21 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				// 气泡：圆角胶囊、更短更窄、上移避免被人物/动物遮挡
 				style: {
 					fontSize: "12px",
-					minHeight: "72px",
-					maxWidth: "320px",
-					padding: "8px 12px",
-					lineHeight: "1.5",
+					minHeight: "110px",
+					maxWidth: "200px",
+					padding: "12px 14px",
+					lineHeight: "1.6",
 					borderRadius: "20px",
-					marginTop: "-120px",
-					whiteSpace: "nowrap",
+					marginTop: "-90px",
 				},
 				mobileStyle: {
 					fontSize: "12px",
-					minHeight: "72px",
-					maxWidth: "320px",
-					padding: "8px 12px",
-					lineHeight: "1.5",
+					minHeight: "110px",
+					maxWidth: "200px",
+					padding: "12px 14px",
+					lineHeight: "1.6",
 					borderRadius: "20px",
-					marginTop: "-120px",
-					whiteSpace: "nowrap",
+					marginTop: "-90px",
 				},
 			},
 			statusBar: {
@@ -308,7 +306,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					minHeight: "26px",
 					padding: "2px 10px",
 					borderRadius: "13px",
-					bottom: "140px",
+					bottom: "100px",
 					left: "0px",
 				},
 				mobileStyle: {
@@ -316,19 +314,18 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					minHeight: "26px",
 					padding: "2px 10px",
 					borderRadius: "13px",
-					bottom: "140px",
+					bottom: "100px",
 					left: "0px",
 				},
 			},
 		});
 	
 		// 状态条跟随人物：锚定在人物头顶上方（模型加载后按实际高度修正）
+		// 状态栏固定位置（所有模型一致，未拖动不乱动）
 		function syncStatusBarPos() {
 			const sb = container.querySelector("#oml2d-statusBar");
-			const stage = container.querySelector("#oml2d-stage");
-			if (!sb || !stage) return;
-			const h = stage.offsetHeight || 200;
-			sb.style.bottom = Math.round(h * 0.6) + "px";
+			if (!sb) return;
+			sb.style.bottom = "100px";
 			sb.style.left = "0px";
 			sb.style.top = "auto";
 			sb.style.right = "auto";
@@ -348,7 +345,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					oml2d.clearTips();
 					const sbL = container.querySelector<HTMLElement>("#oml2d-statusBar");
 					if (sbL) {
-						sbL.style.bottom = "140px";
+						sbL.style.bottom = "100px";
 						sbL.style.left = "0px";
 						sbL.style.top = "auto";
 						sbL.style.right = "auto";

@@ -177,14 +177,6 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			x: 0,
 			y: 0,
 		},
-		{
-			// Rice（Live2D官方示例，可爱少女）
-			path: "https://model.hacxy.cn/Rice/Rice.model3.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,

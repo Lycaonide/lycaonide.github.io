@@ -296,7 +296,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		return options;
 	}
 
-	// 切换中提示：竖排显示在页面最左侧，避免遮挡看板娘气泡，切换完成后消失
+	// 切换中提示：绿底白字（与其他提示气泡一致），竖排贴在模型右侧边缘，不遮挡气泡
 	let switchTipEl: HTMLElement | null = null;
 	let tipShownAt = 0;
 	function showSwitchingTip() {
@@ -306,13 +306,13 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			switchTipEl.textContent = "切换中…";
 			Object.assign(switchTipEl.style, {
 				position: "fixed",
-				left: "6px",
+				left: "212px",
 				top: "50%",
 				transform: "translateY(-50%)",
 				zIndex: "10000",
 				writingMode: "vertical-rl",
 				textOrientation: "upright",
-				background: "rgba(15,15,25,0.62)",
+				background: "var(--l2d-msg-bg)",
 				color: "#fff",
 				padding: "10px 6px",
 				borderRadius: "10px",

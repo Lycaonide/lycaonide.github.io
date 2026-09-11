@@ -121,38 +121,6 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			x: 0,
 			y: 0,
 		},
-		{
-			// Haru（官方示例，元气）
-			path: "https://model.hacxy.cn/Haru/Haru.model3.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
-		{
-			// Xisitina（西丝缇娜，红裙性感御姐）
-			path: "https://model.hacxy.cn/xisitina/model.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
-		{
-			// Ren（Live2D官方示例，帅气的男生）
-			path: "https://model.hacxy.cn/Ren/Ren.model3.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
-		{
-			// Mao（Live2D官方示例，红发红裙少女）
-			path: "https://model.hacxy.cn/Mao/Mao.model3.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
-			y: 0,
-		},
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,

@@ -5,9 +5,9 @@ interface Props {
 	href?: string;
 	label?: string;
 }
-const { dot, href, label }: Props = Astro.props;
+const { dot, href, label, size = "text-sm" }: Props = Astro.props;
 ---
-<a href={href} aria-label={label} class="tag-item transition text-sm font-medium px-3 py-1.5">
+<a href={href} aria-label={label} class:list={["tag-item transition font-medium px-3 py-1.5", size]}>
     {dot && <div class="h-1 w-1 bg-(--btn-content) dark:bg-(--card-bg) transition rounded-md mr-2"></div>}
     <slot></slot>
 </a>

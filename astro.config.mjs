@@ -242,6 +242,9 @@ export default defineConfig({
 				if (pathname === "/dynamic/" && !siteConfig.pages.dynamic) {
 					return false;
 				}
+				if (pathname === "/projects/" && !siteConfig.pages.projects) {
+					return false;
+				}
 				if (pathname.startsWith("/gallery/") && !siteConfig.pages.gallery) {
 					return false;
 				}
@@ -266,10 +269,11 @@ export default defineConfig({
 				if (pathname === "/myanimelist/" && !siteConfig.pages.mal) {
 					return false;
 				}
-				// 动态页评论嵌入页：评论关闭时重定向到 /404/，不应进 sitemap
+				// 动态页评论嵌入页：dynamic 页关闭或评论关闭时重定向到 /404/，不应进 sitemap
 				if (
 					pathname === "/dynamic/comments/" &&
-					(dynamicConfig.showComment === false ||
+					(!siteConfig.pages.dynamic ||
+						dynamicConfig.showComment === false ||
 						!commentConfig.type ||
 						commentConfig.type === "none")
 				) {

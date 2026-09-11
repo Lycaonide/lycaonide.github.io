@@ -296,19 +296,9 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		return options;
 	}
 
-	// 切换中提示：显示在看板娘上方，切换完成后消失（旧模型全程保持显示）
+	// 切换中提示：竖排显示在页面最左侧，避免遮挡看板娘气泡，切换完成后消失
 	let switchTipEl: HTMLElement | null = null;
 	let tipShownAt = 0;
-	function getTipBottom() {
-		const container = document.getElementById("l2d-widget-container");
-		const raw = container?.dataset.size || "300";
-		try {
-			const size = JSON.parse(raw);
-			return (typeof size === "number" ? size : size.height || 300) + 10;
-		} catch {
-			return 310;
-		}
-	}
 	function showSwitchingTip() {
 		tipShownAt = Date.now();
 		if (!switchTipEl) {
@@ -316,16 +306,19 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			switchTipEl.textContent = "切换中…";
 			Object.assign(switchTipEl.style, {
 				position: "fixed",
-				left: "16px",
-				bottom: getTipBottom() + "px",
+				left: "6px",
+				top: "50%",
+				transform: "translateY(-50%)",
 				zIndex: "10000",
+				writingMode: "vertical-rl",
+				textOrientation: "upright",
 				background: "rgba(15,15,25,0.62)",
 				color: "#fff",
-				padding: "5px 14px",
-				borderRadius: "999px",
+				padding: "10px 6px",
+				borderRadius: "10px",
 				fontSize: "13px",
-				lineHeight: "1.4",
-				letterSpacing: "0.5px",
+				lineHeight: "1.5",
+				letterSpacing: "4px",
 				pointerEvents: "none",
 				transition: "opacity 0.25s",
 			});
@@ -355,19 +348,20 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		let swapDoms: HTMLElement[] = [];
 		try {
 			const target = { ...availableModels[targetIdx] };
-			// 后台预取目标模型资源（加速切换）
-			await prefetchModel(target);
+			// 后台预取目标模型资源（不阻塞切换；后台全量预取已做，这里命中缓存秒级完成）
+			prefetchModel(target).catch(() => {});
 			// 创建隐藏实例 B，只加载目标模型（首次加载即目标模型）
 			const tracked = createTracked(buildBaseOptions([target]));
 			swapW = tracked.widget;
 			swapDoms = tracked.doms;
 			hideAll(swapDoms);
 			// 等待目标模型加载完成（loaded 事件）；失败/超时则放弃并保持当前模型
+			// loaded 后再等两帧，确保首帧已渲染，避免显示瞬间白屏
 			await new Promise((resolve, reject) => {
-				const to = setTimeout(() => reject(new Error("swap load timeout")), 15000);
+				const to = setTimeout(() => reject(new Error("swap load timeout")), 10000);
 				swapW.l2d.on("loaded", () => {
 					clearTimeout(to);
-					resolve(undefined);
+					requestAnimationFrame(() => requestAnimationFrame(resolve));
 				});
 			});
 			// 目标模型已完全加载：
@@ -467,6 +461,16 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			const { widget, doms } = createTracked(buildBaseOptions(availableModels));
 			mainWidget = widget;
 			mainDoms = doms;
+
+			// 后台预取所有可用模型资源（限流 3 并发），切换时全部命中缓存、秒级完成
+			let fetchIdx = 0;
+			const pump = async () => {
+				while (fetchIdx < availableModels.length) {
+					const m = availableModels[fetchIdx++];
+					await prefetchModel(m).catch(() => {});
+				}
+			};
+			Array.from({ length: 3 }, () => pump());
 		} catch (e) {
 			console.error("Failed to initialize Live2D widget:", e);
 		}

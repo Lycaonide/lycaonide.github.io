@@ -75,6 +75,25 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 				},
 			},
 		},
+		{
+			// 组件类型：日历组件
+			type: "calendar",
+			// 是否启用该组件
+			enable: true,
+			// 是否显示组件标题
+			showTitle: false,
+			// 组件位置
+			position: "sticky",
+			// 是否在文章详情页显示
+			showOnPostPage: false,
+			// 组件专属配置
+			specificConfig: {
+				calendar: {
+					// 是否显示年度文章热力图
+					showHeatmap: true,
+				},
+			},
+		},
 	],
 
 	// 右侧边栏组件配置列表
@@ -144,25 +163,6 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			specificConfig: {
 				// 折叠阈值：当标签数量超过>10个时自动折叠
 				collapseThreshold: 10,
-			},
-		},
-		{
-			// 组件类型：日历组件
-			type: "calendar",
-			// 是否启用该组件
-			enable: true,
-			// 是否显示组件标题
-			showTitle: false,
-			// 组件位置
-			position: "sticky",
-			// 是否在文章详情页显示
-			showOnPostPage: false,
-			// 组件专属配置
-			specificConfig: {
-				calendar: {
-					// 是否显示年度文章热力图
-					showHeatmap: true,
-				},
 			},
 		},
 		{

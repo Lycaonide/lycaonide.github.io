@@ -27,6 +27,14 @@ category: 技术笔记
 
 #### 二、搭建项目与本地预览
 
+前置环境：需要 **Node.js 20+**（去 [nodejs.org](https://nodejs.org) 下载安装）和 **pnpm** 包管理器：
+
+```bash
+# 安装 pnpm（Node.js 自带 corepack，也可用 npm 装）
+npm install -g pnpm
+pnpm --version   # 确认安装成功
+```
+
 Firefly 主题的仓库地址：[CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)。克隆后安装依赖：
 
 ```bash
@@ -68,7 +76,7 @@ pnpm dev
 
 最终做法：
 
-1. 把 4 个 woff2 字体文件放进 `public/assets/fonts/`；
+1. 把 4 个 woff2 字体文件放进 `public/assets/fonts/`（字体可从主题自带的 assets 目录复制，或从 Google Fonts 下载对应字重的 woff2）；
 2. 新建 `src/styles/local-fonts.css`，手写 `@font-face`：
 
 ```css
@@ -100,7 +108,30 @@ pnpm dev
 ```
 
 3. `fontConfig.ts` 里把 selected 设为 `["system"]`，让全局走系统字体；
-4. 写了个子集化脚本（`pnpm subset-fonts`），只保留常用字符，**字体体积从 7MB 压到 160.8KB**，页面加载快了很多。
+4. 写一个**子集化脚本**：扫描构建产物里的所有 HTML，收集实际用到的字符，只保留这些字符生成轻量 woff2（核心代码用了 `subset-font` 库）：
+
+```ts
+// scripts/subset-fonts.ts（核心逻辑）
+import subsetFont from "subset-font";
+import { glob } from "glob";
+import { readFile, writeFile } from "node:fs/promises";
+
+// 1. 收集 dist/ 里所有 HTML 的实际字符
+const htmlFiles = await glob(`${DIST_DIR}/**/*.html`);
+const charSet = new Set<string>();
+for (const file of htmlFiles) {
+  const html = await readFile(file, "utf-8");
+  for (const c of html.replace(/<[^>]+>/g, " ")) charSet.add(c);
+}
+
+// 2. 用 subset-font 生成子集 woff2，再替换 CSS/HTML 里的引用
+const subset = await subsetFont(fontBuffer, [...charSet].join(""), {
+  targetFormat: "woff2",
+});
+await writeFile(outFile, subset);
+```
+
+这个脚本已集成进 `pnpm build`（构建链会自动执行），也可以单独跑：`npx tsx scripts/subset-fonts.ts`。结果：**字体体积从 7MB 压到 160.8KB**，页面加载快了很多。
 
 > 结论：jsdelivr 在国内基本无解，**能本地化的资源一律本地化**，构建和线上都稳。
 
@@ -250,6 +281,8 @@ git add .
 git commit -m "新文章"
 git push
 ```
+
+> 前置：`git push` 走 SSH，需要先在 GitHub 配置好 SSH 密钥（生成密钥、把公钥加到 GitHub → SSH and GPG keys，方法可参考本站《学习用Hexo写博客》一文第五节）。
 
 等待 3-4 分钟，Actions 构建部署完成，线上自动更新，全程不用手动操作。
 

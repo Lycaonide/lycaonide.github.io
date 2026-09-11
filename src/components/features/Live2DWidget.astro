@@ -194,6 +194,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				if (idx === oml2d.modelIndex) idx = (idx + 1) % n;
 				await oml2d.loadModelByIndex(idx);
 				syncStatusBarPos();
+				syncMenusPos();
+				syncMenusPos();
 			},
 		};
 	
@@ -255,21 +257,21 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				// 气泡：圆角胶囊、更短更窄、上移避免被人物/动物遮挡
 				style: {
 					fontSize: "12px",
-					minHeight: "56px",
-					maxWidth: "240px",
-					padding: "6px 14px",
+					minHeight: "72px",
+					maxWidth: "190px",
+					padding: "8px 12px",
 					lineHeight: "1.5",
 					borderRadius: "20px",
-					marginTop: "-100px",
+					marginTop: "-120px",
 				},
 				mobileStyle: {
 					fontSize: "12px",
-					minHeight: "56px",
-					maxWidth: "240px",
-					padding: "6px 14px",
+					minHeight: "72px",
+					maxWidth: "190px",
+					padding: "8px 12px",
 					lineHeight: "1.5",
 					borderRadius: "20px",
-					marginTop: "-100px",
+					marginTop: "-120px",
 				},
 			},
 			statusBar: {
@@ -309,7 +311,14 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			sb.style.top = "auto";
 			sb.style.right = "auto";
 		}
-		// 欢迎语：模型加载成功后随机显示一条；同时把状态条锚到人物头顶
+		// 按钮栏统一锚到容器右缘（最右位置），切换模型/加载后初始位置保持一致
+		function syncMenusPos() {
+			const menusEl = container.querySelector("#oml2d-menus");
+			if (!menusEl) return;
+			menusEl.style.left = container.offsetWidth + "px";
+			menusEl.style.right = "auto";
+		}
+				// 欢迎语：模型加载成功后随机显示一条；同时把状态条锚到人物头顶
 		if (tips.enable !== false && tips.welcomeMessage && tips.welcomeMessage.length) {
 			oml2d.onLoad((status: string) => {
 				if (status === "success") {
@@ -317,11 +326,25 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 						tips.welcomeMessage[Math.floor(Math.random() * tips.welcomeMessage.length)];
 					oml2d.tipsMessage(msg, 4000, 10);
 					syncStatusBarPos();
+					syncMenusPos();
 				}
 			});
 		}
 	
-		// 窗口尺寸变化时重新判断移动端隐藏
+		// 按钮栏锚到容器右缘：菜单由库异步创建，延时轮询锚定，成功即停（不干扰后续拖动）
+		let menusSyncTries = 0;
+		const menusSyncTimer = window.setInterval(() => {
+			menusSyncTries++;
+			const menusEl = container.querySelector("#oml2d-menus");
+			if (menusEl) {
+				menusEl.style.left = container.offsetWidth + "px";
+				menusEl.style.right = "auto";
+				if (menusSyncTries >= 2) window.clearInterval(menusSyncTimer);
+			}
+			if (menusSyncTries > 8) window.clearInterval(menusSyncTimer);
+		}, 500);
+
+				// 窗口尺寸变化时重新判断移动端隐藏
 		window.addEventListener("resize", () => applyResponsive());
 	
 		// ---- 人物可移动：按住人物/气泡/提示区域拖动，舞台、菜单、气泡、状态条整体平移 ----

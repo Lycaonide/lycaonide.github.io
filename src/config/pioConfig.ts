@@ -90,16 +90,24 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 	// 模型配置，支持单个模型或数组（多模型切换）
 	model: [
 		{
-			// 本地模型（保底，始终可用）
-			path: "/pio/models/live2d/snow_miku/model.json",
+			// 小黑猫
+			path: "https://model.hacxy.cn/cat-black/model.json",
 			volume: 0,
 			scale: 1,
 			x: 0,
 			y: 0,
 		},
 		{
-			// 小黑猫
-			path: "https://model.hacxy.cn/cat-black/model.json",
+			// HK416（少女前线）
+			path: "https://model.hacxy.cn/HK416-1-normal/model.json",
+			volume: 0,
+			scale: 1,
+			x: 0,
+			y: 0,
+		},
+		{
+			// HK416 二形态（少女前线，帅气）
+			path: "https://model.hacxy.cn/HK416-2-normal/model.json",
 			volume: 0,
 			scale: 1,
 			x: 0,

@@ -1,4 +1,5 @@
 import type { Live2DWidgetConfig, SpineModelConfig } from "../types/pioConfig";
+import { decorationConfig } from "./decorationConfig";
 
 // Spine 看板娘配置
 export const spineModelConfig: SpineModelConfig = {
@@ -85,7 +86,7 @@ export const spineModelConfig: SpineModelConfig = {
 // Live2D 看板娘配置 (使用 l2d-widget 库，文档：https://l2d-widget.hacxy.cn)
 export const live2dWidgetConfig: Live2DWidgetConfig = {
 	// Live2D 看板娘开关
-	enable: true,
+	enable: decorationConfig.live2d,
 	// 模型配置，支持单个模型或数组（多模型切换）
 	model: [
 		{

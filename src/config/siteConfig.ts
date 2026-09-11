@@ -1,4 +1,5 @@
 import type { SiteConfig } from "@/types/siteConfig";
+import { decorationConfig } from "./decorationConfig";
 import { resolvePageToggles } from "../utils/page-toggle-utils";
 import { resolveSiteLang } from "../utils/site-config-utils";
 
@@ -80,9 +81,9 @@ export const siteConfig: SiteConfig = {
 	// 网站Card样式配置
 	card: {
 		// 是否开启卡片边框和阴影，开启后让网站更有立体感
-		border: true,
+		border: decorationConfig.card3d,
 		// 是否让卡片风格跟随主题色相
-		followTheme: true,
+		followTheme: decorationConfig.card3d,
 	},
 
 	// Favicon 配置

@@ -1,4 +1,5 @@
-import type { BackgroundWallpaperConfig } from "@/types/backgroundWallpaper";
+import type { BackgroundWallpaperConfig } from "../types/backgroundWallpaper";
+import { decorationConfig } from "./decorationConfig";
 
 export const backgroundWallpaper: BackgroundWallpaperConfig = {
 	// 壁纸模式："banner" 横幅壁纸，"fullscreen" 全屏壁纸，"overlay" 覆盖透明，"none" 纯色背景无壁纸
@@ -128,9 +129,9 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		waves: {
 			enable: {
 				// 桌面端是否启用水波纹动画效果
-				desktop: true,
+				desktop: decorationConfig.waves,
 				// 移动端是否启用水波纹动画效果
-				mobile: true,
+				mobile: decorationConfig.waves,
 			},
 		},
 		// 渐变过渡效果配置，当水波纹关闭时自动启用，提供壁纸底部到背景色的平滑过渡

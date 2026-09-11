@@ -1,10 +1,11 @@
 import type { SakuraConfig } from "../types/effectsConfig";
+import { decorationConfig } from "./decorationConfig";
 
 // 特效配置 - 集中管理所有动画特效
 
 export const sakuraConfig: SakuraConfig = {
 	// 是否启用樱花特效
-	enable: true,
+	enable: decorationConfig.sakura,
 
 	// 樱花数量
 	sakuraNum: 21,

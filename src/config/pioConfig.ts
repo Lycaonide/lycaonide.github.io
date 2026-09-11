@@ -93,7 +93,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 春人（偶像大师 SideM，帅气男生）
 			path: "https://model.hacxy.cn/haruto/haruto.model.json",
 			volume: 0,
-			scale: 0.07,
+			scale: 0.06,
 			x: 0,
 			y: 0,
 		},
@@ -101,7 +101,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 响（偶像大师 SideM，帅气男生）
 			path: "https://model.hacxy.cn/hibiki/hibiki.model.json",
 			volume: 0,
-			scale: 0.056,
+			scale: 0.062,
 			x: 0,
 			y: 0,
 		},
@@ -109,7 +109,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 小黑猫
 			path: "https://model.hacxy.cn/cat-black/model.json",
 			volume: 0,
-			scale: 0.056,
+			scale: 0.042,
 			x: 0,
 			y: 0,
 		},
@@ -117,7 +117,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// HK416（少女前线）
 			path: "https://model.hacxy.cn/HK416-1-normal/model.json",
 			volume: 0,
-			scale: 0.028,
+			scale: 0.031,
 			x: 0,
 			y: 0,
 		},
@@ -125,7 +125,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// HK416 二形态（少女前线，帅气）
 			path: "https://model.hacxy.cn/HK416-2-normal/model.json",
 			volume: 0,
-			scale: 0.028,
+			scale: 0.031,
 			x: 0,
 			y: 0,
 		},

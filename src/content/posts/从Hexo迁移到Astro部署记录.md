@@ -468,9 +468,7 @@ jobs:
 
 ![GitHub Secrets 配置界面](/assets/blog-migrate/github-secrets.jpg)
 
-> 注意：**Name 必须和 workflow 里引用的一致**，不能随便起名——上图就是两个 secret 都配好后的样子（名字对不上，workflow 读不到，CF 部署会一直失败）。
-
-> 两个值分别填什么：`CLOUDFLARE_API_TOKEN` 填你创建的那个新 token 值（创建时只显示一次，Roll 过就填新值）；`CLOUDFLARE_ACCOUNT_ID` 填账号 ID——不知道在哪看？打开 Cloudflare 控制台任意页面（首页 / Workers & Pages 都行），看地址栏 `dash.cloudflare.com/` 后面第一段，就是账号 ID。
+> 注意：**Name 必须和 workflow 里引用的一致**，不能随便起名——上图就是两个 secret 都配好后的样子（名字对不上，workflow 读不到，CF 部署会一直失败）。两个值分别填什么：`CLOUDFLARE_API_TOKEN` 填你创建的那个新 token 值（创建时只显示一次，Roll 过就填新值）；`CLOUDFLARE_ACCOUNT_ID` 填账号 ID——不知道在哪看？打开 Cloudflare 控制台任意页面（首页 / Workers & Pages 都行），看地址栏 `dash.cloudflare.com/` 后面第一段，就是账号 ID。
 
 配好之后，每次 `git push` 会自动构建并同时部署到 GitHub Pages 和 Cloudflare Pages。
 

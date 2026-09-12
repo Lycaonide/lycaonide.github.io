@@ -549,16 +549,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		window.addEventListener("pointerup", endDrag);
 		window.addEventListener("pointercancel", endDrag);
 	
-		// 双击人物：拦截库内置的"双击弹气泡"，只触发按钮栏锁定
-		container.addEventListener(
-			"dblclick",
-			(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-			},
-			true,
-		);
-
+		// 双击人物：库内置的"双击弹对话气泡"保留（用户认可）；同时 mousedown 计数触发按钮栏锁定
 		// 双击人物（mousedown 计数，350ms 内两次按下）：锁定/解锁按钮栏显示
 		let menusLocked = false;
 		let lockedMenusOut: ((ev: MouseEvent) => void) | null = null;

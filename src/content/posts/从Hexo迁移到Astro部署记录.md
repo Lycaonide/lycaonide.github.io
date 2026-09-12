@@ -478,18 +478,7 @@ jobs:
 
 Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项目页 → Custom domains 里添加即可。本站暂时用 `pages.dev` 子域名，等有合适域名再绑。绑定后原 `pages.dev` 域名依然可用，不影响现有访问。
 
-#### 十、总结
-
-这次迁移的核心经验：
-
-1. **配置收敛**：装饰、评论、友链等开关集中在 config 文件里，方便统一管理；
-2. **双站过渡**：新旧站并存，内容迁完再下线，风险可控；
-3. **自动化部署**：GitHub Actions 让发布变成"push 就完事"。
-
-最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题，**樱花、评论、友链齐全，加载快还免费**。
-
-
-##### 发布 / 更新博客常用命令
+#### 十、发布博客和更新博客命令
 
 - **本地预览**：`pnpm dev`（默认 http://localhost:4321）；
 - **构建**：`pnpm build`（输出到 `dist/`，会顺便做字体子集化）；
@@ -509,3 +498,13 @@ $env:CLOUDFLARE_API_TOKEN = "你的token"
 $env:CLOUDFLARE_ACCOUNT_ID = "9df1e93b29898adab711c0958d7bccec"
 npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
 ```
+
+#### 十一、总结
+
+这次迁移的核心经验：
+
+1. **配置收敛**：装饰、评论、友链等开关集中在 config 文件里，方便统一管理；
+2. **双站过渡**：新旧站并存，内容迁完再下线，风险可控；
+3. **自动化部署**：GitHub Actions 让发布变成"push 就完事"。
+
+最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题，**樱花、评论、友链齐全，加载快还免费**。

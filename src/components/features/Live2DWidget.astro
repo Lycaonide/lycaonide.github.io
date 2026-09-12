@@ -114,6 +114,16 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 	// Swup 无刷新导航后组件 DOM 被替换，需重新初始化；旧 window 监听因容器断开自动失效
 	let lastWidgetContainer: HTMLElement | null = null;
 	function initWidget() {
+		// 幂等：同一容器已初始化则跳过
+		// Swup 导航后组件脚本会重新执行，旧 document 监听未清理，多个重建回调可能并发触发，
+		// 若重复创建实例会出现两个状态栏/两个按钮栏、人物加载失败不显示
+		const existing = document.getElementById("l2d-widget-container");
+		if (existing && existing.dataset.oml2dReady === "1") return;
+		if (existing) existing.dataset.oml2dReady = "1";
+		// 容器被替换时旧容器标志无影响（新容器无标志），正常重建
+		if (lastWidgetContainer && lastWidgetContainer !== existing && lastWidgetContainer.dataset) {
+			delete lastWidgetContainer.dataset.oml2dReady;
+		}
 	
 	
 		// 气泡内容宽度自适应：库会把内容宽度固定为 ~108px 导致长句截断，用全局样式覆盖

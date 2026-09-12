@@ -71,7 +71,7 @@ const description =
 
       {/* 自定义内容（交换友链说明，放最上面） */}
       {friendsPageConfig.showCustomContent !== false && (
-        <div class="mt-4 card-base z-10 px-9 py-6 relative w-full">
+        <div class="friends-note mt-4 mb-8 card-base z-10 px-9 py-6 relative w-full">
           <Markdown class="">
             <Content />
           </Markdown>
@@ -371,6 +371,10 @@ const description =
   </script>
 
   <style is:global>
+    .friends-note .custom-md > :first-child {
+      margin-top: 0;
+    }
+
     .friends-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

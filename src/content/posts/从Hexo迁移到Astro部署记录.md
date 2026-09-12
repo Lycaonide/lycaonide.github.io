@@ -381,7 +381,7 @@ pnpm build
 
 # 2. 配置凭据（PowerShell 用 $env: 前缀）
 export CLOUDFLARE_API_TOKEN="你的API_TOKEN"      # 上一步创建的
-export CLOUDFLARE_ACCOUNT_ID="你的账号ID"        # CF 控制台 URL 里 /xxx/ 那段
+export CLOUDFLARE_ACCOUNT_ID="你的账号ID"        # 你的账号ID
 
 # 3. 创建 Pages 项目（仅首次）
 npx wrangler pages project create my-firefly-blog --production-branch main
@@ -464,7 +464,7 @@ jobs:
 3. 左侧菜单 **Security** → **Secrets and variables** → **Actions**；
 4. 点绿色的 **New repository secret** 按钮；
 5. **Name** 填 `CLOUDFLARE_API_TOKEN`，**Secret** 填你的 Cloudflare API Token（创建方法见上文第 1 节），点 **Add secret**；
-6. 再点一次 **New repository secret**：**Name** 填 `CLOUDFLARE_ACCOUNT_ID`，**Secret** 填 Cloudflare 账号 ID（控制台 URL 里 `/xxx/` 那段），点 **Add secret**。
+6. 再点一次 **New repository secret**：**Name** 填 `CLOUDFLARE_ACCOUNT_ID`，**Secret** 填 Cloudflare 账号 ID，点 **Add secret**。
 
 ![GitHub Secrets 配置界面](/assets/blog-migrate/github-secrets.jpg)
 

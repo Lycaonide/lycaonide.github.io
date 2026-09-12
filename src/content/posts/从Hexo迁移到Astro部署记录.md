@@ -71,7 +71,7 @@ pnpm dev
 
 然后在字体配置里直接引用对应字体名即可，不用下载文件、不用子集化。我一开始就是这么用的，当时网络能连上 jsdelivr。
 
-但，在线字体的机制是**访客打开页面时由浏览器现场去 `cdn.jsdelivr.net` 拉取**——大多数访客在国内，直连这个域名经常连不上，字体就加载不出来，页面回退成系统字体。所以为了访客体验，我需要找**不连外网也能加载**的方案，于是试了好几种方案：
+但在线字体的机制是**访客打开页面时由浏览器现场去 `cdn.jsdelivr.net` 拉取**——大多数访客在国内，直连这个域名经常连不上，字体就加载不出来，页面回退成系统字体。所以为了访客体验，我需要找**不连外网也能加载**的方案，于是试了好几种方案：
 
 | 方案 | 结果 |
 | --- | --- |
@@ -485,3 +485,25 @@ Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项
 3. **自动化部署**：GitHub Actions 让发布变成"push 就完事"。
 
 最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题，**樱花、评论、友链齐全，加载快还免费**。
+
+
+##### 发布 / 更新博客常用命令
+
+- **本地预览**：`pnpm dev`（默认 http://localhost:4321）；
+- **构建**：`pnpm build`（输出到 `dist/`，会顺便做字体子集化）；
+- **发布 / 更新**：改完文章（或任何文件）后：
+
+```bash
+git add -A
+git commit -m "写点说明"
+git push
+```
+
+push 后 GitHub Actions 自动构建，**同时部署到 GitHub Pages 和 Cloudflare Pages**（前提：仓库 Secrets 里配好 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`）；
+- **只手动部署 Cloudflare**（临时用）：
+
+```bash
+$env:CLOUDFLARE_API_TOKEN = "你的token"
+$env:CLOUDFLARE_ACCOUNT_ID = "9df1e93b29898adab711c0958d7bccec"
+npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
+```

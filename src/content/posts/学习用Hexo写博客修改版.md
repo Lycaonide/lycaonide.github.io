@@ -93,7 +93,7 @@ hexo s      # 启动本地预览
 ##### 🔍 为什么要修改原步骤？
 
 **核心原因**：国内网络环境对 GitHub 存在访问限制，直接执行 `hexo d` 会出现「连接失败、无法解析主机」等错误，导致部署失败。
-**解决方案**：使用「红岸加速器」来绕过网络限制，因此需要手动配置 Git 代理，让 Git 走加速器的本地端口（`7892`），才能正常推送代码到 GitHub。
+**解决方案**：使用「加速器」来绕过网络限制，因此需要手动配置 Git 代理，让 Git 走加速器的本地端口（`7892`），才能正常推送代码到 GitHub。
 
 ##### ✅ 修改后的完整操作步骤
 
@@ -104,7 +104,7 @@ hexo s      # 启动本地预览
 git config --global --unset http.proxy
 git config --global --unset https.proxy
 
-# 2. 配置红岸加速器代理（本地端口为 7892，与加速器配置一致）
+# 2. 配置加速器代理（本地端口为 7892，与加速器配置一致）
 git config --global http.proxy http://127.0.0.1:7892
 git config --global https.proxy http://127.0.0.1:7892
 
@@ -165,7 +165,7 @@ hexo clean && hexo g && hexo d
 git config --global --unset http.proxy
 git config --global --unset https.proxy
 
-# 配置红岸加速器代理
+# 配置加速器代理
 git config --global http.proxy http://127.0.0.1:7892
 git config --global https.proxy http://127.0.0.1:7892
 

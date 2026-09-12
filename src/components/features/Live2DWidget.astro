@@ -277,8 +277,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				// 气泡：圆角胶囊、更短更窄、上移避免被人物/动物遮挡
 				style: {
 					fontSize: "12px",
-					minHeight: "110px",
-					maxWidth: "200px",
+					minHeight: "70px",
+					maxWidth: "180px",
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
@@ -286,8 +286,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				},
 				mobileStyle: {
 					fontSize: "12px",
-					minHeight: "110px",
-					maxWidth: "200px",
+					minHeight: "70px",
+					maxWidth: "180px",
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
@@ -455,6 +455,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			"pointerdown",
 			(e) => {
 				if ((e.target as HTMLElement).closest("#oml2d-menus")) return;
+				// 按下立即锁定菜单显示：拖动瞬间鼠标移出舞台时不会先触发隐藏
+				forceMenusVisible();
 				dragState = {
 					startX: e.clientX,
 					startY: e.clientY,
@@ -508,7 +510,12 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			}, ms);
 		}
 		function endDrag() {
-			if (dragState?.active) keepMenusVisible(3000);
+			if (dragState?.active) {
+				keepMenusVisible(3000);
+			} else if (savedMenusOut !== null) {
+				// 非拖动点击：恢复库的 hover 显示/隐藏逻辑
+				restoreMenus();
+			}
 			dragState = null;
 		}
 		window.addEventListener("pointerup", endDrag);

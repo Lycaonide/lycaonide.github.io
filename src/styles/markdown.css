@@ -3,23 +3,6 @@
 .custom-md {
   overflow-wrap: break-word;
 
-  /* 彩色文字（文章内嵌 span 用；以后想整体变色，改这里的颜色即可） */
-  .text-accent {
-    color: var(--primary);
-  }
-
-  .text-success {
-    color: #16a34a;
-  }
-
-  .text-danger {
-    color: #dc2626;
-  }
-
-  .text-warn {
-    color: #d97706;
-  }
-
   body.sticky-navbar & {
     [id] {
       scroll-margin-top: 5.5rem;

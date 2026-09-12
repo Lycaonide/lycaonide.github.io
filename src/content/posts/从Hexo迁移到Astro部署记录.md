@@ -139,7 +139,7 @@ await writeFile(outFile, subset);
 
 这个脚本已集成进 `pnpm build`（构建链会自动执行），也可以单独跑：`npx tsx scripts/subset-fonts.ts`。结果：**字体体积从 3MB 压到约 140KB**（换了思源黑体后更小），页面加载快了很多。
 
-本站最终用的是这套本地化方案：字体文件存在站点自己的服务器上，<span class="text-success"><strong>访客打开本站不需要连任何外部字体服务</strong></span>，构建和线上都稳。
+本站最终用的是这套本地化方案：字体文件存在站点自己的服务器上，**访客打开本站不需要连任何外部字体服务**，构建和线上都稳。
 
 #### 五、站点美化：装饰总开关
 
@@ -296,7 +296,7 @@ jobs:
 - **`concurrency`**：防止多次 push 时部署任务互相打架；
 - **`workflow_dispatch`**：想手动触发重新部署时，Actions 页面点一下即可。
 
-每次 push 后，仓库的 Actions 页面会看到构建部署记录（绿色对勾表示成功，点进去能看每步日志）：
+每次 push 后，仓库的 Actions 页面会看到构建部署记录，点进去能看每步日志：
 
 ![步骤：push 后在 Actions 页面查看部署记录](/assets/blog-migrate/github-actions.png)
 
@@ -312,7 +312,7 @@ git push
 
 等待 3-4 分钟，Actions 构建部署完成，线上自动更新，全程不用手动操作。
 
-#### 十、Cloudflare Pages 部署（国内访问加速）
+#### 九、Cloudflare Pages 部署（国内访问加速）
 
 GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体偶尔要等很久。为了让国内访客更流畅，给本站加了一层 **Cloudflare Pages 双部署**：GitHub Pages 保持不变，Cloudflare Pages 作为国内加速入口，两个域名内容同步。
 
@@ -361,7 +361,7 @@ GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体�
 - Account resources：`Include` → 你的账号；
 - 其他默认，点 Create 后复制 token（只显示一次）。
 
-> <span class="text-danger"><strong>注意：token 相当于账号钥匙，不要提交到代码仓库</strong></span>。
+> 注意：token 相当于账号钥匙，**不要提交到代码仓库**。
 
 **以后想改 / 轮换 / 删除 token**：Cloudflare 控制台 → 右上角头像 → **My Profile** → **API Tokens**，找到对应 token 后点右侧菜单：
 
@@ -472,7 +472,7 @@ jobs:
 
 Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项目页 → Custom domains 里添加即可。本站暂时用 `pages.dev` 子域名，等有合适域名再绑。绑定后原 `pages.dev` 域名依然可用，不影响现有访问。
 
-#### 十一、总结
+#### 十、总结
 
 这次迁移的核心经验：
 
@@ -480,4 +480,4 @@ Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项
 2. **双站过渡**：新旧站并存，内容迁完再下线，风险可控；
 3. **自动化部署**：GitHub Actions 让发布变成"push 就完事"。
 
-最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题，<span class="text-accent"><strong>樱花、评论、友链齐全，加载快还免费</strong></span>。
+最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题，**樱花、评论、友链齐全，加载快还免费**。

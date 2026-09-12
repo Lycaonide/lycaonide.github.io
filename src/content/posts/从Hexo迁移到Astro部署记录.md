@@ -468,7 +468,7 @@ jobs:
 
 ![GitHub Secrets 配置界面](/assets/blog-migrate/github-secrets.jpg)
 
-> 注意：**Name 必须和 workflow 里引用的一致**（严格填 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`），不能随便起名。截图里那个 `BLOG_DEPLOY` 只是界面示例——名字对不上，workflow 读不到，CF 部署会一直失败。
+> 注意：**Name 必须和 workflow 里引用的一致**，不能随便起名——上图里填的就是 `CLOUDFLARE_API_TOKEN`（名字对不上，workflow 读不到，CF 部署会一直失败）。
 
 配好之后，每次 `git push` 会自动构建并同时部署到 GitHub Pages 和 Cloudflare Pages。
 

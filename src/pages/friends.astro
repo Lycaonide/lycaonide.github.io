@@ -180,6 +180,94 @@ const description =
     </div>
   </div>
 
+  <!-- 申请友链表单 -->
+  <div class="mt-4 card-base z-10 px-9 py-6 relative w-full">
+    <div class="flex items-center gap-3 mb-3">
+      <div
+        class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70"
+      >
+        <Icon name="material-symbols:link-add-rounded" class="text-[1.5rem]" />
+      </div>
+      <div class="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+        申请友链
+      </div>
+    </div>
+    <p class="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed mb-4">
+      填好信息点提交，会打开邮件客户端把申请发给我；不方便的话直接发邮件到
+      <a
+        href="mailto:1306273519@qq.com"
+        class="font-medium text-(--primary) underline decoration-dashed underline-offset-4"
+        >1306273519@qq.com</a
+      >
+      也可以。
+    </p>
+    <form
+      data-friend-form
+      class="grid gap-3 sm:grid-cols-2"
+      onsubmit="return false"
+    >
+      <input
+        type="text"
+        name="site"
+        placeholder="站点名称 *"
+        required
+        class="w-full px-3 py-2 rounded-xl border border-(--line-divider) bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200"
+      />
+      <input
+        type="url"
+        name="url"
+        placeholder="链接（https://...）*"
+        required
+        class="w-full px-3 py-2 rounded-xl border border-(--line-divider) bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200"
+      />
+      <input
+        type="url"
+        name="avatar"
+        placeholder="头像图片链接（可选）"
+        class="w-full px-3 py-2 rounded-xl border border-(--line-divider) bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200"
+      />
+      <input
+        type="text"
+        name="desc"
+        placeholder="一句话简介 *"
+        required
+        class="w-full px-3 py-2 rounded-xl border border-(--line-divider) bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:border-(--primary) focus:ring-1 focus:ring-(--primary) outline-none transition-all duration-200"
+      />
+      <button
+        type="submit"
+        class="sm:col-span-2 px-4 py-2.5 rounded-xl bg-(--primary) text-white dark:text-black/70 font-medium text-sm hover:opacity-90 transition-opacity duration-200"
+      >
+        提交申请
+      </button>
+    </form>
+
+    <script is:inline>
+      document.querySelectorAll("[data-friend-form]").forEach((form) => {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const f = new FormData(form);
+          const site = (f.get("site") || "").trim();
+          const url = (f.get("url") || "").trim();
+          const avatar = (f.get("avatar") || "").trim();
+          const desc = (f.get("desc") || "").trim();
+          const body =
+            "站点名称：" +
+            site +
+            "\n链接：" +
+            url +
+            (avatar ? "\n头像：" + avatar : "") +
+            "\n简介：" +
+            desc;
+          window.location.href =
+            "mailto:1306273519@qq.com?subject=" +
+            encodeURIComponent("友链申请：" + site) +
+            "&body=" +
+            encodeURIComponent(body);
+        });
+      });
+    </script>
+  </div>
+
   {friendsPageConfig.showCustomContent !== false && (
     <div class="mt-4 card-base z-10 px-9 py-6 relative w-full">
       <Markdown class="">

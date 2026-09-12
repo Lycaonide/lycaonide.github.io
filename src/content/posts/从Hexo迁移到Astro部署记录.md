@@ -3,7 +3,7 @@ draft: false
 title: 从Hexo迁移到Astro部署记录
 published: 2026-09-11
 description: 记录本站从 Hexo 迁移到 Astro 的全过程：技术选型、双站并存、字体本地化、站点美化、Giscus 评论接入、GitHub Actions 自动部署与 Cloudflare Pages 国内加速。
-image: /assets/blog-migrate/github-actions.png
+image: /assets/blog-migrate/cf-deploy-page.jpg
 tags: [Astro, Hexo, 博客, 部署, GitHub Pages, Cloudflare Pages]
 category: 技术笔记
 ---
@@ -132,6 +132,23 @@ await writeFile(outFile, subset);
 ```
 
 这个脚本已集成进 `pnpm build`（构建链会自动执行），也可以单独跑：`npx tsx scripts/subset-fonts.ts`。结果：**字体体积从 7MB 压到 160.8KB**，页面加载快了很多。
+
+##### 在线字体：能访问 jsdelivr 时的简单方案
+
+如果网络环境能访问 jsdelivr（比如开了代理，https://www.jsdelivr.com 能正常打开），就不必折腾本地化，用 **Fontsource + jsdelivr CDN** 几行 CSS 引入即可，主题用的三个字体都能这样加：
+
+```css
+/* 放在全局样式入口文件顶部 */
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/zen-maru-gothic@5/index.css");
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/index.css");
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/inter@5/index.css");
+```
+
+然后在字体配置里直接引用对应字体名（比如 `Zen Maru Gothic`、`JetBrains Mono`）即可，不需要下载任何文件、不需要子集化脚本，这是最省事的路径。
+
+> 注意：这个方法**依赖运行时能访问 cdn.jsdelivr.net**。国内直连时这个域名经常被墙或极慢，页面会长时间白屏等字体。**能稳定访问 jsdelivr → 用在线方案（简单）；国内直连 → 用本地化方案（稳）**。本站最终选了本地化，原因就是访客大多在国内。
+
+> 结论：**国内直连时** jsdelivr 基本无解，**能本地化的资源一律本地化**，构建和线上都稳。
 
 > 结论：jsdelivr 在国内基本无解，**能本地化的资源一律本地化**，构建和线上都稳。
 
@@ -290,6 +307,17 @@ git push
 
 GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体偶尔要等很久。为了让国内访客更流畅，给本站加了一层 **Cloudflare Pages 双部署**：GitHub Pages 保持不变（原有链接不断），Cloudflare Pages 作为国内加速入口，两个域名内容同步。
 
+**双部署有什么用：**
+
+- **国内加速**：Cloudflare 有全球 CDN（含国内优化节点），页面、图片、字体加载明显更快，这是最主要的价值；
+- **双保险**：一个平台出问题（GitHub 被墙、Pages 服务异常、DNS 污染），另一个域名随时能顶上，站点不"失联"；
+- **评论/友链不受影响**：Giscus 评论挂在 GitHub 仓库上、友链数据在配置里，两个域名共用同一套，换域名不丢数据。
+
+**两个网址内容完全一致，按网络环境任选：**
+
+- GitHub Pages：`https://lycaonide.github.io`
+- Cloudflare Pages：`https://my-firefly-blog.pages.dev`
+
 ##### 为什么选 Cloudflare Pages
 
 - **免费额度够用**：每月 100 GB 流量，静态博客轻松覆盖；
@@ -299,9 +327,17 @@ GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体�
 
 ##### 方案对比：控制台连接 Git vs API Token
 
-一开始尝试的是 Cloudflare 控制台「连接到 Git」（Workers 和 Pages → 创建 → 连接到 Git → 授权 GitHub → 选仓库），理想情况是自动构建、push 即部署。但实测中连接流程反复跳转到 GitHub 的 App 安装配置页、授权回调不稳定，折腾半天走不到仓库列表。
+一开始尝试的是 Cloudflare 控制台「连接到 Git」（Workers 和 Pages → 创建 → 连接到 Git → 授权 GitHub → 选仓库），理想情况是自动构建、push 即部署。但实测遇到了几个坑：
 
-**改用 API Token 方案，10 分钟搞定**，部署命令还能写进脚本，以后手动一键部署。
+- 点「Connect GitHub」后**反复跳转到 GitHub 的 App 安装配置页**（settings/installations），而不是正常的 OAuth 授权；
+- 仓库权限配好后点 Save，**授权回调不自动回 CF**，仓库列表一直加载不出来；
+- 折腾半天走不到选仓库那一步。
+
+**为什么改用 API Token 方案：**
+
+- **不依赖控制台页面**：命令行一条命令完成部署，不碰那个绕圈的 OAuth 流程；
+- **可复现、可写进脚本/CI**：命令即文档，以后换机器也能一键部署；
+- **权限可精确控制**：token 只给「Cloudflare Pages → Edit」权限，用完随时在控制台撤销，比账号级授权更安全。
 
 ##### 1. 创建 API Token
 
@@ -350,11 +386,66 @@ npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
 
 ![Cloudflare Pages 部署后的博客首页](/assets/blog-migrate/cloudflare-pages.jpg)
 
-##### 4. 后续自动化
+Cloudflare 控制台的部署记录页（Production 域名 + 每次部署的提交信息、状态、预览地址）：
 
-目前是手动 `wrangler pages deploy`。想做到 push 自动同步，可以在仓库新建 `.github/workflows/deploy-cloudflare.yml`，用 `cloudflare/wrangler-action@v3` 部署（需要把 `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` 加到 GitHub Secrets）。
+![Cloudflare Pages 部署记录页](/assets/blog-migrate/cf-deploy-page.jpg)
 
-两个域名并存，不影响原有评论（Giscus 挂在 GitHub 仓库上）和友链，只是国内访客多了个更快入口。
+##### 4. 后续自动化：push 双平台同步
+
+目前 GitHub Pages 是 push 自动部署，Cloudflare Pages 是手动 `wrangler pages deploy`。想做到**推一次代码、两个平台同时更新**，在仓库新建 `.github/workflows/deploy-cloudflare.yml`，用官方 `cloudflare/wrangler-action@v3`：
+
+```yaml
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.22.0
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name my-firefly-blog --branch main
+```
+
+使用前提：在 GitHub 仓库 Settings → Secrets and variables → Actions 里添加两个 secret：
+
+- `CLOUDFLARE_API_TOKEN`：Cloudflare API Token（创建方法见上文）；
+- `CLOUDFLARE_ACCOUNT_ID`：Cloudflare 账号 ID（控制台 URL 里 `/xxx/` 那段）。
+
+配好之后，每次 `git push` 会自动构建并同时部署到 GitHub Pages 和 Cloudflare Pages。
+
+##### 5. 自定义域名（可选）
+
+Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项目页 → Custom domains 里添加即可。本站暂时用 `pages.dev` 子域名，等有合适域名再绑。绑定后原 `pages.dev` 域名依然可用，不影响现有访问。
 
 #### 十一、总结
 

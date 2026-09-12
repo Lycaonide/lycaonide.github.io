@@ -2,9 +2,9 @@
 draft: false
 title: 从Hexo迁移到Astro部署记录
 published: 2026-09-11
-description: 记录本站从 Hexo 迁移到 Astro 的全过程：技术选型、双站并存、字体本地化、站点美化、Giscus 评论接入与 GitHub Actions 自动部署。
+description: 记录本站从 Hexo 迁移到 Astro 的全过程：技术选型、双站并存、字体本地化、站点美化、Giscus 评论接入、GitHub Actions 自动部署与 Cloudflare Pages 国内加速。
 image: /assets/blog-migrate/github-actions.png
-tags: [Astro, Hexo, 博客, 部署, GitHub Pages]
+tags: [Astro, Hexo, 博客, 部署, GitHub Pages, Cloudflare Pages]
 category: 技术笔记
 ---
 
@@ -286,7 +286,77 @@ git push
 
 等待 3-4 分钟，Actions 构建部署完成，线上自动更新，全程不用手动操作。
 
-#### 九、总结
+#### 十、Cloudflare Pages 部署（国内访问加速）
+
+GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体偶尔要等很久。为了让国内访客更流畅，给本站加了一层 **Cloudflare Pages 双部署**：GitHub Pages 保持不变（原有链接不断），Cloudflare Pages 作为国内加速入口，两个域名内容同步。
+
+##### 为什么选 Cloudflare Pages
+
+- **免费额度够用**：每月 100 GB 流量，静态博客轻松覆盖；
+- **自带全球 CDN**：国内节点比 GitHub Pages 快得多；
+- **支持自定义域名、自动 HTTPS**；
+- **和 GitHub 无缝衔接**：可以直接连仓库，也可以用 API Token 手动部署。
+
+##### 方案对比：控制台连接 Git vs API Token
+
+一开始尝试的是 Cloudflare 控制台「连接到 Git」（Workers 和 Pages → 创建 → 连接到 Git → 授权 GitHub → 选仓库），理想情况是自动构建、push 即部署。但实测中连接流程反复跳转到 GitHub 的 App 安装配置页、授权回调不稳定，折腾半天走不到仓库列表。
+
+**改用 API Token 方案，10 分钟搞定**，部署命令还能写进脚本，以后手动一键部署。
+
+##### 1. 创建 API Token
+
+Cloudflare 控制台 → 右上角头像 → **My Profile** → **API Tokens** → **Create Token** → 选 **Custom token**：
+
+- Token name：随意（比如 `blog-deploy`）；
+- Permissions：`Account` → `Cloudflare Pages` → `Edit`；
+- Account resources：`Include` → 你的账号；
+- 其他默认，点 Create 后复制 token（只显示一次）。
+
+> 注意：token 相当于账号钥匙，**不要提交到代码仓库**；部署完可以随时在控制台撤销轮换。
+
+##### 2. 构建并部署（wrangler）
+
+本地构建产物在 `dist/`，用 [wrangler](https://developers.cloudflare.com/workers/wrangler/) 直接推上去（Node 自带 npx，无需全局安装）：
+
+```bash
+# 1. 构建（输出 dist/）
+pnpm build
+
+# 2. 配置凭据（PowerShell 用 $env: 前缀）
+export CLOUDFLARE_API_TOKEN="你的API_TOKEN"      # 上一步创建的
+export CLOUDFLARE_ACCOUNT_ID="你的账号ID"        # CF 控制台 URL 里 /xxx/ 那段
+
+# 3. 创建 Pages 项目（仅首次）
+npx wrangler pages project create my-firefly-blog --production-branch main
+
+# 4. 部署 dist 目录
+npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
+```
+
+部署成功输出（真实记录）：
+
+```text
+✨ Success! Uploaded 244 files (17.28 sec)
+
+🌎 Deploying...
+✨ Deployment complete! Take a peek over at https://ca824054.my-firefly-blog.pages.dev
+```
+
+生产域名：**https://my-firefly-blog.pages.dev**
+
+##### 3. 验证
+
+浏览器打开 `https://my-firefly-blog.pages.dev`，内容和 GitHub Pages 完全一致（同一个 dist 构建产物），国内访问明显更流畅：
+
+![Cloudflare Pages 部署后的博客首页](/assets/blog-migrate/cloudflare-pages.jpg)
+
+##### 4. 后续自动化
+
+目前是手动 `wrangler pages deploy`。想做到 push 自动同步，可以在仓库新建 `.github/workflows/deploy-cloudflare.yml`，用 `cloudflare/wrangler-action@v3` 部署（需要把 `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` 加到 GitHub Secrets）。
+
+两个域名并存，不影响原有评论（Giscus 挂在 GitHub 仓库上）和友链，只是国内访客多了个更快入口。
+
+#### 十一、总结
 
 这次迁移的核心经验：
 
@@ -295,4 +365,4 @@ git push
 3. **双站过渡**：新旧站并存，内容迁完再下线，风险可控；
 4. **自动化部署**：GitHub Actions 让发布变成"push 就完事"。
 
-最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题 + GitHub Pages，樱花、看板娘、评论、友链齐全，加载快还免费。
+最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题 + GitHub Pages，樱花、评论、友链齐全，加载快还免费。

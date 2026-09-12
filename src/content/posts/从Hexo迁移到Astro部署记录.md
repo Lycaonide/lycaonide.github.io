@@ -58,7 +58,7 @@ pnpm dev
 
 等新站内容补齐后，再逐步把旧站文章迁过来，最后下线旧站即可。迁移过程零停服，随时可以回滚。
 
-#### 四、字体本地化（为了国内访客，放弃在线字体）
+#### 四、字体本地化
 
 主题默认从 **jsdelivr CDN** 下载 3 个在线字体（Zen Maru Gothic / Inter / JetBrains Mono）。**最省事的做法是直接用在线字体**——用 Fontsource + jsdelivr CDN 几行 CSS 就能引入，网络能访问 jsdelivr 时：
 
@@ -71,9 +71,7 @@ pnpm dev
 
 然后在字体配置里直接引用对应字体名即可，不用下载文件、不用子集化。我一开始就是这么用的，当时网络能连上 jsdelivr。
 
-**但**：在线字体的机制是**访客打开页面时由浏览器现场去 `cdn.jsdelivr.net` 拉取**——大多数访客在国内，直连这个域名经常连不上，字体就加载不出来，页面回退成系统字体。所以为了访客体验，我需要找**不连外网也能加载**的方案，于是试了好几种：
-
-试过的方案和结论：
+但，在线字体的机制是**访客打开页面时由浏览器现场去 `cdn.jsdelivr.net` 拉取**——大多数访客在国内，直连这个域名经常连不上，字体就加载不出来，页面回退成系统字体。所以为了访客体验，我需要找**不连外网也能加载**的方案，于是试了好几种方案：
 
 | 方案 | 结果 |
 | --- | --- |
@@ -205,6 +203,15 @@ friends: true,   // 原来是 false
 
 注意：友链内容页缺失会导致构建报错 `friends page content not found`，所以 **开关和内容文件要一起建**。
 
+**友链的几种常见方式：**
+
+- **评论区申请**：在友链页评论区留言，附上站点名、链接、简介、头像；
+- **邮件申请**：直接发邮件到站长邮箱，说明互换意愿和站点信息；
+- **自助表单**：友链页放一个登记表单，来访者填完自动收录（需要表单服务，如 Formspree、腾讯云开发等）；
+- **先加后说**：先在对方站点加上自己的链接，再通过评论/邮件告知对方回加。
+
+本站用的是**评论区 + 邮件**：友链页底部有申请说明，评论里留下站点信息即可，详情见 `src/content/spec/friends.md`。
+
 #### 八、GitHub Actions 自动部署
 
 推送后自动构建发布，用的是 Actions workflow（`.github/workflows/deploy.yml`），这是本站实际在用的完整配置：
@@ -296,7 +303,7 @@ git push
 
 #### 十、Cloudflare Pages 部署（国内访问加速）
 
-GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体偶尔要等很久。为了让国内访客更流畅，给本站加了一层 **Cloudflare Pages 双部署**：GitHub Pages 保持不变（原有链接不断），Cloudflare Pages 作为国内加速入口，两个域名内容同步。
+GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体偶尔要等很久。为了让国内访客更流畅，给本站加了一层 **Cloudflare Pages 双部署**：GitHub Pages 保持不变，Cloudflare Pages 作为国内加速入口，两个域名内容同步。
 
 **双部署有什么用：**
 
@@ -332,7 +339,11 @@ GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体�
 
 ##### 1. 创建 API Token
 
-打开 **Cloudflare 控制台**（https://dash.cloudflare.com）→ 右上角头像 → **My Profile** → **API Tokens** → **Create Token** → 选 **Custom token**：
+在 Cloudflare 控制台右上角头像 → **My Profile** → **API Tokens** 页面，点右上角蓝色 **Create Token** 按钮：
+
+![Cloudflare API Tokens 页面](/assets/blog-migrate/cf-api-token.jpg)
+
+然后选 **Custom token**，按下面的参数填：
 
 - Token name：随意（比如 `blog-deploy`）；
 - Permissions：`Account` → `Cloudflare Pages` → `Edit`；

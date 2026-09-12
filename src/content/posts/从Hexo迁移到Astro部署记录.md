@@ -133,9 +133,9 @@ await writeFile(outFile, subset);
 
 这个脚本已集成进 `pnpm build`（构建链会自动执行），也可以单独跑：`npx tsx scripts/subset-fonts.ts`。结果：**字体体积从 7MB 压到 160.8KB**，页面加载快了很多。
 
-##### 在线字体：能访问 jsdelivr 时的简单方案
+##### 备选：在线字体（简单，但访客需要能连上 jsdelivr）
 
-如果网络环境能访问 jsdelivr（比如开了代理，https://www.jsdelivr.com 能正常打开），就不必折腾本地化，用 **Fontsource + jsdelivr CDN** 几行 CSS 引入即可，主题用的三个字体都能这样加：
+想省事的话，也可以用 **Fontsource + jsdelivr CDN** 在线引入，主题用的三个字体几行 CSS 就能加：
 
 ```css
 /* 放在全局样式入口文件顶部 */
@@ -144,17 +144,15 @@ await writeFile(outFile, subset);
 @import url("https://cdn.jsdelivr.net/npm/@fontsource/inter@5/index.css");
 ```
 
-然后在字体配置里直接引用对应字体名（比如 `Zen Maru Gothic`、`JetBrains Mono`）即可，不需要下载任何文件、不需要子集化脚本，这是最省事的路径。
+然后在字体配置里直接引用对应字体名即可，不用下载文件、不用子集化。
 
-> 注意：这个方法**依赖运行时能访问 cdn.jsdelivr.net**。国内直连时这个域名经常被墙或极慢，页面会长时间白屏等字体。**能稳定访问 jsdelivr → 用在线方案（简单）；国内直连 → 用本地化方案（稳）**。本站最终选了本地化，原因就是访客大多在国内。
+**但要注意在线方案的工作方式**：字体不是打包进站点的，而是**访客打开页面时由浏览器现场去 `cdn.jsdelivr.net` 拉取**——访客网络连不上这个域名（国内直连常被墙）时，字体就加载不出来，页面回退成系统字体。它省的是站长的事，赌的是访客的网络。
 
-> 结论：**国内直连时** jsdelivr 基本无解，**能本地化的资源一律本地化**，构建和线上都稳。
-
-> 结论：jsdelivr 在国内基本无解，**能本地化的资源一律本地化**，构建和线上都稳。
+本站最终用的是**本地化方案**（上面这套，已实测通过）：字体文件存在站点自己的服务器上，**访客打开本站不需要连任何外部字体服务**，构建和线上都稳。
 
 #### 五、站点美化：装饰总开关
 
-主题本身是二次元风格，加了几个装饰效果：**樱花飘落、Live2D 看板娘、水波纹背景、卡片立体感**。为了让它们可管理，我统一收敛到一个配置文件 `src/config/decorationConfig.ts`：
+主题本身是二次元风格，加了几个装饰效果：**樱花飘落、水波纹背景、卡片立体感**。为了让它们可管理，我统一收敛到一个配置文件 `src/config/decorationConfig.ts`：
 
 ```ts
 // src/config/decorationConfig.ts
@@ -341,7 +339,7 @@ GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体�
 
 ##### 1. 创建 API Token
 
-Cloudflare 控制台 → 右上角头像 → **My Profile** → **API Tokens** → **Create Token** → 选 **Custom token**：
+打开 **Cloudflare 控制台**（https://dash.cloudflare.com）→ 右上角头像 → **My Profile** → **API Tokens** → **Create Token** → 选 **Custom token**：
 
 - Token name：随意（比如 `blog-deploy`）；
 - Permissions：`Account` → `Cloudflare Pages` → `Edit`；

@@ -466,6 +466,10 @@ jobs:
 5. **Name** 填 `CLOUDFLARE_API_TOKEN`，**Secret** 填你的 Cloudflare API Token（创建方法见上文第 1 节），点 **Add secret**；
 6. 再点一次 **New repository secret**：**Name** 填 `CLOUDFLARE_ACCOUNT_ID`，**Secret** 填 Cloudflare 账号 ID（控制台 URL 里 `/xxx/` 那段），点 **Add secret**。
 
+![GitHub Secrets 配置界面](/assets/blog-migrate/github-secrets.jpg)
+
+> 注意：**Name 必须和 workflow 里引用的一致**（严格填 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`），不能随便起名。截图里那个 `BLOG_DEPLOY` 只是界面示例——名字对不上，workflow 读不到，CF 部署会一直失败。
+
 配好之后，每次 `git push` 会自动构建并同时部署到 GitHub Pages 和 Cloudflare Pages。
 
 ##### 5. 自定义域名（可选）

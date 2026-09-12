@@ -356,7 +356,7 @@ GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体�
 
 然后选 **Custom token**，按下面的参数填：
 
-- Token name：随意（比如 `blog-deploy`）；
+- Token name：**随便填**，只是标签不影响功能（比如 `blog-deploy`、`blog_deploy` 都行）；
 - Permissions：`Account` → `Cloudflare Pages` → `Edit`；
 - Account resources：`Include` → 你的账号；
 - 其他默认，点 Create 后复制 token（只显示一次）。

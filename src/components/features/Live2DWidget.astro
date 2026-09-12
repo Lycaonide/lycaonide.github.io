@@ -287,9 +287,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
-					marginTop: "-50px",
-					writingMode: "vertical-rl",
-				},
+					marginTop: "-90px",
+									},
 				mobileStyle: {
 					fontSize: "12px",
 					minHeight: "70px",
@@ -297,9 +296,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
-					marginTop: "-50px",
-					writingMode: "vertical-rl",
-				},
+					marginTop: "-90px",
+									},
 			},
 			statusBar: {
 				loadingMessage: "加载中",
@@ -486,6 +484,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				if (!dragState.active && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
 					dragState.active = true;
 					forceMenusVisible();
+					startDragKeep();
 				}
 				if (!dragState.active) return;
 				for (const it of dragState.els) {
@@ -499,7 +498,25 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			{ passive: false },
 		);
 	
-		// 拖动结束后菜单保持显示一段时间，避免鼠标离开人物瞬间按钮栏消失
+		// 拖动期间定时强制保持菜单显示（菜单自身 mouseleave 隐藏也会被拉回，避免拖动中按钮栏消失）
+	let dragKeepTimer: number | null = null;
+	function startDragKeep() {
+		if (dragKeepTimer) window.clearInterval(dragKeepTimer);
+		dragKeepTimer = window.setInterval(() => {
+			const menusEl = container.querySelector<HTMLElement>("#oml2d-menus");
+			const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
+			if (menusEl) {
+				menusEl.style.opacity = "1";
+				menusEl.style.visibility = "visible";
+			}
+			if (stageEl) stageEl.onmouseout = null;
+		}, 200);
+	}
+	function stopDragKeep() {
+		if (dragKeepTimer) { window.clearInterval(dragKeepTimer); dragKeepTimer = null; }
+	}
+
+	// 拖动结束后菜单保持显示一段时间，避免鼠标离开人物瞬间按钮栏消失
 		let keepTimer: number | null = null;
 		function keepMenusVisible(ms: number) {
 			const stageEl = container.querySelector<HTMLElement>("#oml2d-stage");
@@ -520,6 +537,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			}, ms);
 		}
 		function endDrag() {
+			stopDragKeep();
 			if (dragState?.active) {
 				keepMenusVisible(3000);
 			} else if (savedMenusOut !== null) {
@@ -531,6 +549,16 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		window.addEventListener("pointerup", endDrag);
 		window.addEventListener("pointercancel", endDrag);
 	
+		// 双击人物：拦截库内置的"双击弹气泡"，只触发按钮栏锁定
+		container.addEventListener(
+			"dblclick",
+			(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+			},
+			true,
+		);
+
 		// 双击人物（mousedown 计数，350ms 内两次按下）：锁定/解锁按钮栏显示
 		let menusLocked = false;
 		let lockedMenusOut: ((ev: MouseEvent) => void) | null = null;

@@ -3,7 +3,6 @@ draft: false
 title: 从Hexo迁移到Astro部署记录
 published: 2026-09-11
 description: 记录本站从 Hexo 迁移到 Astro 的全过程：技术选型、双站并存、字体本地化、站点美化、Giscus 评论接入、GitHub Actions 自动部署与 Cloudflare Pages 国内加速。
-image: /assets/blog-migrate/cf-deploy-page.jpg
 tags: [Astro, Hexo, 博客, 部署, GitHub Pages, Cloudflare Pages]
 category: 技术笔记
 ---
@@ -449,9 +448,8 @@ Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项
 
 这次迁移的核心经验：
 
-1. **能本地化就本地化**：jsdelivr 在国内不可靠，字体、JS 库尽量走本地，构建和线上都稳；
-2. **配置收敛**：装饰、评论、友链等开关集中在 config 文件里，方便统一管理；
-3. **双站过渡**：新旧站并存，内容迁完再下线，风险可控；
-4. **自动化部署**：GitHub Actions 让发布变成"push 就完事"。
+1. **配置收敛**：装饰、评论、友链等开关集中在 config 文件里，方便统一管理；
+2. **双站过渡**：新旧站并存，内容迁完再下线，风险可控；
+3. **自动化部署**：GitHub Actions 让发布变成"push 就完事"。
 
 最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题 + GitHub Pages，樱花、评论、友链齐全，加载快还免费。

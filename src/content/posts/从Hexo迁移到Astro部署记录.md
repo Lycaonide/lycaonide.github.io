@@ -468,7 +468,7 @@ jobs:
 
 ![GitHub Secrets 配置界面](/assets/blog-migrate/github-secrets.jpg)
 
-> 注意：**Name 必须和 workflow 里引用的一致**，不能随便起名（名字对不上，workflow 读不到，CF 部署会一直失败）。两个值分别填什么：`CLOUDFLARE_API_TOKEN` 填你创建的那个新 token 值；`CLOUDFLARE_ACCOUNT_ID` 填账号 ID——打开 Cloudflare 控制台任意页面，看地址栏 `dash.cloudflare.com/` 后面第一段，就是账号 ID。
+> 注意：**workflow 是仓库 `.github/workflows/` 目录里的 YAML 配置**，声明“每次 push 自动执行哪些步骤”，**Name 必须和 workflow 里引用的一致**，不能随便起名（名字对不上，workflow 读不到，CF 部署会一直失败）。两个值分别填什么：`CLOUDFLARE_API_TOKEN` 填你创建的那个新 token 值；`CLOUDFLARE_ACCOUNT_ID` 填账号 ID——打开 Cloudflare 控制台任意页面，看地址栏 `dash.cloudflare.com/` 后面第一段，就是账号 ID。
 
 配好之后，每次 `git push` 会自动构建并同时部署到 GitHub Pages 和 Cloudflare Pages。
 
@@ -488,8 +488,8 @@ git commit -m "写点说明"
 git push
 ```
 
-push 后 GitHub Actions 自动构建，**同时部署到 GitHub Pages 和 Cloudflare Pages**（workflow 就是仓库 `.github/workflows/` 目录里的 YAML 配置，声明“每次 push 自动执行哪些步骤”；前提是仓库 Secrets 里配好 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`）；
-- **只手动部署 Cloudflare**（临时用：不用 push 自动流程，本地直接用 wrangler 把构建好的 `dist` 传上去，适合还没配 Secrets 或想立即发布）：
+push 后 GitHub Actions 自动构建，**同时部署到 GitHub Pages 和 Cloudflare Pages**；
+- **只手动部署 Cloudflare**：
 
 ```bash
 $env:CLOUDFLARE_API_TOKEN = "你的token"

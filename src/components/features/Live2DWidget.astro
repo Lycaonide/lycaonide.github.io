@@ -116,6 +116,16 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 	function initWidget() {
 	
 	
+		// 气泡内容宽度自适应：库会把内容宽度固定为 ~108px 导致长句截断，用全局样式覆盖
+		if (!document.getElementById("l2d-widget-fix-style")) {
+			const fixStyle = document.createElement("style");
+			fixStyle.id = "l2d-widget-fix-style";
+			fixStyle.textContent =
+				"#oml2d-tips-content{width:auto !important;min-width:0 !important;white-space:nowrap !important;}" +
+				"#oml2d-tips{width:auto !important;max-width:260px !important;}";
+			document.head.appendChild(fixStyle);
+		}
+
 		// ---- 读容器配置（由 pioConfig.ts 序列化而来） ----
 		const container = document.getElementById("l2d-widget-container");
 		if (!container) {
@@ -283,7 +293,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				style: {
 					fontSize: "12px",
 					minHeight: "70px",
-					maxWidth: "240px",
+					maxWidth: "260px",
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
@@ -292,7 +302,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				mobileStyle: {
 					fontSize: "12px",
 					minHeight: "70px",
-					maxWidth: "240px",
+					maxWidth: "260px",
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",

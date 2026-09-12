@@ -9,11 +9,12 @@ category: 技术笔记
 
 #### 一、为什么从 Hexo 迁移到 Astro
 
-原来这个博客是用 **Hexo** 搭的（另一篇《学习用Hexo写博客》记录了完整过程），部署在 GitHub Pages 上，用起来没问题。但用久了有几个痛点：
+原来这个博客是用 **Hexo** 搭的（另一篇《学习用Hexo写博客》记录了完整过程），部署在 GitHub Pages 上，用起来没问题。但用久了有几个很实际的痛点：
 
-- **主题老旧**：Hexo 生态里好看的现代主题不多，定制麻烦；
-- **性能一般**：页面是整站生成，JS 和 CSS 越来越重；
-- **想折腾**：Astro 是当下内容站的主流方案，静态输出、组件化、生态活跃。
+- **主题改不动**：想加个新功能、调个布局，得翻模板源码加硬改样式，主题一升级就冲突，越改越不敢动；
+- **构建越来越慢**：文章一多，`hexo generate` 要跑好几分钟，改个错别字也要等半天；
+- **国内打开不稳**：GitHub Pages 直连时快时慢，图片偶尔加载失败；主题默认引的国外 CDN（jsdelivr、Google Fonts）经常卡住加载不出来——这个后面"字体本地化"和"Cloudflare 双部署"两章就是为了治它；
+- **想换主流方案**：Astro 是当下内容站的主流，静态输出、组件化、生态活跃，值得折腾。
 
 最终选型：
 
@@ -338,7 +339,15 @@ GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体�
 - Account resources：`Include` → 你的账号；
 - 其他默认，点 Create 后复制 token（只显示一次）。
 
-> 注意：token 相当于账号钥匙，**不要提交到代码仓库**；部署完可以随时在控制台撤销轮换。
+> 注意：token 相当于账号钥匙，**不要提交到代码仓库**。
+
+**以后想改 / 轮换 / 删除 token**：Cloudflare 控制台 → 右上角头像 → **My Profile** → **API Tokens**，找到对应 token 后点右侧菜单：
+
+- **Edit**：修改名称、权限、绑定的账号；
+- **Roll**：轮换——生成一个新值，旧值立即失效（token 泄露或想换新时用这个）；
+- **Delete**：彻底删除（部署不再需要时）。
+
+token 只在创建时完整显示一次，**Roll 之后记得把新值同步到 GitHub Secrets**（见下文第 4 节）。
 
 ##### 2. 构建并部署（wrangler）
 
@@ -426,10 +435,14 @@ jobs:
           command: pages deploy dist --project-name my-firefly-blog --branch main
 ```
 
-使用前提：在 GitHub 仓库 Settings → Secrets and variables → Actions 里添加两个 secret：
+使用前提：把两个值配到 GitHub 仓库的 **Secrets** 里，步骤如下：
 
-- `CLOUDFLARE_API_TOKEN`：Cloudflare API Token（创建方法见上文）；
-- `CLOUDFLARE_ACCOUNT_ID`：Cloudflare 账号 ID（控制台 URL 里 `/xxx/` 那段）。
+1. 打开 GitHub 仓库页：`https://github.com/Lycaonide/lycaonide.github.io`；
+2. 点顶部 **Settings** 标签；
+3. 左侧菜单 **Security** → **Secrets and variables** → **Actions**；
+4. 点绿色的 **New repository secret** 按钮；
+5. **Name** 填 `CLOUDFLARE_API_TOKEN`，**Secret** 填你的 Cloudflare API Token（创建方法见上文第 1 节），点 **Add secret**；
+6. 再点一次 **New repository secret**：**Name** 填 `CLOUDFLARE_ACCOUNT_ID`，**Secret** 填 Cloudflare 账号 ID（控制台 URL 里 `/xxx/` 那段），点 **Add secret**。
 
 配好之后，每次 `git push` 会自动构建并同时部署到 GitHub Pages 和 Cloudflare Pages。
 

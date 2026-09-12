@@ -57,12 +57,20 @@ pnpm dev
 
 等新站内容补齐后，再逐步把旧站文章迁过来，最后下线旧站即可。迁移过程零停服，随时可以回滚。
 
-#### 四、字体本地化（最大的坑：jsdelivr 被墙）
+#### 四、字体本地化（为了国内访客，放弃在线字体）
 
-这是迁移过程中最折腾的一环。主题默认从 **jsdelivr CDN** 下载 3 个在线字体（Zen Maru Gothic / Inter / JetBrains Mono），而 jsdelivr 在国内**经常被墙**，导致：
+主题默认从 **jsdelivr CDN** 下载 3 个在线字体（Zen Maru Gothic / Inter / JetBrains Mono）。**最省事的做法是直接用在线字体**——用 Fontsource + jsdelivr CDN 几行 CSS 就能引入，网络能访问 jsdelivr 时：
 
-- 构建卡在字体下载、超时失败；
-- 线上页面字体加载不出来，回退成默认字体，很丑。
+```css
+/* 放在全局样式入口文件顶部 */
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/zen-maru-gothic@5/index.css");
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/index.css");
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/inter@5/index.css");
+```
+
+然后在字体配置里直接引用对应字体名即可，不用下载文件、不用子集化。我一开始就是这么用的，当时网络能连上 jsdelivr。
+
+**但**：在线字体的机制是**访客打开页面时由浏览器现场去 `cdn.jsdelivr.net` 拉取**——大多数访客在国内，直连这个域名经常连不上，字体就加载不出来，页面回退成系统字体。所以为了访客体验，我需要找**不连外网也能加载**的方案，于是试了好几种：
 
 试过的方案和结论：
 
@@ -132,22 +140,7 @@ await writeFile(outFile, subset);
 
 这个脚本已集成进 `pnpm build`（构建链会自动执行），也可以单独跑：`npx tsx scripts/subset-fonts.ts`。结果：**字体体积从 3MB 压到约 140KB**（换了思源黑体后更小），页面加载快了很多。
 
-##### 备选：在线字体（简单，但访客需要能连上 jsdelivr）
-
-想省事的话，也可以用 **Fontsource + jsdelivr CDN** 在线引入，主题用的三个字体几行 CSS 就能加：
-
-```css
-/* 放在全局样式入口文件顶部 */
-@import url("https://cdn.jsdelivr.net/npm/@fontsource/zen-maru-gothic@5/index.css");
-@import url("https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5/index.css");
-@import url("https://cdn.jsdelivr.net/npm/@fontsource/inter@5/index.css");
-```
-
-然后在字体配置里直接引用对应字体名即可，不用下载文件、不用子集化。
-
-**但要注意在线方案的工作方式**：字体不是打包进站点的，而是**访客打开页面时由浏览器现场去 `cdn.jsdelivr.net` 拉取**——访客网络连不上这个域名（国内直连常被墙）时，字体就加载不出来，页面回退成系统字体。它省的是站长的事，赌的是访客的网络。
-
-本站最终用的是**本地化方案**（上面这套，已实测通过）：字体文件存在站点自己的服务器上，**访客打开本站不需要连任何外部字体服务**，构建和线上都稳。
+本站最终用的是这套本地化方案（已实测通过）：字体文件存在站点自己的服务器上，**访客打开本站不需要连任何外部字体服务**，构建和线上都稳。
 
 #### 五、站点美化：装饰总开关
 

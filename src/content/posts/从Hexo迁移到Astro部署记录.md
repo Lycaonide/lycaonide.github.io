@@ -82,8 +82,8 @@ pnpm dev
 ```css
 /* src/styles/local-fonts.css */
 @font-face {
-  font-family: "LXGW WenKai";
-  src: url("/assets/fonts/lxgw-wenkai-500.woff2") format("woff2");
+  font-family: "Noto Sans SC";
+  src: url("/assets/fonts/noto-sans-sc-500.woff2") format("woff2");
   font-weight: 500;
   font-display: swap;
 }
@@ -131,7 +131,7 @@ const subset = await subsetFont(fontBuffer, [...charSet].join(""), {
 await writeFile(outFile, subset);
 ```
 
-这个脚本已集成进 `pnpm build`（构建链会自动执行），也可以单独跑：`npx tsx scripts/subset-fonts.ts`。结果：**字体体积从 7MB 压到 160.8KB**，页面加载快了很多。
+这个脚本已集成进 `pnpm build`（构建链会自动执行），也可以单独跑：`npx tsx scripts/subset-fonts.ts`。结果：**字体体积从 3MB 压到约 140KB**（换了思源黑体后更小），页面加载快了很多。
 
 ##### 备选：在线字体（简单，但访客需要能连上 jsdelivr）
 

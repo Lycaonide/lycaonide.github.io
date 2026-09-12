@@ -278,10 +278,10 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				items: menuItems,
 				// 按键：相对舞台右移出界，离人物更远
 				style: {
-					right: "-30px",
+					right: "-50px",
 				},
 				mobileStyle: {
-					right: "-30px",
+					right: "-50px",
 				},
 				// 按钮：30px 圆形，图标同比例
 				itemStyle: {
@@ -307,7 +307,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
-					marginTop: "-90px",
+					marginTop: "-120px",
 									},
 				mobileStyle: {
 					fontSize: "12px",
@@ -316,7 +316,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
-					marginTop: "-90px",
+					marginTop: "-120px",
 									},
 			},
 			statusBar: {
@@ -390,6 +390,9 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				}
 			});
 		}
+		// 禁用自动休息滑出：默认 10s 后人物自动滑出屏幕，底部（尾巴）会被视口裁掉显示"半截"
+		// 手动休眠按钮仍可滑出，点击人物可滑回
+		oml2d.stopTipsIdle?.();
 	
 		// 按钮栏锚到容器右缘：菜单由库异步创建，延时轮询锚定，成功即停（不干扰后续拖动）
 		let menusSyncTries = 0;

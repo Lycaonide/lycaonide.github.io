@@ -13,7 +13,7 @@ export const spineModelConfig: SpineModelConfig = {
 		// 模型缩放比例
 		scale: 1.0,
 		// X轴偏移
-		x: 0,
+		x: 40,
 		// Y轴偏移
 		y: 0,
 	},
@@ -94,7 +94,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			path: "https://model.hacxy.cn/haruto/haruto.model.json",
 			volume: 0,
 			scale: 0.06,
-			x: 20,
+			x: 60,
 			y: 0,
 		},
 		{
@@ -102,7 +102,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			path: "https://model.hacxy.cn/hibiki/hibiki.model.json",
 			volume: 0,
 			scale: 0.062,
-			x: 15,
+			x: 55,
 			y: 0,
 		},
 		{
@@ -110,7 +110,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			path: "https://model.hacxy.cn/cat-black/model.json",
 			volume: 0,
 			scale: 0.042,
-			x: 25,
+			x: 65,
 			y: 0,
 		},
 		{
@@ -118,7 +118,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			path: "https://model.hacxy.cn/HK416-1-normal/model.json",
 			volume: 0,
 			scale: 0.031,
-			x: 0,
+			x: 40,
 			y: 0,
 		},
 		{

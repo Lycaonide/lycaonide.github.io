@@ -122,7 +122,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			fixStyle.id = "l2d-widget-fix-style";
 			fixStyle.textContent =
 				"#oml2d-tips-content{width:auto !important;min-width:0 !important;white-space:nowrap !important;}" +
-				"#oml2d-tips{width:auto !important;max-width:260px !important;left:0 !important;right:auto !important;}";
+				"#oml2d-tips{width:auto !important;max-width:260px !important;left:0 !important;right:auto !important;transform:translateX(0) !important;}";
 			document.head.appendChild(fixStyle);
 		}
 
@@ -473,8 +473,9 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			"pointerdown",
 			(e) => {
 				if ((e.target as HTMLElement).closest("#oml2d-menus")) return;
-				// 按下立即锁定菜单显示：拖动瞬间鼠标移出舞台时不会先触发隐藏
+				// 按下立即锁定菜单显示 + 启动拖动保持（整个按住期间按钮栏强制显示）
 				forceMenusVisible();
+				startDragKeep();
 				dragState = {
 					startX: e.clientX,
 					startY: e.clientY,

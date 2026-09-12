@@ -242,7 +242,9 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		}
 	
 		// ---- 初始化 ----
-		const oml2d = loadOml2d({
+		// @ts-ignore 挂到 window 便于自动化实测
+			(window as any).__oml2d = null;
+			const oml2d = loadOml2d({
 			parentElement: container,
 			dockedPosition: position === "bottom-right" ? "right" : "left",
 			primaryColor,
@@ -281,7 +283,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				style: {
 					fontSize: "12px",
 					minHeight: "70px",
-					maxWidth: "180px",
+					maxWidth: "240px",
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
@@ -291,7 +293,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				mobileStyle: {
 					fontSize: "12px",
 					minHeight: "70px",
-					maxWidth: "180px",
+					maxWidth: "240px",
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
@@ -326,7 +328,10 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		});
 	
 					// 禁用库内置时段问候（早上好/晚上好等），只显示我们自己的欢迎语
-			if (oml2d.tips) oml2d.tips.welcome = () => {};
+			if (oml2d.tips) // @ts-ignore
+			(window as any).__oml2d = oml2d;
+
+		oml2d.tips.welcome = () => {};
 
 // 状态条跟随人物：锚定在人物头顶上方（模型加载后按实际高度修正）
 		// 状态栏固定位置（所有模型一致，未拖动不乱动）
@@ -576,6 +581,17 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		initWidget();
 		lastWidgetContainer = document.getElementById("l2d-widget-container");
 	}
+	
+	// 兜底：Swup/任何 DOM 替换导致容器变化时也重建（不依赖 astro:page-load 是否触发）
+	const widgetObs = new MutationObserver(() => {
+		const c = document.getElementById("l2d-widget-container");
+		if (c && c !== lastWidgetContainer) {
+			lastWidgetContainer = c;
+			initWidget();
+		}
+	});
+	widgetObs.observe(document.body, { childList: true, subtree: true });
+
 	document.addEventListener("astro:page-load", () => {
 		const c = document.getElementById("l2d-widget-container");
 		if (c && c !== lastWidgetContainer) {

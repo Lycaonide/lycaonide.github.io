@@ -227,7 +227,10 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		}));
 	
 		// ---- 提示气泡（闲置消息；欢迎语在 onLoad 成功后手动显示） ----
-		const tipsConfig: any = {};
+		const tipsConfig: any = {
+				// 气泡内容固定 1 行（横排一句话），不竖排换行
+				messageLine: 1,
+			};
 		if (tips.enable !== false) {
 			if (tips.messages && tips.messages.length) {
 				tipsConfig.idleTips = {
@@ -282,7 +285,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
-					marginTop: "-90px",
+					marginTop: "-50px",
+					writingMode: "vertical-rl",
 				},
 				mobileStyle: {
 					fontSize: "12px",
@@ -291,7 +295,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 					padding: "12px 14px",
 					lineHeight: "1.6",
 					borderRadius: "20px",
-					marginTop: "-90px",
+					marginTop: "-50px",
+					writingMode: "vertical-rl",
 				},
 			},
 			statusBar: {

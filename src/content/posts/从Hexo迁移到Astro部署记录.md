@@ -488,8 +488,8 @@ git commit -m "写点说明"
 git push
 ```
 
-push 后 GitHub Actions 自动构建，**同时部署到 GitHub Pages 和 Cloudflare Pages**（前提：仓库 Secrets 里配好 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`）；
-- **只手动部署 Cloudflare**（临时用，比如 workflow/Secrets 没配好、或想立刻单独部署一次时）：
+push 后 GitHub Actions 自动构建，**同时部署到 GitHub Pages 和 Cloudflare Pages**（workflow 就是仓库 `.github/workflows/` 目录里的 YAML 配置，声明“每次 push 自动执行哪些步骤”；前提是仓库 Secrets 里配好 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`）；
+- **只手动部署 Cloudflare**（临时用：不用 push 自动流程，本地直接用 wrangler 把构建好的 `dist` 传上去，适合还没配 Secrets 或想立即发布）：
 
 ```bash
 $env:CLOUDFLARE_API_TOKEN = "你的token"

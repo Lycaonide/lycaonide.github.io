@@ -180,7 +180,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 		// 气泡开关
 		enable: true,
 		// 初始欢迎消息
-		welcomeMessage: ["你好呀！", "欢迎来到我的世界！"],
+		welcomeMessage: ["你好呀！欢迎来到我的小站～ 我是你的看板娘，请多多关照！", "欢迎来访！一起记录学习与成长～ 有什么想聊的都可以找我！", "今天也要元气满满哦！祝你有个好心情，常来看看～"],
 		// 循环提示内容
 		messages: [
 			"有什么需要帮助的吗？",

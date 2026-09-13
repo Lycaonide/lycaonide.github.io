@@ -1,4 +1,0 @@
-npm warn Unknown project config "manage-package-manager-versions". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
-[42m[1m astro [22m[49m [32mv7.2.10[39m [2mready in[22m 12 [2mms[22m
-[2m┃[22m Local    [36mhttp://localhost:4321/[39m
-[2m┃[22m Network  [2muse --host to expose[22m

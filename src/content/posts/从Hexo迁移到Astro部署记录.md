@@ -690,7 +690,7 @@ pnpm dev
 
 浏览器打开 `https://my-firefly-blog.pages.dev/kb/`：左侧目录树（知识库 → 考研 → 四科 → 26 章）、每页 TOC、暗色模式都正常。
 
-![知识库左侧目录树：知识库 → 考研 → 四科 26 章](/assets/blog-migrate/kb-sidebar.png)以后写笔记：`src/content/docs/kb/考研/操作系统/` 里新建 `第6章-xxx.md` → `git push` → 侧边栏自动多出一节，不用改任何配置。
+![知识库章页面：左侧目录树自动生成（知识库 → 考研 → 四科），右侧 On this page 目录、底部上一页/下一页导航](/assets/blog-migrate/kb-sidebar.png)以后写笔记：`src/content/docs/kb/考研/操作系统/` 里新建 `第6章-xxx.md` → `git push` → 侧边栏自动多出一节，不用改任何配置。
 
 #### 十一、AI 问答接入（可选扩展）
 

@@ -25,5 +25,9 @@
   "public:assets/blog-migrate/cloudflare-pages.jpg": "8c92a09d9ea7e9ecea",
   "public:assets/blog-migrate/cf-deploy-page.jpg": "f8f7f8f8f9fbfbfafa",
   "public:assets/blog-migrate/cf-api-token.jpg": "f6f7f8f6f8fbfafaf8",
-  "public:assets/blog-migrate/github-secrets.jpg": "f5f6f7f6f7f8fafbfb"
+  "public:assets/blog-migrate/github-secrets.jpg": "f5f6f7f6f7f8fafbfb",
+  "public:assets/blog-migrate/cf-env.png": "f5f5f5f8f8f9f8f9f9",
+  "public:assets/blog-migrate/ai-chat-cost.png": "bbbfbab4c7bee3efeb",
+  "public:assets/blog-migrate/actions-double-deploy.png": "f4f5f6f8f8fafdfdfd",
+  "public:assets/blog-migrate/kb-sidebar.png": "f0f2f2f6f8f8fafafa"
 }

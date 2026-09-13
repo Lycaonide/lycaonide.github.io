@@ -483,7 +483,164 @@ jobs:
 
 Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项目页 → Custom domains 里添加即可。本站暂时用 `pages.dev` 子域名，等有合适域名再绑。绑定后原 `pages.dev` 域名依然可用，不影响现有访问。
 
-#### 十、AI 问答接入（可选扩展）
+#### 十、知识库（Starlight）
+
+本站的考研资料挂在 **/kb/** 路径，用的是 Astro 官方文档站方案 **Starlight**：自动侧边栏、目录 TOC、代码高亮、暗色模式全自带，写 Markdown 就能维护。
+
+**为什么用 Starlight：**
+
+- **自动侧边栏**：按文件夹层级生成，新建一个 md 自动出现在侧边栏，不用手写导航；
+- **文档体验完整**：页面内目录、代码块复制、移动端适配都是内置的，不用自己写；
+- **和博客同框架**：同一个 Astro 项目、同一次构建、同一套部署，域名和博客共用。
+
+##### 1. 安装与配置
+
+用 pnpm 安装，然后在 `astro.config.mjs` 的 `integrations` 里加 starlight：
+
+```bash
+pnpm add @astrojs/starlight
+```
+
+```js
+// astro.config.mjs（starlight 部分，本站实际配置）
+starlight({
+  title: "知识库",                              // 导航名显示"知识库"，URL 用 /kb/
+  disable404Route: true,
+  sidebar: kbSidebar,                           // 动态侧边栏，见第 3 节
+  social: [{ icon: "external", label: "返回", href: "/" }],   // 顶栏"返回"回博客首页
+  components: {
+    SocialIcons: "./src/components/starlight/SocialIcons.astro",  // 把图标换成文字"返回"
+  },
+  customCss: ["./src/styles/starlight.css"],    // 样式对齐博客主题色，见第 4 节
+  head: [
+    // AI 问答脚本（第十一章），必须 is:inline
+    { tag: "script", attrs: { src: "/ai-chat.js", is: "inline" } },
+  ],
+}),
+```
+
+##### 2. 内容目录结构
+
+知识库内容放在 `src/content/docs/` 下，按"知识库 → 考研 → 科目 → 章节"建文件夹：
+
+```text
+src/content/docs/kb/
+├── index.md                # 知识库首页
+└── 考研/
+    ├── index.md
+    ├── 操作系统/            # 科目一
+    │   ├── index.md
+    │   ├── 第1章-计算机系统概述.md
+    │   ├── 第2章-进程与线程.md
+    │   └── ……
+    ├── 计算机网络/          # 科目二
+    ├── 计算机组成原理/      # 科目三
+    └── 数据结构/            # 科目四
+```
+
+每个科目一个文件夹 + `index.md`，每章一个 md 文件，Starlight 会自动按层级生成侧边栏。
+
+##### 3. 动态侧边栏（加新章不用改配置）
+
+Starlight 默认 `sidebar` 要手写条目，加一章改一次很烦。本站写了个**构建时扫描函数**：读 `src/content/docs/kb` 目录，自动生成侧边栏结构：
+
+```js
+// astro.config.mjs 顶部（本站实际使用）
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __kbDir = fileURLToPath(new URL("./src/content/docs/kb", import.meta.url));
+
+function kbSlugify(name) {
+  return name.replace(/\.mdx?$/, "").toLowerCase()
+    .replace(/[^\p{L}\p{N}\- ]/gu, "").replace(/ +/g, "-");
+}
+
+function kbScan(dir, prefix) {
+  const items = readdirSync(dir, { withFileTypes: true })
+    .filter((d) => d.isDirectory() || /\.mdx?$/.test(d.name))
+    .sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+  const out = [];
+  for (const e of items) {
+    if (e.isDirectory()) {
+      const children = kbScan(join(dir, e.name), prefix + "/" + e.name);
+      if (children.length) out.push({ label: e.name, items: children });
+    } else if (e.name !== "index.md" && e.name !== "index.mdx") {
+      out.push({ slug: prefix + "/" + kbSlugify(e.name) });
+    }
+  }
+  return out;
+}
+
+const kbSidebar = [
+  { label: "知识库", items: [{ label: "知识库首页", link: "/kb/" }, ...kbScan(__kbDir, "kb")] },
+];
+```
+
+之后在 `考研/` 下新增 `第N章-xxx.md`，**构建时侧边栏自动出现**，不用碰配置文件。`index.md` 被过滤（只作文件夹首页，不进侧边栏）。
+
+##### 4. 样式对齐博客主题
+
+Starlight 默认蓝色主题，本站用 `src/styles/starlight.css` 把它改成博客的青绿主题色，并让明暗模式联动：
+
+```css
+/* src/styles/starlight.css（本站实际使用） */
+:root[data-theme="light"] {
+  --sl-color-accent-high: #0f766e;
+  --sl-color-accent: #0d9488;
+  --sl-color-accent-low: #ccfbf1;
+}
+:root[data-theme="dark"] {
+  --sl-color-accent-high: #5eead4;
+  --sl-color-accent: #2dd4bf;
+  --sl-color-accent-low: #134e4a;
+}
+```
+
+**明暗联动**：博客主题切换存在 `localStorage.theme`，Starlight 存在 `starlight-theme`。`astro.config.mjs` 的 starlight `head` 里加了一段同步脚本（见上面第 1 节配置注释处的完整配置），两边切换互相跟随，不会出现"博客暗色、知识库亮色"的割裂。
+
+##### 5. 顶栏"返回"链接
+
+Starlight 顶栏右侧默认放社交图标，本站自定义了 `src/components/starlight/SocialIcons.astro`，把图标换成**文字"返回"**，点击直接回博客首页——知识库是从博客点进来的，给一个明确的回去入口：
+
+```astro
+---
+// src/components/starlight/SocialIcons.astro（本站实际使用）
+import config from "virtual:starlight/user-config";
+const links = config.social || [];
+---
+{
+  links.length > 0 && (
+    <>
+      {links.map(({ label, href }) => (
+        <a href={href} class="return-link">{label}</a>
+      ))}
+    </>
+  )
+}
+<style>
+  .return-link {
+    color: var(--sl-color-text-accent);
+    padding: 0.5em;
+    margin: -0.5em;
+    font-size: var(--sl-text-sm);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+</style>
+```
+
+##### 6. 小细节
+
+- **标题锚点**：Starlight 给每个标题自动加 `#` 锚点图标，用 CSS 隐藏（保留锚点定位功能）：
+  ```css
+  .sl-markdown-content .anchor { display: none; }
+  ```
+- **Obsidian 编辑**：知识库的 md 也可以直接用 Obsidian 打开编辑（`src/content/docs/kb/.obsidian/` 是 Obsidian 配置，已 gitignore 不入库），本地写完 push 即更新；
+- **部署**：`/kb/` 和博客一起构建、一起被 GitHub Actions / Cloudflare Pages 部署，不需要额外配置。
+
+#### 十一、AI 问答接入（可选扩展）
 
 本站右下角的 **✦ 悬浮按钮**就是 AI 问答：点开后可以像聊天一样问问题，系统会把当前页面的知识库内容一起带给大模型，回答贴合本站内容。整个功能**免费额度内不花钱**，用的模型是火山方舟（豆包）的 **Doubao-Seed-2.0-Code**。
 
@@ -503,8 +660,6 @@ Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项
 ##### 2. 创建 API Key
 
 控制台左侧 **API Key 管理** → **创建 API Key**，起个名字（如 `blog-ai`），创建后**只显示一次，马上复制保存**：
-
-![火山方舟 API Key 管理页](/assets/blog-migrate/ark-apikey.png)
 
 > API Key 相当于账号钥匙，**不要提交到代码仓库**（本教程把它放在 CF 环境变量里，见第 5 节）。
 
@@ -645,7 +800,7 @@ curl -X POST https://my-firefly-blog.pages.dev/api/chat ^
 
 浏览器打开 `https://my-firefly-blog.pages.dev`，点右下角 ✦ 按钮即可聊天。**注意 GitHub Pages 站没有 Functions 后端，AI 按钮自动隐藏**（前端已按域名判断）。
 
-#### 十一、发布博客和更新博客命令
+#### 十二、发布博客和更新博客命令
 
 
 - **本地预览**：`pnpm dev`（默认 http://localhost:4321）；
@@ -667,7 +822,7 @@ $env:CLOUDFLARE_ACCOUNT_ID = "9df1e93b29898adab711c0958d7bccec"
 npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
 ```
 
-#### 十二、总结
+#### 十三、总结
 
 这次迁移的核心经验：
 

@@ -1,0 +1,56 @@
+// Cloudflare Pages Function：AI 问答代理（隐藏 API Key）
+export async function onRequestPost(context) {
+  const { question, context: ctx } = await context.request.json().catch(() => ({}));
+  if (!question || typeof question !== "string") {
+    return json({ error: "缺少问题" }, 400);
+  }
+  const API_KEY = context.env.ARK_API_KEY;
+  if (!API_KEY) {
+    return json({ error: "服务未配置（缺少 ARK_API_KEY）" }, 500);
+  }
+  const MODEL = context.env.ARK_MODEL || "doubao-seed-2-0-code-preview-260215";
+  const system =
+    "你是一个考研学习助手，根据提供的知识库内容回答用户问题。" +
+    "如果知识库内容不足以回答，可以结合你的知识补充，并说明哪些来自知识库。回答简洁、条理清晰，使用中文。";
+  const user =
+    (ctx && typeof ctx === "string" && ctx.trim()
+      ? `以下是知识库相关章节的内容（供参考）：\n\n${ctx.slice(0, 6000)}\n\n`
+      : "") + `用户问题：${question}`;
+  try {
+    const resp = await fetch("https://ark.cn-beijing.volces.com/api/v3/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user },
+        ],
+        max_tokens: 1500,
+        temperature: 0.6,
+      }),
+    });
+    if (!resp.ok) {
+      const t = (await resp.text()).slice(0, 300);
+      return json({ error: `上游接口错误 ${resp.status}: ${t}` }, 502);
+    }
+    const data = await resp.json();
+    const answer = data?.choices?.[0]?.message?.content;
+    if (!answer) {
+      return json({ error: "AI 未返回内容" }, 502);
+    }
+    return json({ answer });
+  } catch (e) {
+    return json({ error: `请求失败: ${String(e)}` }, 500);
+  }
+}
+
+function json(obj, status) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
+}

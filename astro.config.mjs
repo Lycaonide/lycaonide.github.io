@@ -330,6 +330,10 @@ export default defineConfig({
 			},
 			customCss: ["./src/styles/starlight.css"],
 			head: [
+			{
+				tag: "script",
+				attrs: { src: "/ai-chat.js" },
+			},
 				{
 					tag: "script",
 					content:

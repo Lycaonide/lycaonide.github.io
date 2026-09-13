@@ -49,3 +49,5 @@ package/
 .mimocode
 
 src/content/docs/kb/.obsidian/
+.dev.vars
+.wrangler/

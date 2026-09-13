@@ -876,7 +876,64 @@ $env:CLOUDFLARE_ACCOUNT_ID = "9df1e93b29898adab711c0958d7bccec"
 npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
 ```
 
-#### 十三、总结
+#### 十三、文章最后编辑时间
+
+文章页现在会显示两个时间：**发布时间**（标题下方）和**"最后更新于"**（文章底部的卡片）——超过 30 天没更新的文章还会追加"部分内容可能已过时"提醒。
+
+![文章页底部：作者、发布于、许可协议、最后更新于](/assets/blog-migrate/updated-card.png)
+
+这个"最后更新"时间怎么维护？对比过几种方案：
+
+| 方案 | 原理 | 优点 | 缺点 |
+| --- | --- | --- | --- |
+| **A. 手动写 `updated`** | 每篇 frontmatter 手写 `updated: 2026-09-14` | 零成本、完全可控 | 容易忘——只改内容不写字段，页面就"假装没更新" |
+| **B. pre-commit 钩子自动补**（本站采用） | 提交时检测本次改动的文章，自动补 `updated: 今天` | 全自动、不用记、即时生效 | 钩子在本地 `.git/hooks`，换机器/重克隆后要重装一次 |
+| **C. GitHub Actions 自动提交** | CI 检测文章改动并自动提交回仓库 | 跨机器统一 | 需要 CI 写仓库权限、可能触发循环构建、有几分钟延迟 |
+| **D. 构建时读 git log** | 构建时用 `git log` 查每篇最后修改时间 | 完全自动、不用字段 | 线上 Pages 是静态产物没有 git 信息；本地构建还要依赖 git 命令 |
+
+结论：**B 最省心**——文章更新流程完全不变（改完 `git add` + `git commit`），钩子悄悄把时间补上，不需要任何额外记忆。
+
+##### 1. 主题原生支持
+
+主题的 `content.config.ts` 本身就定义了可选的 `updated` 字段，`PostMeta.astro` 在 `updated` 存在且不等于 `published` 时自动显示"最后更新于"。所以**不用改渲染代码**，只给文章加字段就行（我只把底部卡片的显示逻辑从"30 天以上才显示"改成"始终显示"，旧文章超 30 天未更新才追加过时提醒）。
+
+##### 2. 提交钩子（`.git/hooks/pre-commit`）
+
+```bash
+#!/bin/sh
+command -v node >/dev/null 2>&1 || exit 0
+SCRIPT_DIR="$(cd "$(dirname "$0")/../../scripts" && pwd)" || exit 0
+node "$SCRIPT_DIR/auto-updated.mjs" >/dev/null 2>&1
+exit 0
+```
+
+##### 3. 自动补日期脚本（`scripts/auto-updated.mjs`）
+
+核心就三步：取本次提交的文章 → 补 `updated: 今天` → 重新暂存。
+
+```js
+// 1. 取出本次 staged 的博客文章（-z 处理中文/空格文件名）
+const out = execSync(
+  'git -c core.quotepath=false diff --cached --name-only -z -- "src/content/posts"',
+  { cwd: root, encoding: "utf8" },
+);
+files = out.split("\0").filter(f => f.endsWith(".md"));
+
+// 2. 逐篇补 updated: 今天（已有且是今天则跳过）
+if (/^updated:/m.test(s)) {
+  s = s.replace(/^updated:.*$/m, `updated: ${today}`);
+} else {
+  s = s.replace(/^(published:.*)$/m, `$1\nupdated: ${today}`);
+}
+
+// 3. 重新 git add 改过的文件，让提交带上新字段
+execSync(`git add -- ${changed.map(f => `"${f}"`).join(" ")}`);
+```
+
+##### 4. 以后怎么用
+
+改完文章 → `git add` → `git commit`，钩子自动补 `updated: 当天`，push 后文章页自动显示新的编辑时间，**不用手动写任何字段**。
+#### 十四、总结
 
 这次迁移的核心经验：
 

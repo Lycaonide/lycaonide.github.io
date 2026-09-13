@@ -2,6 +2,7 @@
 draft: false
 title: 学习用Hexo写博客修改版
 published: 2026-03-25
+updated: 2026-09-14
 tags: [Hexo, 博客]
 category: 技术笔记
 ---

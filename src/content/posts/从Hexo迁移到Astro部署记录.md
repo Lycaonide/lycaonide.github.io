@@ -154,7 +154,7 @@ await writeFile(outFile, subset);
 // src/config/decorationConfig.ts
 export const decorationConfig = {
   sakura: true,   // 樱花飘落
-  live2d: true,   // 看板娘
+  live2d: false,  // 看板娘（已移除，保留配置项）
   waves: true,    // 背景水波纹
   card3d: true,   // 卡片立体感
 };
@@ -192,6 +192,8 @@ export const commentConfig = {
   loading: "lazy",
 };
 ```
+
+> 注意：上面 `repoId`、`categoryId` 是**本站的值**，照着做时去 [giscus.app](https://giscus.app) 填自己的仓库，页面会自动生成你仓库对应的 repoId / categoryId / mapping，替换进去即可（填错评论不会加载）。
 
 > 补充：分类我选了 **Announcements**（公告分类），可以防止陌生人随意开新讨论刷屏。GitHub Discussions 的分类主要有这几个：
 
@@ -679,7 +681,9 @@ const links = config.social || [];
 pnpm dev
 ```
 
-浏览器打开 `https://my-firefly-blog.pages.dev/kb/`（部署后线上验证，本地预览用 `http://localhost:4321/kb/`）：左侧目录树（知识库 → 考研 → 四科 → 26 章）、每页 TOC、暗色模式都正常。以后写笔记：`src/content/docs/kb/考研/操作系统/` 里新建 `第6章-xxx.md` → `git push` → 侧边栏自动多出一节，不用改任何配置。
+浏览器打开 `https://my-firefly-blog.pages.dev/kb/`（部署后线上验证，本地预览用 `http://localhost:4321/kb/`）：左侧目录树（知识库 → 考研 → 四科 → 26 章）、每页 TOC、暗色模式都正常。
+
+![知识库左侧目录树：知识库 → 考研 → 四科 26 章](/assets/blog-migrate/kb-sidebar.png)以后写笔记：`src/content/docs/kb/考研/操作系统/` 里新建 `第6章-xxx.md` → `git push` → 侧边栏自动多出一节，不用改任何配置。
 
 #### 十一、AI 问答接入（可选扩展）
 
@@ -723,7 +727,7 @@ export async function onRequestPost(context) {
   }
   const MODEL = context.env.ARK_MODEL || "doubao-seed-2-0-code-preview-260215";
   const system =
-    "你是一个考研学习助手，根据提供的知识库内容回答用户问题。" +
+    "你是本站的 AI 问答助手，根据提供的知识库内容回答用户问题。" +
     "如果知识库内容不足以回答，可以结合你的知识补充，并说明哪些来自知识库。回答简洁、条理清晰，使用中文。";
   const user =
     (ctx && typeof ctx === "string" && ctx.trim()

@@ -42,7 +42,10 @@ export async function onRequestPost(context) {
     if (!answer) {
       return json({ error: "AI 未返回内容" }, 502);
     }
-    return json({ answer });
+    const usage = data?.usage
+      ? { prompt: data.usage.prompt_tokens ?? 0, completion: data.usage.completion_tokens ?? 0, total: data.usage.total_tokens ?? 0 }
+      : null;
+    return json({ answer, usage });
   } catch (e) {
     return json({ error: `请求失败: ${String(e)}` }, 500);
   }

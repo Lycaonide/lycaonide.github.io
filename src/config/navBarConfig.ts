@@ -53,7 +53,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 	// 竞赛文档（Starlight）
 	links.push({
 		name: "知识库",
-		url: "/知识库/",
+		url: "/kb/",
 		icon: "material-symbols:menu-book",
 	});
 

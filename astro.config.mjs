@@ -141,8 +141,8 @@ export default defineConfig({
 			updateHead: true,
 			updateBodyClass: false,
 			globalInstance: true,
-			// /知识库 是 Starlight 独立布局，不走 swup 无刷新过渡
-			ignore: [/^\/知识库/],
+			// /kb 是 Starlight 独立布局，不走 swup 无刷新过渡
+			ignore: [/^\/kb/],
 			// 滚动相关配置优化
 			resolveUrl: (url) => url,
 			animateHistoryBrowsing: false,

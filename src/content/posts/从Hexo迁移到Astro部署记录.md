@@ -485,64 +485,118 @@ Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项
 
 #### 十、知识库（Starlight）
 
-本站的考研资料挂在 **/kb/** 路径，用的是 Astro 官方文档站方案 **Starlight**：自动侧边栏、目录 TOC、代码高亮、暗色模式全自带，写 Markdown 就能维护。
+博客的文章是"一篇一篇"的，但考研笔记这种**按科目、按章节**整理的内容，文章流明显不合适：笔记要看的是"树状目录 → 章节导航"，不是一篇篇文章卡片。所以在这个仓库里加了一个 **Starlight** 文档区（Astro 官方的文档站集成），导航名显示"知识库"，URL 用短路径 **`/kb/`**，和博客**同一个仓库、同一次构建、同一个域名**：
 
-**为什么用 Starlight：**
+- 博客：`/`（Firefly 主题，文章、首页、友链等）
+- 知识库：`/kb/`（Starlight 文档站，考研四科笔记）
 
-- **自动侧边栏**：按文件夹层级生成，新建一个 md 自动出现在侧边栏，不用手写导航；
-- **文档体验完整**：页面内目录、代码块复制、移动端适配都是内置的，不用自己写；
-- **和博客同框架**：同一个 Astro 项目、同一次构建、同一套部署，域名和博客共用。
+##### 1. 为什么用 Starlight（实际选型过程）
 
-##### 1. 安装与配置
+一开始犹豫过"手写侧边栏方案"（在博客主题里自己写一个文档区 + 侧边栏组件）。对比后放弃了，理由很实际：
 
-用 pnpm 安装，然后在 `astro.config.mjs` 的 `integrations` 里加 starlight：
+| 方案 | 问题 |
+| --- | --- |
+| 手写侧边栏（astro-content-sidebar 类方案） | 要自己处理**文件夹嵌套、排序、分组、折叠**逻辑，还要写递归渲染组件；笔记一多层级变深，样式和交互的坑一个接一个 |
+| **Starlight** ✅ | Astro 官方文档站集成，**自动侧边栏、页面内 TOC、代码高亮、暗色模式、移动端适配、代码块复制**全套自带，写 Markdown 就能维护 |
 
-```bash
+当时的内容量摆在那：**408 四科、26 章**（下面第 3 节），手写导航的维护成本不值得。
+
+也对比过"**单独建一个文档站**"（另一个仓库/域名）：不选的理由是——同仓库子路由一次构建、一个域名、一套部署，而且 **Pagefind 搜索是整个 dist 一起扫的**，博客文章和知识库笔记能在同一个搜索框里搜到，不用两套搜索。这个对笔记型内容很有用（搜"进程调度"能同时命中博客文章和知识库章节）。
+
+##### 2. 安装与接入
+
+```powershell
 pnpm add @astrojs/starlight
 ```
+
+在 `astro.config.mjs` 的 `integrations` 里加 starlight：
 
 ```js
 // astro.config.mjs（starlight 部分，本站实际配置）
 starlight({
-  title: "知识库",                              // 导航名显示"知识库"，URL 用 /kb/
+  title: "知识库",                              // 导航名显示"知识库"
   disable404Route: true,
-  sidebar: kbSidebar,                           // 动态侧边栏，见第 3 节
+  sidebar: kbSidebar,                           // 动态侧边栏，见第 5 节
   social: [{ icon: "external", label: "返回", href: "/" }],   // 顶栏"返回"回博客首页
   components: {
     SocialIcons: "./src/components/starlight/SocialIcons.astro",  // 把图标换成文字"返回"
   },
-  customCss: ["./src/styles/starlight.css"],    // 样式对齐博客主题色，见第 4 节
+  customCss: ["./src/styles/starlight.css"],    // 样式对齐博客主题色，见第 6 节
   head: [
-    // AI 问答脚本（第十一章），必须 is:inline
+    // AI 问答脚本（第十一章），必须 is:inline，知识库页也有 AI 按钮
     { tag: "script", attrs: { src: "/ai-chat.js", is: "inline" } },
   ],
 }),
 ```
 
-##### 2. 内容目录结构
+> **导航名和 URL 为什么分开**：`title` 显示"知识库"，但访问路径是 `/kb/`——短路径好记、输入方便，导航名和 URL 互不绑定，改名字不用动链接。
 
-知识库内容放在 `src/content/docs/` 下，按"知识库 → 考研 → 科目 → 章节"建文件夹：
+##### 3. 内容目录：四科 26 章（按王道教材建）
+
+知识库内容在 `src/content/docs/`，按"知识库 → 考研 → 科目 → 章节"建文件夹。四科章节目录**按王道《408 考研复习指导》的章节建**：
 
 ```text
 src/content/docs/kb/
-├── index.md                # 知识库首页
+├── index.md                    # 知识库首页
 └── 考研/
-    ├── index.md
-    ├── 操作系统/            # 科目一
-    │   ├── index.md
+    ├── index.md                # 考研分区页
+    ├── 操作系统/               # 5 章
     │   ├── 第1章-计算机系统概述.md
     │   ├── 第2章-进程与线程.md
-    │   └── ……
-    ├── 计算机网络/          # 科目二
-    ├── 计算机组成原理/      # 科目三
-    └── 数据结构/            # 科目四
+    │   ├── 第3章-内存管理.md
+    │   ├── 第4章-文件管理.md
+    │   └── 第5章-输入输出（IO）管理.md
+    ├── 数据结构/               # 8 章
+    │   ├── 第1章-绪论.md
+    │   ├── 第2章-线性表.md
+    │   ├── 第3章-栈、队列和数组.md
+    │   ├── 第4章-串.md
+    │   ├── 第5章-树与二叉树.md
+    │   ├── 第6章-图.md
+    │   ├── 第7章-查找.md
+    │   └── 第8章-排序.md
+    ├── 计算机网络/             # 6 章
+    │   ├── 第1章-计算机网络体系结构.md
+    │   ├── 第2章-物理层.md
+    │   ├── 第3章-数据链路层.md
+    │   ├── 第4章-网络层.md
+    │   ├── 第5章-传输层.md
+    │   └── 第6章-应用层.md
+    └── 计算机组成原理/         # 7 章
+        ├── 第1章-计算机系统概述.md
+        ├── 第2章-数据的表示和运算.md
+        ├── 第3章-存储系统.md
+        ├── 第4章-指令系统.md
+        ├── 第5章-中央处理器.md
+        ├── 第6章-总线.md
+        └── 第7章-输入输出系统.md
 ```
 
-每个科目一个文件夹 + `index.md`，每章一个 md 文件，Starlight 会自动按层级生成侧边栏。
+##### 4. 每章建一个子页
 
-##### 3. 动态侧边栏（加新章不用改配置）
+每个科目一个文件夹 + `index.md`，每章一个 md 文件。科目首页 `index.md` 里写章节目录链接（方便从科目页点进章节），章节页是独立的 `第N章-xxx.md`，Starlight 自动按层级生成侧边栏。
 
-Starlight 默认 `sidebar` 要手写条目，加一章改一次很烦。本站写了个**构建时扫描函数**：读 `src/content/docs/kb` 目录，自动生成侧边栏结构：
+```markdown
+<!-- src/content/docs/kb/考研/操作系统/index.md -->
+---
+title: 操作系统
+description: Operating System - 进程/内存/文件/设备管理，配合王道考研
+sidebar:
+  hidden: true
+---
+
+> 这里放 操作系统 的复习笔记，按章节组织。
+## 章节目录（王道考研复习指导）
+- [第1章 计算机系统概述](第1章-计算机系统概述/)
+- [第2章 进程与线程](第2章-进程与线程/)
+- ……
+```
+
+`sidebar: hidden: true` 让科目首页不在侧边栏重复出现（侧边栏只展示章节），章节目录由用户点进科目页看。
+
+##### 5. 动态侧边栏（加新章不用改配置）
+
+Starlight 默认 `sidebar` 要手写条目，加一章改一次很烦。本站写了个**构建时扫描函数**：读 `src/content/docs/kb` 目录，自动生成侧边栏结构——**以后加新章节、新科目，只要把 md 丢进文件夹就行，不用碰 astro.config.mjs**：
 
 ```js
 // astro.config.mjs 顶部（本站实际使用）
@@ -578,11 +632,11 @@ const kbSidebar = [
 ];
 ```
 
-之后在 `考研/` 下新增 `第N章-xxx.md`，**构建时侧边栏自动出现**，不用碰配置文件。`index.md` 被过滤（只作文件夹首页，不进侧边栏）。
+之后在 `考研/` 下新增 `第N章-xxx.md`，**构建时侧边栏自动出现**。`index.md` 被过滤（只作文件夹首页，不进侧边栏）。
 
-##### 4. 样式对齐博客主题
+##### 6. 样式对齐博客主题 + 明暗联动
 
-Starlight 默认蓝色主题，本站用 `src/styles/starlight.css` 把它改成博客的青绿主题色，并让明暗模式联动：
+Starlight 默认是蓝色主题，放在博客里很突兀。用 `src/styles/starlight.css` 改成博客的青绿主题色（teal，和 Firefly 的 primary 一致）：
 
 ```css
 /* src/styles/starlight.css（本站实际使用） */
@@ -598,9 +652,9 @@ Starlight 默认蓝色主题，本站用 `src/styles/starlight.css` 把它改成
 }
 ```
 
-**明暗联动**：博客主题切换存在 `localStorage.theme`，Starlight 存在 `starlight-theme`。`astro.config.mjs` 的 starlight `head` 里加了一段同步脚本（见上面第 1 节配置注释处的完整配置），两边切换互相跟随，不会出现"博客暗色、知识库亮色"的割裂。
+**明暗联动**：博客主题切换存在 `localStorage.theme`，Starlight 存在 `starlight-theme`，两边互不相通会割裂。`astro.config.mjs` 的 starlight `head` 里加了一段同步脚本（第 2 节配置里有），本地存储变化互相转发——**在博客切暗色，知识库跟着变**，反之亦然。
 
-##### 5. 顶栏"返回"链接
+##### 7. 顶栏"返回"链接
 
 Starlight 顶栏右侧默认放社交图标，本站自定义了 `src/components/starlight/SocialIcons.astro`，把图标换成**文字"返回"**，点击直接回博客首页——知识库是从博客点进来的，给一个明确的回去入口：
 
@@ -631,14 +685,29 @@ const links = config.social || [];
 </style>
 ```
 
-##### 6. 小细节
+##### 8. 踩坑记录（实际修过的问题）
 
-- **标题锚点**：Starlight 给每个标题自动加 `#` 锚点图标，用 CSS 隐藏（保留锚点定位功能）：
+- **标题锚点图标**：Starlight 给每个标题自动加 `#` 锚点图标（点击可定位），博客文章也有一份。看起来"标题后面跟一个 # 加一个链接符号"，实际是自动生成的锚点。用 CSS 隐藏图标、保留锚点定位功能：
   ```css
   .sl-markdown-content .anchor { display: none; }
   ```
-- **Obsidian 编辑**：知识库的 md 也可以直接用 Obsidian 打开编辑（`src/content/docs/kb/.obsidian/` 是 Obsidian 配置，已 gitignore 不入库），本地写完 push 即更新；
-- **部署**：`/kb/` 和博客一起构建、一起被 GitHub Actions / Cloudflare Pages 部署，不需要额外配置。
+- **标题重复**：科目/章节页如果 markdown 里再写一遍大标题，会和 Starlight 自动渲染的页面标题重复，看起来"内容把标题重复了一遍"。解决：md 里不重复写 `#` 一级标题，正文直接从 `>` 引言开始（如第 3 节的 index.md 写法）。
+- **Swup 无刷新冲突**：博客用了 Swup 无刷新跳转，但 `/kb` 是 Starlight 独立布局，走 Swup 会样式错乱。在 swup 配置里排除：`ignore: [/^\/kb/]`。
+- **AI 脚本注入**：知识库页要显示 AI 按钮，脚本在 starlight `head` 里注入**必须 `is: inline`**（否则 Astro 构建时丢弃引用），和博客布局里同一份 `ai-chat.js`。
+
+##### 9. Obsidian 编辑 + AI 联动 + 部署
+
+- **Obsidian 编辑**：`src/content/docs/kb/` 就是一个普通 Markdown 文件夹，直接用 **Obsidian** 打开就能编辑（双链、大纲都支持）。本地的 `.obsidian/` 配置目录已 gitignore，不会进仓库；写完 `git push` 自动部署上线。
+- **AI 联动**：知识库页面同样有右下角 AI 问答按钮（第 11 章），提问时会把当前章节的正文作为上下文带给大模型——**对着笔记章节直接问"这一章的重点是什么"**。
+- **部署**：`/kb/` 和博客一起构建、一起被 GitHub Actions / Cloudflare Pages 部署，**不需要额外配置**。
+
+##### 10. 验证
+
+```powershell
+pnpm dev
+```
+
+浏览器打开 `http://localhost:4321/kb/`：左侧目录树（知识库 → 考研 → 四科 → 26 章）、每页 TOC、暗色模式都正常。以后写笔记：`src/content/docs/kb/考研/操作系统/` 里新建 `第6章-xxx.md` → `git push` → 侧边栏自动多出一节，不用改任何配置。
 
 #### 十一、AI 问答接入（可选扩展）
 

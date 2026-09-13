@@ -660,20 +660,20 @@ const seriesData = await getSeriesPosts(entry);
       );
       const threshold = Number(card.dataset.threshold);
 
-      // 如果超過閾值，就顯示卡片與提示文字
+      // 有日期就显示"最后更新"卡片；超过阈值才追加过时警告
+      card.classList.remove('hidden');
+
+      if (daysDiff >= 1) {
+        const textEl = document.getElementById('days-ago-text');
+        if (textEl && textEl.dataset.template) {
+          textEl.textContent = `，${textEl.dataset.template.replace("{days}", daysDiff.toString())}`;
+        }
+      }
+
       if (daysDiff >= threshold) {
-        card.classList.remove('hidden');
-
-        if (daysDiff >= 1) {
-          const textEl = document.getElementById('days-ago-text');
-          if (textEl && textEl.dataset.template) {
-            textEl.textContent = `，${textEl.dataset.template.replace("{days}", daysDiff.toString())}`;
-          }
-
-          const warningEl = document.getElementById('outdated-warning');
-          if (warningEl) {
-            warningEl.classList.remove('hidden');
-          }
+        const warningEl = document.getElementById('outdated-warning');
+        if (warningEl) {
+          warningEl.classList.remove('hidden');
         }
       }
     }

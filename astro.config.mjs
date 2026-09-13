@@ -332,11 +332,10 @@ export default defineConfig({
 			head: [
 			{
 				tag: "script",
-				attrs: { src: "/ai-chat.js", is: "inline" },
-			},
-				{
-					tag: "script",
-					content:
+				attrs: { src: "/ai-chat.js", is: "inline" }},
+			{
+				tag: "script",
+				content:
 						"(function(){var K='theme',S='starlight-theme',c=function(v){return v==='dark'||v==='light'?v:null};try{var b=c(localStorage.getItem(K));if(b)localStorage.setItem(S,b)}catch(e){}window.addEventListener('storage',function(e){try{if(e.key===K){var v=c(e.newValue);if(v)localStorage.setItem(S,v)}if(e.key===S){var v2=c(e.newValue);if(v2)localStorage.setItem(K,v2)}}catch(_){}});})();",
 				},
 			],

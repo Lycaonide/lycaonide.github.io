@@ -154,7 +154,6 @@ await writeFile(outFile, subset);
 // src/config/decorationConfig.ts
 export const decorationConfig = {
   sakura: true,   // 樱花飘落
-  live2d: false,  // 看板娘（已移除，保留配置项）
   waves: true,    // 背景水波纹
   card3d: true,   // 卡片立体感
 };

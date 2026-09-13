@@ -594,30 +594,6 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
     <!-- GitHub 卡片客户端实时补全（forks/stars） -->
     <GithubCardManager />
 
-  <!-- Live2D 看板娘（本地脚本 + jsdelivr 模型） -->
-  <script is:inline src="/lib/oml2d.js"></script>
-  <script is:inline>
-    (function () {
-      try {
-        if (typeof OML2D === "undefined") { console.error("OML2D 加载失败"); return; }
-        window.addEventListener("load", function () {
-          OML2D.loadOml2d({
-            models: [
-              { path: "https://cdn.jsdelivr.net/gh/Live2D/CubismWebSamples@develop/Samples/Resources/Hiyori/Hiyori.model3.json", position: [0, 30], stageStyle: { height: 320 } },
-              { path: "https://cdn.jsdelivr.net/gh/Live2D/CubismWebSamples@develop/Samples/Resources/Haru/Haru.model3.json", position: [0, 30], stageStyle: { height: 320 } },
-            ],
-            menus: {
-              items: [
-                { id: "Rest", icon: "icon-rest", title: "休息", onClick(i) { i.stageSlideOut(); } },
-                { id: "SwitchModelClothes", icon: "icon-skin", title: "切换衣服", onClick(i) { i.loadNextModelClothes(); } },
-                { id: "SwitchModel", icon: "icon-switch", title: "切换模型", onClick(i) { i.loadNextModel(); } },
-              ],
-            },
-          });
-        });
-      } catch (e) { console.error("看板娘初始化失败:", e); }
-    })();
-  </script>
   </body>
 </html>
 

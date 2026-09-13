@@ -6,8 +6,6 @@
 export const decorationConfig = {
 	// 樱花飘落特效
 	sakura: true,
-	// Live2D 看板娘（左下角，桌面端显示，移动端自动隐藏）
-	live2d: false,
 	// 底部水波纹动画
 	waves: true,
 	// 卡片立体感（边框 + 阴影 + 跟随主题色）

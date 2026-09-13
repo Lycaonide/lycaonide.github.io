@@ -141,8 +141,8 @@ export default defineConfig({
 			updateHead: true,
 			updateBodyClass: false,
 			globalInstance: true,
-			// /docs 是 Starlight 独立布局，不走 swup 无刷新过渡
-			ignore: [/^\/docs/],
+			// /考研 是 Starlight 独立布局，不走 swup 无刷新过渡
+			ignore: [/^\/考研/],
 			// 滚动相关配置优化
 			resolveUrl: (url) => url,
 			animateHistoryBrowsing: false,
@@ -290,7 +290,7 @@ export default defineConfig({
 		}),
 		mdx(),
 		starlight({
-			title: "竞赛文档",
+			title: "考研",
 			disable404Route: true,
 			// 顶栏右侧链接回博客
 			social: [{ icon: "external", label: "博客", href: "/" }],

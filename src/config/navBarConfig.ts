@@ -52,8 +52,8 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 
 	// 竞赛文档（Starlight）
 	links.push({
-		name: "竞赛文档",
-		url: "/docs/",
+		name: "考研",
+		url: "/考研/",
 		icon: "material-symbols:menu-book",
 	});
 

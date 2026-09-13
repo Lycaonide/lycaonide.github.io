@@ -610,76 +610,7 @@ const seriesData = await getSeriesPosts(entry);
     </div>
   </div>
 
-  <!-- 上次编辑时间 -->
-  {
-    siteConfig.post.showLastModified && (() => {
-      const lastModified = dayjs(entry.data.updated || entry.data.published);
-      const dateStr = lastModified.format("YYYY-MM-DD");
-      const outdatedThreshold = siteConfig.post.outdatedThreshold ?? 1;
-
-      // 1. 預設加上 hidden 隱藏，並把時間與閾值綁在 data-* 屬性
-      return (
-        <div 
-          id="outdated-card" 
-          class="card-base p-6 mb-4 hidden" 
-          data-date={lastModified.toISOString()} 
-          data-threshold={outdatedThreshold}
-        >
-          <div class="flex items-center gap-2">
-            <div class="transition h-9 w-9 rounded-lg overflow-hidden relative flex items-center justify-center mr-0">
-              <Icon
-                name="material-symbols:history-rounded"
-                class="text-4xl text-(--primary) transition-transform group-hover:translate-x-0.5 bg-(--enter-btn-bg) p-2 rounded-md"
-              />
-            </div>
-
-            <div class="flex flex-col gap-0.1">
-              <div class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75">
-                {i18n(I18nKey.lastModifiedPrefix)}{dateStr}
-                <span id="days-ago-text" data-template={i18n(I18nKey.lastModifiedDaysAgo)}></span>
-              </div>
-              <p id="outdated-warning" class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75 hidden">
-                {i18n(I18nKey.lastModifiedOutdated)}
-              </p>
-            </div>
-          </div>
-        </div>
-      );
-    })()
-  }
-
-  <script>
-    const card = document.getElementById('outdated-card');
-    const dateStr = card?.dataset.date;
-
-    if (card && dateStr) {
-      // 讀取伺服器給的日期，用原生 Date 算出差異天數（避免向客戶端打包整個 dayjs）
-      const lastModified = new Date(dateStr);
-      const daysDiff = Math.floor(
-        (Date.now() - lastModified.getTime()) / 86400000,
-      );
-      const threshold = Number(card.dataset.threshold);
-
-      // 有日期就显示"最后更新"卡片；超过阈值才追加过时警告
-      card.classList.remove('hidden');
-
-      if (daysDiff >= 1) {
-        const textEl = document.getElementById('days-ago-text');
-        if (textEl && textEl.dataset.template) {
-          textEl.textContent = `，${textEl.dataset.template.replace("{days}", daysDiff.toString())}`;
-        }
-      }
-
-      if (daysDiff >= threshold) {
-        const warningEl = document.getElementById('outdated-warning');
-        if (warningEl) {
-          warningEl.classList.remove('hidden');
-        }
-      }
-    }
-  </script>
-
-  {
+    {
     siteConfig.post.postNavigation && (
       <div
         class="flex flex-col md:flex-row justify-between mb-4 gap-4 overflow-hidden w-full"

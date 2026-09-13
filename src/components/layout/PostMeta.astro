@@ -99,8 +99,7 @@ const visibleTags =
   {
     showPublished &&
       !hideUpdateDate &&
-      updated &&
-      updated.getTime() !== published.getTime() && (
+      updated && (
         <div class="flex items-center">
           <div class="meta-icon">
             <Icon
@@ -109,7 +108,7 @@ const visibleTags =
             />
           </div>
           <span class="text-50 text-sm font-medium">
-            {formatDateToYYYYMMDD(updated)}
+            {i18n(I18nKey.lastModifiedPrefix)}{formatDateToYYYYMMDD(updated)}
           </span>
         </div>
       )

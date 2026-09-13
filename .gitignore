@@ -47,3 +47,5 @@ package/
 .codex*
 .claude
 .mimocode
+
+src/content/docs/kb/.obsidian/

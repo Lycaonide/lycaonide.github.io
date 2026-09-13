@@ -50,6 +50,7 @@
 
       .anchor-icon {
         @apply mx-[0.45ch]!;
+        display: none; /* 隐藏#图标，保留锚点跳转 */
       }
     }
 

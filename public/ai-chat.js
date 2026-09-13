@@ -1,6 +1,8 @@
 // 知识库 AI 问答组件：右下角浮动按钮 + 弹窗
 (function () {
   if (window.__aiChatLoaded) return;
+  // GitHub Pages 无 Functions 后端，仅 CF 域名启用
+  if (location.hostname === "lycaonide.github.io") return;
   window.__aiChatLoaded = true;
   function init() {
 

@@ -897,7 +897,9 @@ npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
 
 主题的 `content.config.ts` 本身就定义了可选的 `updated` 字段，`PostMeta.astro`（文章页元信息）原生支持显示"最后更新于"。默认条件比较严（`updated` 存在且不等于 `published` 才显示），我只改了两处：**只要写了 `updated` 就显示**，并且**删掉了主题在文章底部的大卡片**（避免开头结尾重复）。
 
-##### 2. 提交钩子（`.git/hooks/pre-commit`）
+##### 2. 提交钩子（已入库 `scripts/pre-commit.hook`）
+
+钩子内容（文件已放进仓库，方便换机器恢复）：
 
 ```bash
 #!/bin/sh
@@ -906,6 +908,15 @@ SCRIPT_DIR="$(cd "$(dirname "$0")/../../scripts" && pwd)" || exit 0
 node "$SCRIPT_DIR/auto-updated.mjs" >/dev/null 2>&1
 exit 0
 ```
+
+安装到本机（Git 只认 `.git/hooks/` 下的钩子文件）：
+
+```powershell
+# Windows（Git Bash 环境）
+cp scripts/pre-commit.hook .git/hooks/pre-commit
+```
+
+换机器 / 重新克隆仓库后，重新执行上面这一行即可（核心脚本 `scripts/auto-updated.mjs` 已经在仓库里）。
 
 ##### 3. 自动补日期脚本（`scripts/auto-updated.mjs`）
 
@@ -932,7 +943,12 @@ execSync(`git add -- ${changed.map(f => `"${f}"`).join(" ")}`);
 
 ##### 4. 以后怎么用
 
-改完文章 → `git add` → `git commit`，钩子自动补 `updated: 当天`，push 后文章页自动显示新的编辑时间，**不用手动写任何字段**。
+改文章 → `git add` → `git commit` → `git push`，钩子在 commit 时自动补 `updated: 当天`，push 后双站部署完，文章页自动显示新的"最后更新于"，**全程不用手动写字段**。
+
+两个注意点：
+
+- 钩子只管 `src/content/posts/` 下的博客文章，知识库笔记（`src/content/docs/`）不处理；
+- 钩子只装在本机 `.git/hooks/`，换机器 / 重克隆后按第 2 节一行命令重装即可。
 #### 十四、总结
 
 这次迁移的核心经验：

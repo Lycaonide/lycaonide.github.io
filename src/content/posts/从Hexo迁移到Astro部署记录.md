@@ -878,9 +878,9 @@ npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
 
 #### 十三、文章最后编辑时间
 
-文章页现在会显示两个时间：**发布时间**（标题下方）和**"最后更新于"**（文章底部的卡片）——超过 30 天没更新的文章还会追加"部分内容可能已过时"提醒。
+文章页现在会显示两个时间：**发布时间**和**"最后更新于"**，都显示在标题下方的元信息区（一行一个，互不干扰）。
 
-![文章页底部：作者、发布于、许可协议、最后更新于](/assets/blog-migrate/updated-card.png)
+![文章开头元信息：发布于 2026-09-14、最后更新于 2026-09-14、技术笔记](/assets/blog-migrate/updated-card.png)
 
 这个"最后更新"时间怎么维护？对比过几种方案：
 
@@ -895,7 +895,7 @@ npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
 
 ##### 1. 主题原生支持
 
-主题的 `content.config.ts` 本身就定义了可选的 `updated` 字段，`PostMeta.astro` 在 `updated` 存在且不等于 `published` 时自动显示"最后更新于"。所以**不用改渲染代码**，只给文章加字段就行（我只把底部卡片的显示逻辑从"30 天以上才显示"改成"始终显示"，旧文章超 30 天未更新才追加过时提醒）。
+主题的 `content.config.ts` 本身就定义了可选的 `updated` 字段，`PostMeta.astro`（文章页元信息）原生支持显示"最后更新于"。默认条件比较严（`updated` 存在且不等于 `published` 才显示），我只改了两处：**只要写了 `updated` 就显示**，并且**删掉了主题在文章底部的大卡片**（避免开头结尾重复）。
 
 ##### 2. 提交钩子（`.git/hooks/pre-commit`）
 

@@ -1,5 +1,5 @@
 ---
-title: 知识库
+title: 知识库首页
 description: 我的知识库 - 考研 / 学习笔记
 ---
 

@@ -1,6 +1,8 @@
 ﻿---
 title: 考研
 description: 竞赛笔记与文档
+sidebar:
+  hidden: true
 ---
 
 这里是 408 考研知识库，四科笔记按章节整理。

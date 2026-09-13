@@ -1,6 +1,8 @@
 ---
 title: 计算机网络
 description: Computer Network - 体系结构/TCP-IP/应用层/传输层/网络层，配合王道考研
+sidebar:
+  hidden: true
 ---
 
 # 计算机网络

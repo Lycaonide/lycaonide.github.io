@@ -1,0 +1,30 @@
+---
+// 自定义 SocialIcons：把顶栏外链图标改为文字链接（回博客首页）
+import config from "virtual:starlight/user-config";
+const links = config.social || [];
+---
+
+{
+	links.length > 0 && (
+		<>
+			{links.map(({ label, href }) => (
+				<a href={href} class="return-link">{label}</a>
+			))}
+		</>
+	)
+}
+
+<style>
+	.return-link {
+		color: var(--sl-color-text-accent);
+		padding: 0.5em;
+		margin: -0.5em;
+		font-size: var(--sl-text-sm);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.return-link:hover,
+	.return-link:focus {
+		color: var(--sl-color-white);
+	}
+</style>

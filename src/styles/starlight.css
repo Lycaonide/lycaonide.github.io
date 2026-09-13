@@ -18,3 +18,8 @@
 	--sl-color-accent: #2dd4bf;
 	--sl-color-accent-low: #134e4a;
 }
+
+/* 隐藏标题锚点 # 图标（保留锚点定位功能） */
+.sl-markdown-content .anchor-icon {
+	display: none;
+}

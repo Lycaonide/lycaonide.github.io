@@ -18,11 +18,13 @@
     ".ai-msg.user{align-self:flex-end;background:var(--sl-color-accent,#2dd4bf);color:#fff}" +
     ".ai-msg.bot{align-self:flex-start;background:var(--sl-color-gray-5,#f1f5f9);color:var(--sl-color-gray-2,#333)}" +
     ".ai-msg.err{align-self:flex-start;background:#fee2e2;color:#b91c1c}" +
+    ".ai-msg.cost{align-self:flex-start;font-size:11px;color:#b45309;background:rgba(251,191,36,.12);padding:4px 10px}" +
     ".ai-msg.loading{color:var(--sl-color-gray-3,#888)}" +
     "#ai-chat-input-row{display:flex;gap:8px;padding:10px;border-top:1px solid var(--sl-color-gray-4,rgba(0,0,0,.1))}" +
     "#ai-chat-input{flex:1;border:1px solid var(--sl-color-gray-4,rgba(0,0,0,.15));border-radius:8px;padding:8px 10px;font-size:14px;background:var(--sl-color-gray-7,#fff);color:var(--sl-color-gray-1,#111);outline:none}" +
     "#ai-chat-send{background:var(--sl-color-accent,#2dd4bf);color:#fff;border:none;border-radius:8px;padding:0 14px;cursor:pointer;font-size:14px}" +
-    "#ai-chat-send:disabled{opacity:.5;cursor:not-allowed}";
+    "#ai-chat-send:disabled{opacity:.5;cursor:not-allowed}" +
+    "#ai-chat-cost{display:block;padding:6px 12px;font-size:11px;color:#b45309;background:rgba(251,191,36,.12);border-bottom:1px solid rgba(0,0,0,.06);line-height:1.5}";
 
   var style = document.createElement("style");
   style.textContent = CSS;
@@ -39,6 +41,7 @@
   box.innerHTML =
     '<div id="ai-chat-head"><span>AI 学习助手</span><button id="ai-chat-close" aria-label="关闭">✕</button></div>' +
     '<div id="ai-chat-msgs"></div>' +
+    '<div id="ai-chat-cost">免费额度内不花钱 · 额度用尽后按量计费，余额不足自动停用</div>' +
     '<div id="ai-chat-input-row"><input id="ai-chat-input" placeholder="输入问题，例如：什么是进程调度？" /><button id="ai-chat-send">发送</button></div>';
 
   document.body.appendChild(btn);
@@ -90,6 +93,9 @@
         loading.remove();
         if (d.answer) {
           addMsg(d.answer, "bot");
+          if (d.usage && d.usage.total) {
+            addMsg("本次消耗 " + d.usage.total + " tokens（免费额度内不扣费）", "cost");
+          }
         } else {
           addMsg(d.error || "出错了，请稍后再试", "err");
         }

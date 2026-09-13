@@ -20,6 +20,6 @@
 }
 
 /* 隐藏标题锚点 # 图标（保留锚点定位功能） */
-.sl-markdown-content .anchor-icon {
+.sl-markdown-content .anchor {
 	display: none;
 }

@@ -1,0 +1,7 @@
+#!/bin/sh
+# pre-commit 钩子：自动给本次提交的博客文章补 updated: 今天
+# 由 scripts/auto-updated.mjs 执行；node 不可用时静默跳过，不阻塞提交
+command -v node >/dev/null 2>&1 || exit 0
+SCRIPT_DIR="$(cd "$(dirname "$0")/../../scripts" && pwd)" || exit 0
+node "$SCRIPT_DIR/auto-updated.mjs" >/dev/null 2>&1
+exit 0

@@ -1,0 +1,20 @@
+/* ============================================
+   Starlight 主题对齐 Firefly 博客配色（hue 165 青绿）
+   ============================================ */
+
+:root,
+:root[data-theme="light"] {
+	/* 亮色强调色：teal 青绿系（对齐博客 primary oklch(.7 .14 165)） */
+	--sl-color-accent-high: #0f766e;
+	--sl-color-accent: #0d9488;
+	--sl-color-accent-low: #ccfbf1;
+
+	/* 链接色跟随主题 */
+	--sl-color-text-accent: var(--sl-color-accent);
+}
+
+:root[data-theme="dark"] {
+	--sl-color-accent-high: #5eead4;
+	--sl-color-accent: #2dd4bf;
+	--sl-color-accent-low: #134e4a;
+}

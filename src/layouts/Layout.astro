@@ -339,6 +339,25 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
       </script>
     )}
 
+    <!-- Starlight 文档站暗色联动：starlight-theme -> theme -->
+    <script is:inline>
+      (function () {
+        var conv = function (v) { return v === "dark" || v === "light" ? v : null; };
+        try {
+          var st = conv(localStorage.getItem("starlight-theme"));
+          if (st) localStorage.setItem("theme", st);
+        } catch (e) {}
+        window.addEventListener("storage", function (e) {
+          try {
+            if (e.key === "starlight-theme") {
+              var v = conv(e.newValue);
+              if (v) localStorage.setItem("theme", v);
+            }
+          } catch (_) {}
+        });
+      })();
+    </script>
+
     <!-- Set the theme before the page is rendered to avoid a flash -->
     <script
       is:inline

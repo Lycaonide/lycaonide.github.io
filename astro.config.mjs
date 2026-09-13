@@ -294,6 +294,14 @@ export default defineConfig({
 			disable404Route: true,
 			// 顶栏右侧链接回博客
 			social: [{ icon: "external", label: "博客", href: "/" }],
+			customCss: ["./src/styles/starlight.css"],
+			head: [
+				{
+					tag: "script",
+					content:
+						"(function(){var K='theme',S='starlight-theme',c=function(v){return v==='dark'||v==='light'?v:null};try{var b=c(localStorage.getItem(K));if(b)localStorage.setItem(S,b)}catch(e){}window.addEventListener('storage',function(e){try{if(e.key===K){var v=c(e.newValue);if(v)localStorage.setItem(S,v)}if(e.key===S){var v2=c(e.newValue);if(v2)localStorage.setItem(K,v2)}}catch(_){}});})();",
+				},
+			],
 		}),
 	],
 	markdown: {

@@ -9,6 +9,7 @@ import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
+import starlight from "@astrojs/starlight";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
 import { pluginLanguageLogo } from "ec-lang-logo"; /* Language Logo */
@@ -140,6 +141,8 @@ export default defineConfig({
 			updateHead: true,
 			updateBodyClass: false,
 			globalInstance: true,
+			// /docs 是 Starlight 独立布局，不走 swup 无刷新过渡
+			ignore: [/^\/docs/],
 			// 滚动相关配置优化
 			resolveUrl: (url) => url,
 			animateHistoryBrowsing: false,
@@ -286,6 +289,12 @@ export default defineConfig({
 			},
 		}),
 		mdx(),
+		starlight({
+			title: "竞赛文档",
+			disable404Route: true,
+			// 顶栏右侧链接回博客
+			social: [{ icon: "external", label: "博客", href: "/" }],
+		}),
 	],
 	markdown: {
 		processor: unified({

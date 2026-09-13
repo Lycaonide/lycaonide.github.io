@@ -31,6 +31,7 @@
 		"@astrojs/mdx": "^7.0.8",
 		"@astrojs/rss": "^4.0.19",
 		"@astrojs/sitemap": "^3.7.4",
+		"@astrojs/starlight": "^0.42.0",
 		"@astrojs/svelte": "9.0.1",
 		"@expressive-code/plugin-collapsible-sections": "^0.44.2",
 		"@expressive-code/plugin-line-numbers": "^0.44.2",

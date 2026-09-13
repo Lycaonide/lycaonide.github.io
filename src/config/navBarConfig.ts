@@ -50,6 +50,13 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		],
 	});
 
+	// 竞赛文档（Starlight）
+	links.push({
+		name: "竞赛文档",
+		url: "/docs/",
+		icon: "material-symbols:menu-book",
+	});
+
 	// 自定义导航栏链接
 	links.push({
 		name: "GitHub",

@@ -164,7 +164,14 @@ export const decorationConfig = {
 
 #### 六、评论系统：Giscus
 
-评论用的是 **Giscus**（基于 GitHub Discussions，免费、无广告、数据在自己仓库里）。接入步骤：
+评论用的是 **Giscus**。为什么选它而不是别的评论方案：
+
+- **免费无广告**：基于 GitHub Discussions，不用付费、没有第三方评论系统的广告；
+- **数据在自己仓库**：所有评论都存在博客仓库的 Discussions 里，跟着仓库走，换平台不丢；
+- **不用自己搭服务器**：纯静态方案，访客用 GitHub 账号登录即可评论（没有账号也能看）；
+- **防刷屏**：配成 Announcements 分类后只有管理员能开新讨论，访客只能回复，评论区干净。
+
+对比过的其他方案：自建评论（要服务器和维护）、第三方评论系统（有广告、数据在别人那、部分收费）——都不如 Giscus 省心。接入步骤：
 
 1. **开启 Discussions**：仓库 `Settings → Features → Discussions` 勾选开启。开启后仓库导航栏会出现 Discussions 入口：
 
@@ -532,9 +539,9 @@ starlight({
 
 > **导航名和 URL 为什么分开**：`title` 显示"知识库"，但访问路径是 `/kb/`——短路径好记、输入方便，导航名和 URL 互不绑定，改名字不用动链接。
 
-##### 3. 内容目录：四科 26 章
+##### 3. 内容目录
 
-知识库内容在 `src/content/docs/`，按"知识库 → 考研 → 科目 → 章节"建文件夹，四科章节目录**按王道《408 考研复习指导》建**：
+知识库内容在 `src/content/docs/`，按"知识库 → 考研 → 科目 → 章节"建文件夹，四科章节目录按王道《408 考研复习指导》建：
 
 ```text
 src/content/docs/kb/
@@ -681,7 +688,7 @@ const links = config.social || [];
 pnpm dev
 ```
 
-浏览器打开 `https://my-firefly-blog.pages.dev/kb/`（部署后线上验证，本地预览用 `http://localhost:4321/kb/`）：左侧目录树（知识库 → 考研 → 四科 → 26 章）、每页 TOC、暗色模式都正常。
+浏览器打开 `https://my-firefly-blog.pages.dev/kb/`：左侧目录树（知识库 → 考研 → 四科 → 26 章）、每页 TOC、暗色模式都正常。
 
 ![知识库左侧目录树：知识库 → 考研 → 四科 26 章](/assets/blog-migrate/kb-sidebar.png)以后写笔记：`src/content/docs/kb/考研/操作系统/` 里新建 `第6章-xxx.md` → `git push` → 侧边栏自动多出一节，不用改任何配置。
 

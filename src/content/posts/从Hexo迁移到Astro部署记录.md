@@ -27,12 +27,17 @@ category: 技术笔记
 
 #### 二、搭建项目与本地预览
 
-前置环境：需要 **Node.js 20+**（去 [nodejs.org](https://nodejs.org) 下载安装）和 **pnpm** 包管理器：
+前置环境：需要 **Node.js 22.12+**（本教程用 24 LTS；Astro 7 构建、wrangler 部署都要求 22 以上，用 20 会直接报错）和 **pnpm** 包管理器。Windows 推荐用 **nvm-windows** 管理 Node 版本：
 
 ```bash
+# 安装 nvm-windows：github.com/coreybutler/nvm-windows 下载安装
+nvm install 24.5.0   # 安装 Node 24（也可装 22 LTS）
+nvm use 24.5.0       # 切换版本
+node --version       # 确认输出 v24.x
+
 # 安装 pnpm（Node.js 自带 corepack，也可用 npm 装）
 npm install -g pnpm
-pnpm --version   # 确认安装成功
+pnpm --version       # 确认安装成功
 ```
 
 Firefly 主题的仓库地址：[CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)。克隆后安装依赖：
@@ -375,13 +380,13 @@ token 只在创建时完整显示一次，**Roll 之后记得把新值同步到 
 
 本地构建产物在 `dist/`，用 [wrangler](https://developers.cloudflare.com/workers/wrangler/) 直接推上去（Node 自带 npx，无需全局安装）：
 
-```bash
+```powershell
 # 1. 构建（输出 dist/）
 pnpm build
 
-# 2. 配置凭据（PowerShell 用 $env: 前缀）
-export CLOUDFLARE_API_TOKEN="你的API_TOKEN"      # 上一步创建的
-export CLOUDFLARE_ACCOUNT_ID="你的账号ID"        # 你的账号ID
+# 2. 配置凭据（Windows PowerShell 用 $env: 前缀，Linux/macOS 用 export）
+$env:CLOUDFLARE_API_TOKEN = "你的API_TOKEN"      # 上一步创建的
+$env:CLOUDFLARE_ACCOUNT_ID = "你的账号ID"        # 你的账号ID
 
 # 3. 创建 Pages 项目（仅首次）
 npx wrangler pages project create my-firefly-blog --production-branch main
@@ -470,13 +475,178 @@ jobs:
 
 > 注意：**workflow 是仓库 `.github/workflows/` 目录里的 YAML 配置**，声明“每次 push 自动执行哪些步骤”，**Name 必须和 workflow 里引用的一致**，不能随便起名（名字对不上，workflow 读不到，CF 部署会一直失败）。两个值分别填什么：`CLOUDFLARE_API_TOKEN` 填你创建的那个新 token 值；`CLOUDFLARE_ACCOUNT_ID` 填账号 ID——打开 Cloudflare 控制台任意页面，看地址栏 `dash.cloudflare.com/` 后面第一段，就是账号 ID。
 
-配好之后，每次 `git push` 会自动构建并同时部署到 GitHub Pages 和 Cloudflare Pages。
+配好之后，每次 `git push` 会自动构建并同时部署到 GitHub Pages 和 Cloudflare Pages。仓库 Actions 页面可以看到两个 workflow 同时运行、双双成功：
+
+![push 后 GitHub Actions 双平台同时部署成功](/assets/blog-migrate/actions-double-deploy.png)
 
 ##### 5. 自定义域名（可选）
 
 Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项目页 → Custom domains 里添加即可。本站暂时用 `pages.dev` 子域名，等有合适域名再绑。绑定后原 `pages.dev` 域名依然可用，不影响现有访问。
 
-#### 十、发布博客和更新博客命令
+#### 十、AI 问答接入（可选扩展）
+
+本站右下角的 **✦ 悬浮按钮**就是 AI 问答：点开后可以像聊天一样问问题，系统会把当前页面的知识库内容一起带给大模型，回答贴合本站内容。整个功能**免费额度内不花钱**，用的模型是火山方舟（豆包）的 **Doubao-Seed-2.0-Code**。
+
+**为什么选火山方舟：**
+
+- **有免费额度**：每个模型开通即送 50 万 tokens（约够上千次问答），个人博客基本够用；
+- **国内直连快**：endpoint 在 `ark.cn-beijing.volces.com`，国内访问无墙；
+- **按量计费便宜**：额度耗尽后按 tokens 计费（约 0.8 元/千 tokens 量级），可以随时在控制台停用；
+- **不用额外服务器**：后端跑在 Cloudflare Pages Function 上（随 Pages 免费托管），不需要自己的云服务器。
+
+##### 1. 开通模型
+
+火山方舟控制台：`console.volcengine.com/ark` → **开通管理** → 搜索要用的模型（比如 `doubao-seed-2-0`）→ 点**开通**。开通页面能直接看到每个模型的免费额度（50 万 tokens）和计费价格，开通免费。
+
+> 注意：模型 ID 在开通后控制台可查（如 `doubao-seed-2-0-code-preview-260215`）。如果控制台提示"余额不足无法开通"，是因为部分模型要求账户有预留金，充 20 元即可（可退）。
+
+##### 2. 创建 API Key
+
+控制台左侧 **API Key 管理** → **创建 API Key**，起个名字（如 `blog-ai`），创建后**只显示一次，马上复制保存**：
+
+![火山方舟 API Key 管理页](/assets/blog-migrate/ark-apikey.png)
+
+> API Key 相当于账号钥匙，**不要提交到代码仓库**（本教程把它放在 CF 环境变量里，见第 5 节）。
+
+##### 3. 写 Cloudflare Pages Function（后端代理）
+
+Pages 项目根目录建 `functions/api/chat.ts`——Cloudflare Pages 会自动把 `functions/api/` 下的文件发布成 `/api/xxx` 接口。作用：前端只把问题发给本站，由这个 Function 带 Key 去请求火山方舟，**Key 永远不会暴露到浏览器**：
+
+```ts
+// functions/api/chat.ts（本站实际使用版本）
+export async function onRequestPost(context) {
+  const { question, context: ctx } = await context.request.json().catch(() => ({}));
+  if (!question || typeof question !== "string") {
+    return json({ error: "缺少问题" }, 400);
+  }
+  const API_KEY = context.env.ARK_API_KEY;
+  if (!API_KEY) {
+    return json({ error: "服务未配置（缺少 ARK_API_KEY）" }, 500);
+  }
+  const MODEL = context.env.ARK_MODEL || "doubao-seed-2-0-code-preview-260215";
+  const system =
+    "你是一个考研学习助手，根据提供的知识库内容回答用户问题。" +
+    "如果知识库内容不足以回答，可以结合你的知识补充，并说明哪些来自知识库。回答简洁、条理清晰，使用中文。";
+  const user =
+    (ctx && typeof ctx === "string" && ctx.trim()
+      ? `以下是知识库相关章节的内容（供参考）：\n\n${ctx.slice(0, 6000)}\n\n`
+      : "") + `用户问题：${question}`;
+  try {
+    const resp = await fetch("https://ark.cn-beijing.volces.com/api/v3/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user },
+        ],
+        max_tokens: 1500,
+        temperature: 0.6,
+      }),
+    });
+    if (!resp.ok) {
+      const t = (await resp.text()).slice(0, 300);
+      return json({ error: `上游接口错误 ${resp.status}: ${t}` }, 502);
+    }
+    const data = await resp.json();
+    const answer = data?.choices?.[0]?.message?.content;
+    if (!answer) {
+      return json({ error: "AI 未返回内容" }, 502);
+    }
+    // 把本次消耗的 tokens 返回给前端，用于费用提示
+    const usage = data?.usage
+      ? { prompt: data.usage.prompt_tokens ?? 0, completion: data.usage.completion_tokens ?? 0, total: data.usage.total_tokens ?? 0 }
+      : null;
+    return json({ answer, usage });
+  } catch (e) {
+    return json({ error: `请求失败: ${String(e)}` }, 500);
+  }
+}
+
+function json(obj, status) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
+}
+```
+
+##### 4. 前端组件
+
+新建 `public/ai-chat.js`：右下角浮动按钮 + 聊天弹窗 + 费用提示。核心逻辑：
+
+```js
+// public/ai-chat.js（核心逻辑，完整文件见仓库）
+(function () {
+  // GitHub Pages 没有 Functions 后端，只在 Cloudflare 域名启用
+  if (location.hostname === "lycaonide.github.io") return;
+
+  // 1. 创建浮动按钮和弹窗（appendChild 到 body）
+  // 2. 发送问题时 POST /api/chat，带上当前页面内容作为上下文
+  // 3. 回答里如果有 usage.total，就显示"本次消耗 X tokens（免费额度内不扣费）"
+  // 4. 弹窗底部常驻提示行：
+  //    "免费额度内不花钱 · 额度用尽后按量计费，余额不足自动停用"
+})();
+```
+
+然后在布局里**引入**（注意：必须加 `is:inline`，否则 Astro 会丢弃对 public 目录脚本的引用，按钮不出来）：
+
+```astro
+<!-- src/layouts/Layout.astro 的 <head> 里 -->
+<script src="/ai-chat.js" is:inline></script>
+```
+
+如果用了 Starlight 知识库，也要在 `astro.config.mjs` 的 starlight `head` 里注入同一份：
+
+```js
+// astro.config.mjs（starlight 配置里）
+head: [
+  { tag: "script", attrs: { src: "/ai-chat.js", is: "inline" } },
+],
+```
+
+> 踩坑记录：① Astro 会丢弃非 `is:inline` 的 public 脚本引用（页面 HTML 里查不到）；② 脚本在 `<head>` 里立即执行时 `document.body` 还不存在，要先等 `DOMContentLoaded`；③ GitHub Pages 没有 Functions 后端，要按域名禁用（`location.hostname` 判断）。
+
+##### 5. 配置环境变量（ARK_API_KEY）
+
+Cloudflare 控制台 → 你的 Pages 项目 → **Settings** → **Environment variables** → **Add**：
+
+- **Type**：Text（明文字符串即可，Key 只在服务器端读取，不会发给浏览器）
+- **Name**：`ARK_API_KEY`
+- **Value**：第 2 步创建的 API Key
+
+![CF Pages 环境变量配置](/assets/blog-migrate/cf-env.png)
+
+想换模型可以再加一个 `ARK_MODEL` 变量（默认就是 Doubao-Seed-2.0-Code，不配也行）。
+
+##### 6. 费用提示
+
+前端弹窗里做了两层提示（本站实际效果）：
+
+- **常驻提示行**（输入框上方）：`免费额度内不花钱 · 额度用尽后按量计费，余额不足自动停用`；
+- **每次回答后**显示本次消耗：`本次消耗 927 tokens（免费额度内不扣费）`。
+
+![AI 问答弹窗与费用提示](/assets/blog-migrate/ai-chat-cost.png)
+
+控制台（火山方舟 → 费用中心）能看每月账单，个人博客用量远低于 50 万免费额度，基本不产生费用。
+
+##### 7. 验证
+
+```bash
+# 本地或线上直接测接口（返回 JSON，含 answer 和 usage）
+curl -X POST https://my-firefly-blog.pages.dev/api/chat ^
+  -H "Content-Type: application/json" ^
+  -d "{\"question\":\"进程和线程有什么区别？\"}"
+```
+
+浏览器打开 `https://my-firefly-blog.pages.dev`，点右下角 ✦ 按钮即可聊天。**注意 GitHub Pages 站没有 Functions 后端，AI 按钮自动隐藏**（前端已按域名判断）。
+
+#### 十一、发布博客和更新博客命令
+
 
 - **本地预览**：`pnpm dev`（默认 http://localhost:4321）；
 - **构建**：`pnpm build`（输出到 `dist/`，会顺便做字体子集化）；
@@ -497,12 +667,13 @@ $env:CLOUDFLARE_ACCOUNT_ID = "9df1e93b29898adab711c0958d7bccec"
 npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
 ```
 
-#### 十一、总结
+#### 十二、总结
 
 这次迁移的核心经验：
 
 1. **配置收敛**：装饰、评论、友链等开关集中在 config 文件里，方便统一管理；
 2. **双站过渡**：新旧站并存，内容迁完再下线，风险可控；
-3. **自动化部署**：GitHub Actions 让发布变成"push 就完事"。
+3. **自动化部署**：GitHub Actions 让发布变成"push 就完事"（GitHub Pages + Cloudflare Pages 双平台同时更新）；
+4. **AI 问答**：火山方舟 + Cloudflare Pages Function 免费接入，知识库随页携带，Key 不落地。
 
 最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题，**樱花、评论、友链齐全，加载快还免费**。

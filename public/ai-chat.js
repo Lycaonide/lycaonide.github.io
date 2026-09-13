@@ -2,6 +2,7 @@
 (function () {
   if (window.__aiChatLoaded) return;
   window.__aiChatLoaded = true;
+  function init() {
 
   var CSS =
     "#ai-chat-btn{position:fixed;right:20px;bottom:20px;z-index:9999;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;background:var(--sl-color-accent,#2dd4bf);color:#fff;font-size:22px;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:transform .15s}" +
@@ -106,4 +107,11 @@
   input.addEventListener("keydown", function (e) {
     if (e.key === "Enter") ask();
   });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();

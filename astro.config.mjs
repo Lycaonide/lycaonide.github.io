@@ -332,7 +332,7 @@ export default defineConfig({
 			head: [
 			{
 				tag: "script",
-				attrs: { src: "/ai-chat.js" },
+				attrs: { src: "/ai-chat.js", is: "inline" },
 			},
 				{
 					tag: "script",

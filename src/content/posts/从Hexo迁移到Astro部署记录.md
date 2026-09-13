@@ -2,6 +2,7 @@
 draft: false
 title: 从Hexo迁移到Astro部署记录
 published: 2026-09-14
+updated: 2026-09-14
 description: 记录本站从 Hexo 迁移到 Astro 的全过程：技术选型、双站并存、字体本地化、站点美化、Giscus 评论接入、GitHub Actions 自动部署与 Cloudflare Pages 国内加速。
 tags: [Astro, Hexo, 博客, 部署, GitHub Pages, Cloudflare Pages]
 category: 技术笔记

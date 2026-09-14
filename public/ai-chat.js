@@ -1,4 +1,4 @@
-// 知识库 AI 问答组件：右下角浮动按钮 + 弹窗
+// 知识库 AI 问答组件：右下角浮动按钮 + 弹窗（博客全文本地检索 + 片段送 AI）
 (function () {
   if (window.__aiChatLoaded) return;
   // GitHub Pages 无 Functions 后端，仅 CF 域名启用
@@ -67,6 +67,58 @@
     return t.slice(0, 6000);
   }
 
+  // ---------- 博客全文本地检索（RAG，免费、只送命中片段给 AI） ----------
+  var STOP = new Set(("的了吗是么什么怎么能可以用在与和或都也这那我你他它一个一下这个那个有没有想请帮我给把被让对从到就才只还又再很更最等因为所以但是然后").split(""));
+
+  function extractWords(q) {
+    var words = q.match(/[a-zA-Z0-9][a-zA-Z0-9\-_.]*/g) || [];
+    var zh = q.replace(/[a-zA-Z0-9\-_. ]/g, "");
+    var filtered = zh.split("").filter(function (c) { return !STOP.has(c); }).join("");
+    var bigrams = [];
+    for (var i = 0; i < filtered.length - 1; i++) bigrams.push(filtered.substr(i, 2));
+    return { words: words, bigrams: bigrams };
+  }
+
+  // 缓存索引（一次加载，后续复用）
+  var _indexPromise = null;
+  function loadIndex() {
+    if (!_indexPromise) {
+      _indexPromise = fetch("/api/blog-index.json", { cache: "force-cache" }).then(function (r) { return r.json(); });
+    }
+    return _indexPromise;
+  }
+
+  function searchBlog(q) {
+    var w = extractWords(q);
+    return loadIndex().then(function (idx) {
+      var results = [];
+      idx.posts.forEach(function (post) {
+        var tScore = 0;
+        w.words.concat(w.bigrams).forEach(function (kw) {
+          if (post.title.indexOf(kw) >= 0) tScore += kw.length * 4;
+        });
+        post.blocks.forEach(function (b) {
+          var score = tScore;
+          w.words.forEach(function (kw) { if (b.indexOf(kw) >= 0) score += kw.length * 8; });
+          var bg = 0;
+          w.bigrams.forEach(function (kw) { if (b.indexOf(kw) >= 0) bg += 1; });
+          score += Math.min(bg, 5);
+          if (score > 0) results.push({ title: post.title, score: score, text: b });
+        });
+      });
+      results.sort(function (a, b) { return b.score - a.score; });
+      var parts = [], total = 0, postCount = {};
+      results.forEach(function (r) {
+        if (parts.length >= 4 || total + r.text.length > 4500) return;
+        if ((postCount[r.title] || 0) >= 2) return;
+        postCount[r.title] = (postCount[r.title] || 0) + 1;
+        parts.push("【" + r.title + "】" + r.text);
+        total += r.text.length;
+      });
+      return parts.join("\n\n");
+    });
+  }
+
   btn.addEventListener("click", function () {
     box.classList.add("open");
     input.focus();
@@ -81,11 +133,17 @@
     sendBtn.disabled = true;
     addMsg(q, "user");
     var loading = addMsg("思考中…", "loading");
-    fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: q, context: pageContext() }),
-    })
+    searchBlog(q)
+      .then(function (ctx) {
+        // 优先用博客全文检索片段；没命中时回退当前页内容
+        var page = pageContext();
+        var context = (ctx && ctx.trim()) ? ctx : page;
+        return fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: q, context: context.slice(0, 6000) }),
+        });
+      })
       .then(function (r) {
         return r.json();
       })

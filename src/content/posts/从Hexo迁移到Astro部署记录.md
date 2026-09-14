@@ -2,7 +2,7 @@
 draft: false
 title: 从Hexo迁移到Astro部署记录
 published: 2026-09-14
-updated: 2026-09-14
+updated: 2026-09-15
 description: 记录本站从 Hexo 迁移到 Astro 的全过程：技术选型、双站并存、字体本地化、站点美化、Giscus 评论接入、GitHub Actions 自动部署与 Cloudflare Pages 国内加速。
 tags: [Astro, Hexo, 博客, 部署, GitHub Pages, Cloudflare Pages]
 category: 技术笔记
@@ -824,7 +824,7 @@ head: [
 
 第一版只能把"当前页面"内容带给 AI——你在哪个页面问，它参考哪个页面，问"本项目用什么 Node 版本"这种信息在其他文章里的问题就答不上。升级后改成**全文检索（轻量 RAG）**，实测效果（回答会**明确区分来源、点名具体篇目**）：
 
-![AI 问答检索博客全文后回答 Node 版本（区分来源、点名篇目）](/assets/blog-migrate/ai-rag-sources.png)
+<img src="/assets/blog-migrate/ai-rag-sources.png" alt="AI 问答检索博客全文后回答 Node 版本（区分来源、点名篇目）" width="400" />
 
 - **全文索引**：构建时由 `scripts/build-blog-index.mjs` 把 `src/content/posts/` 下所有文章解析成纯文本、按段落分块，生成 `public/api/blog-index.json`（本站 5 篇约 43KB），已挂进 `pnpm build` 自动生成；
 - **本地检索**：提问时浏览器直接读索引，把问题拆成关键词（英文/数字词高权重 + 中文相邻两字 bigram）给每个段落打分，取最相关的 4 段（≤4500 字符，每篇最多 2 段）；

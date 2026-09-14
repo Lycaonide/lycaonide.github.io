@@ -2,6 +2,7 @@
 draft: false
 title: 学习用Hexo写博客
 published: 2026-01-25
+updated: 2026-09-14
 tags: [Hexo, 博客] 
 category: 技术笔记
 ---
@@ -16,7 +17,7 @@ category: 技术笔记
   3. 安装路径保持默认（或自定义，需记住路径），点击“Next”；
   4. 勾选“Add to PATH”（自动配置环境变量），点击“Next”→“Install”→“Finish”。
 - **验证**：
-  右键桌面→选择“Git Bash Here”打开终端，输入`node -v`，我安装的是v.24.5.0版本。
+  右键桌面→选择“Git Bash Here”打开终端，输入`node -v`，我安装的是v24.5.0版本。
 
 
 ##### 2. 安装Git

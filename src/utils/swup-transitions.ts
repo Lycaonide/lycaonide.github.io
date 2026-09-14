@@ -35,7 +35,7 @@ function startProgressBar(): void {
 			{ transform: "scaleX(0.95)", opacity: 1 },
 		],
 		{
-			duration: 8000,
+			duration: 3500,
 			easing: "cubic-bezier(0.1, 0.05, 0.1, 1)",
 			fill: "forwards",
 		},

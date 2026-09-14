@@ -79,9 +79,9 @@ export const fontConfig: FontSelectionConfig = {
 	selected: ["system"],
 
 	// 各区域独立字体设置（填上方 fonts 的 cssVariable，留空则用全局 selected）
-	// 主页横幅主标题字体：思源黑体
+	// 主页横幅主标题字体：思源黑体 Noto Sans SC
 	bannerTitleFont: "--font-noto-sans-sc",
-	// 主页横幅副标题字体：思源黑体
+	// 主页横幅副标题字体：思源黑体 Noto Sans SC
 	bannerSubtitleFont: "--font-noto-sans-sc",
 	// 导航栏标题字体：Space Grotesk
 	navbarTitleFont: "--font-space-grotesk",

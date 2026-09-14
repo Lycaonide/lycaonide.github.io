@@ -694,7 +694,7 @@ pnpm dev
 
 #### 十一、AI 问答接入（可选扩展）
 
-本站右下角的 **✦ 悬浮按钮**就是 AI 问答：点开后可以像聊天一样问问题，系统会把当前页面的知识库内容一起带给大模型，回答贴合本站内容。整个功能**免费额度内不花钱**，用的模型是火山方舟（豆包）的 **Doubao-Seed-2.0-Code**。
+本站右下角的 **✦ 悬浮按钮**就是 AI 问答：点开后可以像聊天一样问问题，系统会先在本地检索本站**全部博客文章**，把最相关的段落带给大模型，回答贴合本站内容（检索原理见第 5 节）。整个功能**免费额度内不花钱**，用的模型是火山方舟（豆包）的 **Doubao-Seed-2.0-Code**。
 
 **为什么选火山方舟：**
 
@@ -795,7 +795,7 @@ function json(obj, status) {
   if (location.hostname === "lycaonide.github.io") return;
 
   // 1. 创建浮动按钮和弹窗（appendChild 到 body）
-  // 2. 发送问题时 POST /api/chat，带上当前页面内容作为上下文
+  // 2. 发送问题时先本地检索博客全文（见第 5 节），把命中片段作为上下文，POST /api/chat
   // 3. 回答里如果有 usage.total，就显示"本次消耗 X tokens（免费额度内不扣费）"
   // 4. 弹窗底部常驻提示行：
   //    "免费额度内不花钱 · 额度用尽后按量计费，余额不足自动停用"
@@ -820,7 +820,29 @@ head: [
 
 > 踩坑记录：① Astro 会丢弃非 `is:inline` 的 public 脚本引用（页面 HTML 里查不到）；② 脚本在 `<head>` 里立即执行时 `document.body` 还不存在，要先等 `DOMContentLoaded`；③ GitHub Pages 没有 Functions 后端，要按域名禁用（`location.hostname` 判断）。
 
-##### 5. 配置环境变量（ARK_API_KEY）
+##### 5. 升级：博客全文本地检索（轻量 RAG）
+
+第一版只能把"当前页面"内容带给 AI——你在哪个页面问，它参考哪个页面，问"本项目用什么 Node 版本"这种信息在其他文章里的问题就答不上。升级后改成**全文检索（轻量 RAG）**，实测效果：
+
+![AI 问答检索博客全文后回答 Node 版本](/assets/blog-migrate/ai-rag-answer.png)
+
+- **全文索引**：构建时由 `scripts/build-blog-index.mjs` 把 `src/content/posts/` 下所有文章解析成纯文本、按段落分块，生成 `public/api/blog-index.json`（本站 5 篇约 43KB），已挂进 `pnpm build` 自动生成；
+- **本地检索**：提问时浏览器直接读索引，把问题拆成关键词（英文/数字词高权重 + 中文相邻两字 bigram）给每个段落打分，取最相关的 4 段（≤4500 字符，每篇最多 2 段）；
+- **只送片段**：命中的段落拼进请求发给大模型，AI 基于片段回答——检索在浏览器本地完成**不花钱**，每次只消耗片段对应的 tokens（实测约 2200 tokens）。
+
+```js
+// public/ai-chat.js 新增的检索逻辑（核心）
+fetch("/api/blog-index.json", { cache: "force-cache" })   // 1. 加载索引（缓存复用）
+  .then(r => r.json()).then(idx => {
+    // 2. 问题拆词：英文词 + 中文 bigram，标题/正文/标签加权打分
+    // 3. 取分数最高的 4 段拼成上下文（每篇最多 2 段）
+    // 4. 拼好的片段作为 context 随问题 POST /api/chat
+  });
+```
+
+**为什么不把全文直接塞给 AI**：5 篇文章全文约 43KB ≈ 2 万+ tokens，每次问答全量发太费；检索后只发命中片段 ≈ 4500 字符 ≈ 2 千 tokens，**省约 10 倍**，免费额度能多用很久。
+
+##### 6. 配置环境变量（ARK_API_KEY）
 
 Cloudflare 控制台 → 你的 Pages 项目 → **Settings** → **Environment variables** → **Add**：
 
@@ -832,7 +854,7 @@ Cloudflare 控制台 → 你的 Pages 项目 → **Settings** → **Environment 
 
 想换模型可以再加一个 `ARK_MODEL` 变量（默认就是 Doubao-Seed-2.0-Code，不配也行）。
 
-##### 6. 费用提示
+##### 7. 费用提示
 
 前端弹窗里做了两层提示（本站实际效果）：
 
@@ -843,7 +865,7 @@ Cloudflare 控制台 → 你的 Pages 项目 → **Settings** → **Environment 
 
 控制台（火山方舟 → 费用中心）能看每月账单，个人博客用量远低于 50 万免费额度，基本不产生费用。
 
-##### 7. 验证
+##### 8. 验证
 
 ```bash
 # 本地或线上直接测接口（返回 JSON，含 answer 和 usage）
@@ -854,6 +876,14 @@ curl -X POST https://my-firefly-blog.pages.dev/api/chat ^
 
 浏览器打开 `https://my-firefly-blog.pages.dev`，点右下角 ✦ 按钮即可聊天。**注意 GitHub Pages 站没有 Functions 后端，AI 按钮自动隐藏**（前端已按域名判断）。
 
+
+##### 9. 后续：向量检索（RAG 进阶）
+
+现在的轻量 RAG 是**关键词/字面匹配**（"node"能命中"Node 24"），零成本、够用。以后文章多到几百篇、或想让它理解口语化问法（"node 版本"自动关联"v24.5.0"这类变体表达）时，升级成**向量检索**：
+
+- 原理：用 embedding 模型把每段文本转成向量存索引，提问时把问题也转成向量，按**余弦相似度**找最相关的段落——语义层面的匹配，不依赖字面一致；
+- 代价：检索前多一步 embedding 调用（火山方舟等平台提供，按 tokens 计费，量很小），实现复杂度也高一些；
+- 结论：对目前 5 篇的博客**没必要**，属于"文章规模大了再说"的进阶方向。真要做时，在 `scripts/build-blog-index.mjs` 里给每段生成向量、前端检索改成向量相似度即可，上下文接口不用动。
 #### 十二、发布博客和更新博客命令
 
 

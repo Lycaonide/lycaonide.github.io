@@ -38,6 +38,9 @@
 
   var box = document.createElement("div");
   box.id = "ai-chat-box";
+  // inline 兜底：即使外部样式表丢失，弹窗也固定在右下角、默认隐藏
+  box.style.cssText =
+    "position:fixed;right:20px;bottom:84px;z-index:9999;display:none;width:min(380px,calc(100vw - 40px));max-height:60vh;flex-direction:column;background:var(--sl-color-gray-6,#fff);border:1px solid var(--sl-color-gray-4,rgba(0,0,0,.12));border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.2);overflow:hidden;font-size:14px;";
   box.innerHTML =
     '<div id="ai-chat-head"><span>AI 学习助手</span><button id="ai-chat-close" aria-label="关闭">✕</button></div>' +
     '<div id="ai-chat-msgs"></div>' +
@@ -122,10 +125,12 @@
 
   btn.addEventListener("click", function () {
     box.classList.add("open");
+    box.style.display = "flex";
     input.focus();
   });
   closeBtn.addEventListener("click", function () {
     box.classList.remove("open");
+    box.style.display = "none";
   });
 
   function ask() {

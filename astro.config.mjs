@@ -161,6 +161,10 @@ export default defineConfig({
 				"#right-sidebar-dynamic",
 				"#floating-toc-wrapper",
 			],
+			ignore: (url) => {
+			const u = typeof url === "string" ? url : (url && (url.url || url.pathname)) || "";
+			return u.includes("/kb/");
+		},
 			smoothScrolling: false,
 			cache: true,
 			preload: {

@@ -137,11 +137,18 @@
       .then(function (ctx) {
         // 优先用博客全文检索片段；没命中时回退当前页内容
         var page = pageContext();
-        var context = (ctx && ctx.trim()) ? ctx : page;
+        var context, note;
+        if (ctx && ctx.trim()) {
+          context = ctx;
+          note = "以下是本站博客文章的检索片段（供参考）：\n\n";
+        } else {
+          context = page;
+          note = "以下是当前页面的内容（供参考）：\n\n";
+        }
         return fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: q, context: context.slice(0, 6000) }),
+          body: JSON.stringify({ question: q, context: (note + context).slice(0, 6000) }),
         });
       })
       .then(function (r) {

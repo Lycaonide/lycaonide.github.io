@@ -10,11 +10,12 @@ export async function onRequestPost(context) {
   }
   const MODEL = context.env.ARK_MODEL || "doubao-seed-2-0-code-preview-260215";
   const system =
-    "你是本站的 AI 问答助手，根据提供的博客文章和知识库内容回答用户问题。" +
-    "如果提供的内容不足以回答，可以结合你的知识补充，并说明哪些来自本站博客或知识库。回答简洁、条理清晰，使用中文。";
+    "你是本站的 AI 问答助手，根据提供的参考内容回答用户问题。" +
+    "参考内容可能来自两类：本站博客文章或知识库笔记。回答时请先判断参考内容的来源，并明确告诉用户信息来自博客文章还是知识库。" +
+    "如果参考内容不足以回答，可以结合你的知识补充，并说明哪些来自参考内容。回答简洁、条理清晰，使用中文。";
   const user =
     (ctx && typeof ctx === "string" && ctx.trim()
-      ? `以下是知识库相关章节的内容（供参考）：\n\n${ctx.slice(0, 6000)}\n\n`
+      ? `以下是参考内容（供参考）：\n\n${ctx.slice(0, 6000)}\n\n`
       : "") + `用户问题：${question}`;
   try {
     const resp = await fetch("https://ark.cn-beijing.volces.com/api/v3/chat/completions", {

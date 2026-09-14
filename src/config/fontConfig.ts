@@ -29,6 +29,20 @@ export const fontsList: FontDefinition[] = [
 		fallbacks: ["sans-serif"],
 	},
 	{
+		name: "LXGW WenKai",
+		cssVariable: "--font-lxgw-wenkai",
+		provider: "local",
+		options: {
+			variants: [
+				{
+					src: ["./public/assets/fonts/lxgw-wenkai-500.woff2"],
+					weight: "500",
+				},
+			],
+		},
+		fallbacks: ["sans-serif"],
+	},
+	{
 		name: "Space Grotesk",
 		cssVariable: "--font-space-grotesk",
 		provider: "local",
@@ -79,10 +93,10 @@ export const fontConfig: FontSelectionConfig = {
 	selected: ["system"],
 
 	// 各区域独立字体设置（填上方 fonts 的 cssVariable，留空则用全局 selected）
-	// 主页横幅主标题字体：思源黑体 Noto Sans SC
-	bannerTitleFont: "--font-noto-sans-sc",
-	// 主页横幅副标题字体：思源黑体 Noto Sans SC
-	bannerSubtitleFont: "--font-noto-sans-sc",
+	// 主页横幅主标题字体：霞鹜文楷（楷体）
+	bannerTitleFont: "--font-lxgw-wenkai",
+	// 主页横幅副标题字体：霞鹜文楷
+	bannerSubtitleFont: "--font-lxgw-wenkai",
 	// 导航栏标题字体：Space Grotesk
 	navbarTitleFont: "--font-space-grotesk",
 	// 代码块字体：JetBrains Mono
@@ -90,6 +104,9 @@ export const fontConfig: FontSelectionConfig = {
 
 	// 本地字体子集化配置（构建时由 scripts/subset-fonts.ts 处理）
 	subsetFonts: {
+		"--font-lxgw-wenkai": {
+			extraChars: "",
+		},
 		"--font-noto-sans-sc": {
 			extraChars: "",
 		},

@@ -3,9 +3,18 @@
 
 :root {
   --font-noto-sans-sc: "Noto Sans SC", sans-serif;
+  --font-lxgw-wenkai: "LXGW WenKai", sans-serif;
   --font-space-grotesk: "Space Grotesk", sans-serif;
   --font-jetbrains-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
     Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+@font-face {
+  font-family: "LXGW WenKai";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/assets/fonts/lxgw-wenkai-500.woff2") format("woff2");
 }
 
 @font-face {

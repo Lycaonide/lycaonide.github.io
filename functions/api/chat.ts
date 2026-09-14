@@ -10,8 +10,8 @@ export async function onRequestPost(context) {
   }
   const MODEL = context.env.ARK_MODEL || "doubao-seed-2-0-code-preview-260215";
   const system =
-    "你是本站的 AI 问答助手，根据提供的知识库和博客内容回答用户问题。" +
-    "如果知识库内容不足以回答，可以结合你的知识补充，并说明哪些来自知识库。回答简洁、条理清晰，使用中文。";
+    "你是本站的 AI 问答助手，根据提供的博客文章和知识库内容回答用户问题。" +
+    "如果提供的内容不足以回答，可以结合你的知识补充，并说明哪些来自本站博客或知识库。回答简洁、条理清晰，使用中文。";
   const user =
     (ctx && typeof ctx === "string" && ctx.trim()
       ? `以下是知识库相关章节的内容（供参考）：\n\n${ctx.slice(0, 6000)}\n\n`

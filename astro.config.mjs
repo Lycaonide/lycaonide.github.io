@@ -339,6 +339,15 @@ export default defineConfig({
 				attrs: { src: "/ai-chat.js", is: "inline" }},
 			{
 				tag: "script",
+				attrs: {
+					src: "https://static.cloudflareinsights.com/beacon.min.js",
+					type: "module",
+					"data-cf-beacon":
+						'{"token": "092a891a22f0434890303a58e99052f6"}',
+				},
+			},
+			{
+				tag: "script",
 				content:
 					"(function(){var K='theme',S='starlight-theme',c=function(v){return v==='dark'||v==='light'?v:null};try{var b=c(localStorage.getItem(K));if(b)localStorage.setItem(S,b)}catch(e){}window.addEventListener('storage',function(e){try{if(e.key===K){var v=c(e.newValue);if(v)localStorage.setItem(S,v)}if(e.key===S){var v2=c(e.newValue);if(v2)localStorage.setItem(K,v2)}}catch(_){}});})();",
 				},

@@ -107,15 +107,16 @@
         });
       });
       results.sort(function (a, b) { return b.score - a.score; });
-      var parts = [], total = 0, postCount = {};
+      var parts = [], total = 0, postCount = {}, titles = [];
       results.forEach(function (r) {
         if (parts.length >= 4 || total + r.text.length > 4500) return;
         if ((postCount[r.title] || 0) >= 2) return;
         postCount[r.title] = (postCount[r.title] || 0) + 1;
+        if (titles.indexOf(r.title) < 0) titles.push(r.title);
         parts.push("【" + r.title + "】" + r.text);
         total += r.text.length;
       });
-      return parts.join("\n\n");
+      return { text: parts.join("\n\n"), titles: titles };
     });
   }
 
@@ -134,21 +135,23 @@
     addMsg(q, "user");
     var loading = addMsg("思考中…", "loading");
     searchBlog(q)
-      .then(function (ctx) {
+      .then(function (res) {
         // 优先用博客全文检索片段；没命中时回退当前页内容
         var page = pageContext();
-        var context, note;
-        if (ctx && ctx.trim()) {
-          context = ctx;
+        var context, note, sources;
+        if (res && res.text && res.text.trim()) {
+          context = res.text;
           note = "以下是本站博客文章的检索片段（供参考）：\n\n";
+          sources = res.titles || [];
         } else {
           context = page;
           note = "以下是当前页面的内容（供参考）：\n\n";
+          sources = [];
         }
         return fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: q, context: (note + context).slice(0, 6000) }),
+          body: JSON.stringify({ question: q, context: (note + context).slice(0, 6000), sources: sources }),
         });
       })
       .then(function (r) {

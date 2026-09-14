@@ -1,6 +1,6 @@
 // Cloudflare Pages Function：AI 问答代理（隐藏 API Key）
 export async function onRequestPost(context) {
-  const { question, context: ctx } = await context.request.json().catch(() => ({}));
+  const { question, context: ctx, sources } = await context.request.json().catch(() => ({}));
   if (!question || typeof question !== "string") {
     return json({ error: "缺少问题" }, 400);
   }
@@ -12,10 +12,13 @@ export async function onRequestPost(context) {
   const system =
     "你是本站的 AI 问答助手，根据提供的参考内容回答用户问题。" +
     "参考内容可能来自两类：本站博客文章或知识库笔记。回答时请先判断参考内容的来源，并明确告诉用户信息来自博客文章还是知识库。" +
+    "回答时请明确指出结论依据来自哪篇具体文章或笔记（如有多个来源，逐一列出篇名）。" +
     "如果参考内容不足以回答，可以结合你的知识补充，并说明哪些来自参考内容。回答简洁、条理清晰，使用中文。";
+  const srcList = Array.isArray(sources) ? sources.filter((s) => typeof s === "string" && s.trim()) : [];
   const user =
     (ctx && typeof ctx === "string" && ctx.trim()
-      ? `以下是参考内容（供参考）：\n\n${ctx.slice(0, 6000)}\n\n`
+      ? (srcList.length ? `参考内容来自以下文章/笔记：${srcList.join("、")}\n\n` : "") +
+        `以下是参考内容（供参考）：\n\n${ctx.slice(0, 6000)}\n\n`
       : "") + `用户问题：${question}`;
   try {
     const resp = await fetch("https://ark.cn-beijing.volces.com/api/v3/chat/completions", {

@@ -143,20 +143,20 @@ const subset = await subsetFont(fontBuffer, [...charSet].join(""), {
 await writeFile(outFile, subset);
 ```
 
-这个脚本已集成进 `pnpm build`（构建链会自动执行），也可以单独跑：`npx tsx scripts/subset-fonts.ts`。结果：**字体体积从 3MB 压到约 140KB**（换了思源黑体后更小），页面加载快了很多。
+这个脚本已集成进 `pnpm build`（构建链会自动执行），也可以单独跑：`npx tsx scripts/subset-fonts.ts`。结果：**字体体积从 3MB 压到约 140KB**（子集化后），页面加载快了很多。
 
 本站最终用的是这套本地化方案：字体文件存在站点自己的服务器上，**访客打开本站不需要连任何外部字体服务**，构建和线上都稳。
 
-横幅标题（首页那句"你好，我是lycaonide"）的字体也是这么折腾出来的：主题默认标题是 **Zen Maru Gothic**（圆体），看效果总觉得和参考图不一样，于是一路试：
+横幅标题（首页那句"你好，我是lycaonide"）的字体也是这么折腾出来的：主题默认标题是 **Zen Maru Gothic**（圆体），一路试了不少：
 
 | 试过的字体 | 结果 |
 | --- | --- |
-| 霞鹜文楷（楷体） | 12.8MB 太大，笔画偏书法，弃 |
-| 站酷快乐体 | 圆润手写风，但和参考图不像，弃 |
+| 站酷快乐体 | 圆润手写风，和参考图不像，弃 |
 | Zen Maru Gothic（主题默认圆体） | 圆体效果不符预期，弃 |
-| **思源黑体 Noto Sans SC** ✅ | **和参考图一致**，本地化+子集化后约 140KB，最终采用 |
+| 思源黑体 Noto Sans SC | 方正黑体，不够满意，弃 |
+| **霞鹜文楷（楷体）** ✅ | **最想要的楷体风格**，本地化+子集化后体积小，最终采用 |
 
-结论：横幅标题/副标题用思源黑体（`fontConfig.ts` 里 `bannerTitleFont` / `bannerSubtitleFont` 都指向 Noto Sans SC），和主题自带的思源黑体共用同一个本地文件，不额外增加体积。
+结论：横幅标题/副标题用霞鹜文楷（`fontConfig.ts` 里 `bannerTitleFont` / `bannerSubtitleFont` 都指向 LXGW WenKai），本地化+子集化后体积可控，访客加载无压力。
 
 #### 五、站点美化：装饰总开关
 

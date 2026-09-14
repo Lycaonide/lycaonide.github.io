@@ -145,7 +145,10 @@
           sources = res.titles || [];
         } else {
           context = page;
-          note = "以下是当前页面的内容（供参考）：\n\n";
+          var u = (location.pathname || "");
+          note = (u.indexOf("/kb/") === 0 || u.indexOf("/docs/") === 0)
+            ? "以下是本站知识库笔记的内容（供参考）：\n\n"
+            : "以下是当前页面的内容（供参考）：\n\n";
           sources = [];
         }
         return fetch("/api/chat", {

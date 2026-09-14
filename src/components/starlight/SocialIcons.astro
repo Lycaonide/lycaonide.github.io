@@ -8,7 +8,7 @@ const links = config.social || [];
 	links.length > 0 && (
 		<>
 			{links.map(({ label, href }) => (
-				<a href={href} class="return-link" onclick="event.preventDefault();window.location.href='/';">{label}</a>
+				<a href={href} class="return-link" data-no-swup>{label}</a>
 			))}
 		</>
 	)

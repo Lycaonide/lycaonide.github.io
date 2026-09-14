@@ -736,6 +736,8 @@ const viewConfigStr = JSON.stringify({
         } else {
             // First widget to mount – show loading and trigger init
             setLoading(true);
+            // 超时兜底：音频源再慢，3.5 秒后也隐藏加载遮罩，避免一直转圈
+            setTimeout(function () { setLoading(false); }, 3500);
             scheduleInit();
         }
     }

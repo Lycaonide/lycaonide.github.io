@@ -32,5 +32,8 @@
   "public:assets/blog-migrate/kb-sidebar.png": "f0f2f2f6f8f8fafafa",
   "public:assets/blog-migrate/updated-card.png": "edf5f2f1f7f5f0f9f6",
   "public:assets/blog-migrate/ai-rag-sources.png": "a4babfa2c5cbe6f0ec",
-  "public:assets/images/avatar.png": "ebd8d9ebd7d8e6bebf"
+  "public:assets/images/avatar.png": "ebd8d9ebd7d8e6bebf",
+  "public:assets/blog-migrate/cf-web-analytics-sites.png": "eff1f5f7f6f6f8f8f8",
+  "public:assets/blog-migrate/cf-web-analytics-dashboard.png": "e3edf0edf2f7f7f8fa",
+  "public:assets/blog-migrate/cf-beacon-snippet.png": "f2f3f4f8f7f7f5f6f8"
 }

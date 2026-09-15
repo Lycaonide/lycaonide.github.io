@@ -992,13 +992,81 @@ execSync(`git add -- ${changed.map(f => `"${f}"`).join(" ")}`);
 
 - 钩子只管 `src/content/posts/` 下的博客文章，知识库笔记（`src/content/docs/`）不处理；
 - 钩子只装在本机 `.git/hooks/`，换机器 / 重克隆后按第 2 节一行命令重装即可。
-#### 十四、总结
+
+#### 十四、接入 Cloudflare Web Analytics 访问统计
+
+文章写多了自然想知道：到底有多少人看？从哪国来？页面打开快不快。接统计之前对比了一圈方案：
+
+| 方案 | 后端 | 费用 | Cookie 横幅 | 体积 |
+| --- | --- | --- | --- | --- |
+| Google Analytics | Google | 免费但功能臃肿 | 要弹 cookie 授权条 | 重 |
+| Umami 自建 | 要自己再部署一个服务 | 免费但得管服务器 | 自己定 | 中 |
+| **Cloudflare Web Analytics** ✅ | Cloudflare 托管 | **免费、不限流量** | **隐私友好，不用 cookie 横幅** | **一段约 1KB 的 beacon** |
+
+选 Cloudflare Web Analytics 主要三点：① 本站已经在 Cloudflare Pages 上，**同一个账号开通就行，不用再注册或部署任何东西**；② 免费、不限流量；③ 隐私优先——它本身不给访客种追踪 cookie，国内访客不用再弹"是否接受 Cookie"那个横幅。
+
+##### 1. 在控制台添加站点
+
+Cloudflare 控制台左侧 **Analytics → Web analytics** → 右上角 **Add a site**，填入主域名 `lycaonide.github.io`（一个 property 可绑多个主机名，备用域名后面想统计再加）：
+
+![Cloudflare Web Analytics 站点列表：已添加 lycaonide.github.io](/assets/blog-migrate/cf-web-analytics-sites.png)
+
+创建后进 **Manage site**，页面下方 **Install JS Snippet** 直接给出一段带 token 的代码，点 **Click to copy** 复制：
+
+![Manage site 页：Install JS Snippet 给出带 token 的统计代码](/assets/blog-migrate/cf-beacon-snippet.png)
+
+> 注意：这段代码里的 `token` 是**公开的站点标识**，本来就会出现在每个访客的 HTML 里，随便贴、不用当密钥；真正要保密的是第九节那个部署用的 API Token。
+
+##### 2. 把 beacon 加到两处布局
+
+为什么是两处？博客文章用的是 Firefly 主题自己的 `src/layouts/Layout.astro`，而知识库 `/kb/` 用的是 **Starlight 独立布局**，两者 `<head>` 互不相干——只加一处，另一处就不计数。
+
+**第一处：博客布局** `src/layouts/Layout.astro` 的 `<head>` 里（和 AI 脚本一样必须 `is:inline`）：
+
+```astro
+<!-- src/layouts/Layout.astro 的 <head> 里 -->
+<!-- Cloudflare Web Analytics -->
+<script is:inline type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "092a891a22f0434890303a58e99052f6"}'></script>
+<!-- End Cloudflare Web Analytics -->
+```
+
+**第二处：知识库 Starlight 布局**，加在 `astro.config.mjs` 的 `starlight({ head: [...] })` 数组里（和第十一节 AI 脚本同一个数组）：
+
+```js
+// astro.config.mjs（starlight 配置的 head 数组里，本站实际使用）
+{
+  tag: "script",
+  attrs: {
+    src: "https://static.cloudflareinsights.com/beacon.min.js",
+    type: "module",
+    "data-cf-beacon":
+      '{"token": "092a891a22f0434890303a58e99052f6"}',
+  },
+},
+```
+
+两处用的是**同一个 token**，所以博客文章和知识库章节都汇总到同一个 Web Analytics property 里看。
+
+##### 3. 验证
+
+push 部署后等几分钟，回到 Web Analytics 看板，能看到 PV / 独立访问数、访客国家分布，以及 **Core Web Vitals**（LCP / INP / CLS，条全绿就是体验健康）：
+
+![接入后控制台：近 24 小时 PV/访问量、Core Web Vitals 全部正常](/assets/blog-migrate/cf-web-analytics-dashboard.png)
+
+几个实际踩过的点：
+
+- **数据有几分钟延迟**，刚部署完立刻看是空的，正常，过一会儿再刷新就有数了；
+- **一定要 `is:inline`**：和第十一节 AI 脚本一个道理，不加 `is:inline`，Astro 构建时会把这条 `<script>` 引用丢掉，页面里根本没有，控制台永远收不到数；
+- **两个域名想清楚**：本站 property 里只配了 `lycaonide.github.io`（主站），`my-firefly-blog.pages.dev` 备用域名的访问默认不计入；想一起统计就在 Manage site 的 Configured hostname(s) 里把 pages.dev 也加上；
+- **不依赖 Cloudflare 托管也能用**：它只是一段前端 beacon，静态站挂哪都行——本站反正已经在 CF Pages 上，顺手开通而已。
+#### 十五、总结
 
 这次迁移的核心经验：
 
 1. **配置收敛**：装饰、评论、友链等开关集中在 config 文件里，方便统一管理；
 2. **双站过渡**：新旧站并存，内容迁完再下线，风险可控；
 3. **自动化部署**：GitHub Actions 让发布变成"push 就完事"（GitHub Pages + Cloudflare Pages 双平台同时更新）；
-4. **AI 问答**：火山方舟 + Cloudflare Pages Function 免费接入，知识库随页携带，Key 不落地。
+4. **AI 问答**：火山方舟 + Cloudflare Pages Function 免费接入，知识库随页携带，Key 不落地；
+5. **访问统计**：Cloudflare Web Analytics 同账号免费接入，一段 beacon 同时统计博客和知识库，无 Cookie 横幅。
 
 最终效果就是你现在看到的这个站：Astro 7 + Firefly 主题，**樱花、评论、友链齐全，加载快还免费**。

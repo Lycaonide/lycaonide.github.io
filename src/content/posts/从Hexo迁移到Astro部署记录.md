@@ -352,14 +352,14 @@ GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体�
 - GitHub Pages：`https://lycaonide.github.io`
 - Cloudflare Pages：`https://my-firefly-blog.pages.dev`
 
-##### 为什么选 Cloudflare Pages
+##### 1. 为什么选 Cloudflare Pages
 
 - **免费额度够用**：每月 100 GB 流量，静态博客轻松覆盖；
 - **自带全球 CDN**：国内节点比 GitHub Pages 快得多；
 - **支持自定义域名、自动 HTTPS**；
 - **和 GitHub 无缝衔接**：可以直接连仓库，也可以用 API Token 手动部署。
 
-##### 方案对比：控制台连接 Git vs API Token
+##### 2. 方案对比：控制台连接 Git vs API Token
 
 一开始尝试的是 Cloudflare 控制台「连接到 Git」（Workers 和 Pages → 创建 → 连接到 Git → 授权 GitHub → 选仓库），理想情况是自动构建、push 即部署。但实测遇到了几个坑：
 
@@ -373,7 +373,7 @@ GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体�
 - **可复现、可写进脚本/CI**：命令即文档，以后换机器也能一键部署；
 - **权限可精确控制**：token 只给「Cloudflare Pages → Edit」权限，用完随时在控制台撤销，比账号级授权更安全。
 
-##### 1. 创建 API Token
+##### 3. 创建 API Token
 
 在 Cloudflare 控制台右上角头像 → **My Profile** → **API Tokens** 页面，点右上角蓝色 **Create Token** 按钮：
 
@@ -394,9 +394,9 @@ GitHub Pages 的服务器在境外，国内访问时快时慢，图片、字体�
 - **Roll**：轮换——生成一个新值，旧值立即失效（token 泄露或想换新时用这个）；
 - **Delete**：彻底删除（部署不再需要时）。
 
-token 只在创建时完整显示一次，**Roll 之后记得把新值同步到 GitHub Secrets**（见下文第 4 节）。
+token 只在创建时完整显示一次，**Roll 之后记得把新值同步到 GitHub Secrets**（见下文第 6 节）。
 
-##### 2. 构建并部署（wrangler）
+##### 4. 构建并部署（wrangler）
 
 本地构建产物在 `dist/`，用 [wrangler](https://developers.cloudflare.com/workers/wrangler/) 直接推上去（Node 自带 npx，无需全局安装）：
 
@@ -426,7 +426,7 @@ npx wrangler pages deploy dist --project-name my-firefly-blog --branch main
 
 生产域名：**https://my-firefly-blog.pages.dev**
 
-##### 3. 验证
+##### 5. 验证
 
 浏览器打开 `https://my-firefly-blog.pages.dev`，内容和 GitHub Pages 完全一致（同一个 dist 构建产物），国内访问明显更流畅：
 
@@ -436,7 +436,7 @@ Cloudflare 控制台的部署记录页（Production 域名 + 每次部署的提�
 
 ![Cloudflare Pages 部署记录页](/assets/blog-migrate/cf-deploy-page.jpg)
 
-##### 4. 后续自动化：push 双平台同步
+##### 6. 后续自动化：push 双平台同步
 
 目前 GitHub Pages 是 push 自动部署，Cloudflare Pages 是手动 `wrangler pages deploy`。想做到**推一次代码、两个平台同时更新**，在仓库新建 `.github/workflows/deploy-cloudflare.yml`，用官方 `cloudflare/wrangler-action@v3`：
 
@@ -488,7 +488,7 @@ jobs:
 2. 点顶部 **Settings** 标签；
 3. 左侧菜单 **Security** → **Secrets and variables** → **Actions**；
 4. 点绿色的 **New repository secret** 按钮；
-5. **Name** 填 `CLOUDFLARE_API_TOKEN`，**Secret** 填你的 Cloudflare API Token（创建方法见上文第 1 节），点 **Add secret**；
+5. **Name** 填 `CLOUDFLARE_API_TOKEN`，**Secret** 填你的 Cloudflare API Token（创建方法见上文第 3 节），点 **Add secret**；
 6. 再点一次 **New repository secret**：**Name** 填 `CLOUDFLARE_ACCOUNT_ID`，**Secret** 填 Cloudflare 账号 ID，点 **Add secret**。
 
 ![GitHub Secrets 配置界面](/assets/blog-migrate/github-secrets.jpg)
@@ -499,7 +499,7 @@ jobs:
 
 ![push 后 GitHub Actions 双平台同时部署成功](/assets/blog-migrate/actions-double-deploy.png)
 
-##### 5. 自定义域名（可选）
+##### 7. 自定义域名（可选）
 
 Cloudflare Pages 支持绑定自定义域名（免费，自动 HTTPS），在项目页 → Custom domains 里添加即可。本站暂时用 `pages.dev` 子域名，等有合适域名再绑。绑定后原 `pages.dev` 域名依然可用，不影响现有访问。
 

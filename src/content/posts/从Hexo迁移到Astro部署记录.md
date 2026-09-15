@@ -911,6 +911,26 @@ git push
 ```
 
 push 后 GitHub Actions 自动构建，**同时部署到 GitHub Pages 和 Cloudflare Pages**；
+
+- **完整一键发布（Windows PowerShell，含 Node 版本切换）**：本机 `node` 必须 ≥22，若默认 shell 指到旧版 Node（20）会导致 Astro 构建报错。用 nvm 的软链 `C:\nvm4w\nodejs` 覆盖 PATH 后再构建推送：
+
+```powershell
+cd E:\Project and blog\my-firefly-blog
+
+# nvm 软链指向 v24.5.0；覆盖 PATH，避免用沙箱/旧版 Node 20
+$env:PATH = "C:\nvm4w\nodejs;" + $env:PATH
+node --version        # 确认输出 v24.x
+
+pnpm build            # 本地构建（含字体子集化）
+
+git add -A
+git commit -m "写点说明"
+
+# 首次推新仓库可能要确认 host key；已配置过可省略这行
+$env:GIT_SSH_COMMAND = "ssh -o StrictHostKeyChecking=accept-new"
+git push origin main
+```
+
 - **只手动部署 Cloudflare**：
 
 ```bash
@@ -1098,17 +1118,35 @@ push 部署后等几分钟，回到 Web Analytics 看板，能看到 PV / 独立
 | 试 ABR 两遍 | `-b:v 900k -pass 2` | 29.3MB | ABR 有偏差仍超限（没加 `-maxrate`），弃 |
 | **最终** ✅ | **crf 30 / preset medium** | **24.27MB / 约 875kbps** | **限内且清晰，采用** |
 
-最终命令：
+压制前先用 `ffprobe` 查源视频参数，确认分辨率和时长（算 25MB 码率预算要用）：
 
 ```bash
-# 源视频约 1280x720、245s；最终压成 firefly.mp4（24.27MB）
+# 查源视频分辨率/时长/码率
+ffprobe -v error -select_streams v:0 -show_entries stream=width,height,bit_rate \
+  -show_entries format=duration,size 源视频.mp4
+# 实际结果：1280x720，时长 245s
+```
+
+最终压制命令：
+
+```bash
+# 源视频 1280x720、245s；最终压成 firefly.mp4（24.27MB）
 ffmpeg -y -i 源视频.mp4 -c:v libx264 -preset medium -crf 30 \
   -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart firefly.mp4
 ```
 
 参数：`-crf` 越小越清晰、体积越大（动画 720p 用 30 可接受）；`-movflags +faststart` 把索引放到文件头，浏览器能边下边播；`-pix_fmt yuv420p` 兼容性最好。
 
-配套的加载优化：背景视频不做首屏自动加载，而是挂在导航栏"播放背景视频"按钮上，点击时才给 `<video>` 赋 `src`——访客不点就不下载这 24MB，首屏更快也更省流量。
+配套的加载优化：背景视频不做首屏自动加载，而是挂在导航栏"播放背景视频"按钮上，点击时才给 `<video>` 赋 `src`——访客不点就不下载这 24MB，首屏更快也更省流量：
+
+```js
+// BackgroundPlayer：点击播放才赋 src，访客不点就不下载
+const video = document.querySelector("video");
+playBtn.addEventListener("click", () => {
+  if (!video.src) video.src = "/assets/videos/firefly.mp4";
+  video.play();
+});
+```
 
 > 经验：① 动画类 720p 视频码率别低于 700kbps，否则动态细节必糊；② CF Pages 单文件 25MB，长视频先算预算——可用码率 ≈ 25MB × 8 ÷ 时长(秒)；③ 体积 / 清晰 / 加载速度三者不可兼得，按场景取舍。
 #### 十六、总结

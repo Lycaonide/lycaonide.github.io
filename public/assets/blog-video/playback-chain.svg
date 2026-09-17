@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" font-family="'Microsoft YaHei','PingFang SC',system-ui,sans-serif">
+  <title>背景视频播放链路（最终形态）</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <text x="500" y="42" text-anchor="middle" font-size="22" font-weight="700" fill="#e2e8f0">背景视频播放链路（最终形态）</text>
+  <text x="500" y="68" text-anchor="middle" font-size="13" fill="#94a3b8">主链路按序尝试，全部失败才退回图片壁纸</text>
+
+  <!-- 节点1 -->
+  <rect x="20" y="150" width="150" height="130" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+  <text x="95" y="185" text-anchor="middle" font-size="16" font-weight="700" fill="#e2e8f0">点击播放</text>
+  <text x="95" y="212" text-anchor="middle" font-size="11.5" fill="#94a3b8">导航栏"播放背景视频"</text>
+  <text x="95" y="232" text-anchor="middle" font-size="11.5" fill="#94a3b8">按钮触发 toggle</text>
+
+  <!-- 箭头1 -->
+  <line x1="170" y1="215" x2="205" y2="215" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="188" y="205" text-anchor="middle" font-size="11" fill="#f87171">失败↓</text>
+
+  <!-- 节点2（主路径，绿色高亮） -->
+  <rect x="210" y="150" width="180" height="130" rx="12" fill="#052e16" stroke="#22c55e" stroke-width="2"/>
+  <text x="300" y="180" text-anchor="middle" font-size="16" font-weight="700" fill="#4ade80">HLS 分片（首选）</text>
+  <text x="300" y="207" text-anchor="middle" font-size="11.5" fill="#86efac">dev 拉取 m3u8 + ts 分片</text>
+  <text x="300" y="227" text-anchor="middle" font-size="11.5" fill="#86efac">每片约 355KB，边下边播</text>
+  <text x="300" y="268" text-anchor="middle" font-size="11" fill="#4ade80">✓ 点击后 1-2 秒出画面</text>
+
+  <!-- 箭头2 -->
+  <line x1="390" y1="215" x2="425" y2="215" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="408" y="205" text-anchor="middle" font-size="11" fill="#f87171">失败↓</text>
+
+  <!-- 节点3 -->
+  <rect x="430" y="150" width="170" height="130" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+  <text x="515" y="185" text-anchor="middle" font-size="16" font-weight="700" fill="#e2e8f0">mp4 单文件</text>
+  <text x="515" y="212" text-anchor="middle" font-size="11.5" fill="#94a3b8">相对路径跟随当前域名</text>
+  <text x="515" y="232" text-anchor="middle" font-size="11.5" fill="#94a3b8">支持 Range 时渐进播放</text>
+  <text x="515" y="252" text-anchor="middle" font-size="11.5" fill="#94a3b8">15MB 整包（无 Range 时）</text>
+
+  <!-- 箭头3 -->
+  <line x1="600" y1="215" x2="635" y2="215" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="618" y="205" text-anchor="middle" font-size="11" fill="#f87171">失败↓</text>
+
+  <!-- 节点4 -->
+  <rect x="640" y="150" width="150" height="130" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+  <text x="715" y="185" text-anchor="middle" font-size="16" font-weight="700" fill="#e2e8f0">备用源</text>
+  <text x="715" y="212" text-anchor="middle" font-size="11.5" fill="#94a3b8">多级备用兜底</text>
+  <text x="715" y="232" text-anchor="middle" font-size="11.5" fill="#94a3b8">不显示切歌按钮</text>
+
+  <!-- 箭头4 -->
+  <line x1="790" y1="215" x2="825" y2="215" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="808" y="205" text-anchor="middle" font-size="11" fill="#f87171">失败↓</text>
+
+  <!-- 节点5 -->
+  <rect x="830" y="150" width="150" height="130" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+  <text x="905" y="185" text-anchor="middle" font-size="16" font-weight="700" fill="#e2e8f0">图片壁纸</text>
+  <text x="905" y="212" text-anchor="middle" font-size="11.5" fill="#94a3b8">全部失败才回退</text>
+  <text x="905" y="232" text-anchor="middle" font-size="11.5" fill="#94a3b8">不再尝试视频</text>
+
+  <!-- 底部要点 -->
+  <rect x="40" y="320" width="920" height="84" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="60" y="346" font-size="13" font-weight="700" fill="#cbd5e1">关键点</text>
+  <text x="60" y="370" font-size="12" fill="#94a3b8">• HLS 分片部署在 dev（Cloudflare Pages），io（GitHub Pages）页面跨域拉取，依赖 dev 的 CORS 头（_headers 配置 Access-Control-Allow-Origin: *）</text>
+  <text x="60" y="390" font-size="12" fill="#94a3b8">• HLS 致命错误自动回退 mp4，mp4 失败再进备用源，保证任何网络下都有内容可播</text>
+</svg>

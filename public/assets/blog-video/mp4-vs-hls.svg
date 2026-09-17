@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" font-family="'Microsoft YaHei','PingFang SC',system-ui,sans-serif">
+  <title>mp4 单文件 vs HLS 分片</title>
+
+  <text x="500" y="40" text-anchor="middle" font-size="22" font-weight="700" fill="#e2e8f0">为什么 mp4 会卡 / 变下载界面，而 HLS 分片不会</text>
+
+  <!-- ============ 上栏：mp4 ============ -->
+  <rect x="40" y="70" width="920" height="210" rx="12" fill="#1c1917" stroke="#f87171" stroke-width="1.5"/>
+  <text x="60" y="100" font-size="15" font-weight="700" fill="#fca5a5">mp4 单文件（托管不支持 Range）</text>
+  <text x="60" y="122" font-size="12" fill="#94a3b8">原理：浏览器依赖 HTTP Range 请求"边下边播"，只下载开头几百 KB 就开始播放，边播边下载剩余部分</text>
+
+  <!-- 进度条整包 -->
+  <rect x="60" y="140" width="880" height="30" rx="6" fill="#334155"/>
+  <rect x="60" y="140" width="880" height="30" rx="6" fill="#ef4444" opacity="0.85"/>
+  <text x="500" y="160" text-anchor="middle" font-size="12.5" fill="#ffffff" font-weight="700">下载进度 100% —— 15.66MB 全部下载完才允许播放</text>
+  <text x="60" y="192" font-size="12.5" fill="#fca5a5">✗ 服务器不支持 Range → 必须整包下载 → 手机上变成"下载界面"；电脑上点播放后长时间无反应</text>
+
+  <text x="60" y="220" font-size="12" fill="#94a3b8">实测：向 Cloudflare Pages 发送 Range: bytes=0-1048575，返回 200 + 完整 15.66MB（而非 206 分段）</text>
+  <text x="60" y="242" font-size="12" fill="#94a3b8">GitHub Pages 支持 Range（返回 206），但国内线路慢，渐进下载速度约 22KB/s，播放仍然卡顿</text>
+
+  <!-- ============ 下栏：HLS ============ -->
+  <rect x="40" y="300" width="920" height="230" rx="12" fill="#052e16" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="60" y="330" font-size="15" font-weight="700" fill="#4ade80">HLS 分片（行业标准做法）</text>
+  <text x="60" y="352" font-size="12" fill="#94a3b8">原理：视频被切成若干 6 秒的小文件（ts 分片）+ 一个播放清单（m3u8），播放器按需逐片拉取，不需要 Range</text>
+
+  <!-- 分片方块 -->
+  <text x="60" y="385" font-size="12" fill="#86efac">playlist.m3u8（清单）</text>
+  <rect x="220" y="368" width="96" height="16" rx="3" fill="#16a34a"/>
+  <text x="268" y="380" text-anchor="middle" font-size="10.5" fill="#ffffff">playlist</text>
+  <g>
+    <rect x="60" y="400" width="42" height="42" rx="4" fill="#15803d"/>
+    <rect x="108" y="400" width="42" height="42" rx="4" fill="#16a34a"/>
+    <rect x="156" y="400" width="42" height="42" rx="4" fill="#22c55e"/>
+    <rect x="204" y="400" width="42" height="42" rx="4" fill="#4ade80"/>
+    <rect x="252" y="400" width="42" height="42" rx="4" fill="#4ade80" opacity="0.7"/>
+    <rect x="300" y="400" width="42" height="42" rx="4" fill="#334155"/>
+    <rect x="348" y="400" width="42" height="42" rx="4" fill="#334155"/>
+    <text x="415" y="426" font-size="12" fill="#86efac">… 共 41 片，每片约 355KB</text>
+  </g>
+  <text x="60" y="466" font-size="12.5" fill="#4ade80">✓ 播放器逐片拉取，拉完第 2 片（<1MB）就开始播放，边播边拉后续分片</text>
+  <text x="60" y="492" font-size="12.5" fill="#4ade80">✓ 每个分片是完整的小文件，直接下载即可，完全绕开"服务器不支持 Range"的限制</text>
+  <text x="60" y="514" font-size="12" fill="#94a3b8">代价：需要 hls.js 播放器（约 605KB，点击播放时才懒加载）；视频从 1 个文件变为 1 个清单 + 41 个分片</text>
+</svg>

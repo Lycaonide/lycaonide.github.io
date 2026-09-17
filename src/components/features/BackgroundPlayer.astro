@@ -257,8 +257,9 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			window.swup.hooks.on("page:view", applyHomeStretch);
 		}
 
-		// 已经在首页时再点导航"主页"按钮：重放"加载一下"的拉长动画
-		// （页面切换场景由 applyHomeStretch 处理；这里是同页点击，无导航事件，手动重放）
+		// 已经在首页时再点导航"主页"按钮：自然的"加载一下"效果
+		// 淡入 + 从 65vh 拉长到 72vh（轻微弹性过冲），不先缩回，视觉自然
+		// （页面切换场景由 applyHomeStretch 处理；这里是同页点击，无导航事件）
 		document.addEventListener("click", function (e) {
 			var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
 			if (!a) return;
@@ -272,10 +273,15 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			if (location.pathname !== "/" && location.pathname !== "/index.html") return;
 			var w = document.getElementById("wallpaper-wrapper");
 			if (!w) return;
-			// 先缩回 65vh，强制回流后再拉长，重放过渡动画
+			if (w.classList.contains("home-reloading")) return; // 动画进行中，忽略重复点击
+			// 临时移除稳态类（72vh !important 会压过 keyframes），动画由 keyframes 全程控制
 			w.classList.remove("bg-home-active");
-			void w.offsetHeight;
-			w.classList.add("bg-home-active");
+			w.classList.add("home-reloading");
+			w.addEventListener("animationend", function onEnd() {
+				w.classList.remove("home-reloading");
+				w.classList.add("bg-home-active");
+				w.removeEventListener("animationend", onEnd);
+			});
 		}, true);
 
 		function toggle() {

@@ -257,9 +257,9 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			window.swup.hooks.on("page:view", applyHomeStretch);
 		}
 
-		// 已经在首页时再点导航"主页"按钮：整页重新加载 = 最自然的"加载一下"
-		// 背景在页面重新加载后随首次入场自然拉长（65→72），全程只有一次变化，
-		// 避免任何"起点切换/淡入/回弹"造成的二次感知
+		// 已经在首页时再点导航"主页"按钮：背景"跳动"加载动画
+		// 只对背景 wrapper 做 scaleY 脉冲（transform，不受 height!important 影响），
+		// 内容区完全不动、无透明度变化、无起点跳变，视觉上只有一次连贯"跳动"
 		// （页面切换场景由 applyHomeStretch 处理；这里是同页点击，无导航事件）
 		document.addEventListener("click", function (e) {
 			var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
@@ -272,12 +272,18 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			if (!isHomeLink) return;
 			// 不在首页时交给 applyHomeStretch（页面切换自带拉长），这里只处理同页点击
 			if (location.pathname !== "/" && location.pathname !== "/index.html") return;
-			// 整页重新加载前先让页面淡出（约 350ms），"加载一下"更有慢节奏；
-			// reload 是浏览器级操作，Swup 无法拦截，背景加载后重新入场拉长
-			document.documentElement.classList.add("page-fade-out");
+			var w = document.getElementById("wallpaper-wrapper");
+			if (!w) return;
+			if (w.classList.contains("home-jumping")) return; // 动画进行中，忽略重复点击
+			w.classList.add("home-jumping");
+			var cleanup = function () {
+				w.classList.remove("home-jumping");
+				w.removeEventListener("animationend", cleanup);
+			};
+			w.addEventListener("animationend", cleanup);
 			setTimeout(function () {
-				location.reload();
-			}, 350);
+				if (w.classList.contains("home-jumping")) cleanup();
+			}, 1600);
 		}, true);
 
 		function toggle() {

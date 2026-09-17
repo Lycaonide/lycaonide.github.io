@@ -993,11 +993,14 @@ html[data-wallpaper-mode="fullscreen"][data-fullscreen-layout="classic"] #wallpa
 }
 
 
-/* 点击"主页"整页重载前的淡出过渡 */
-html.page-fade-out {
-    animation: pageFadeOut 350ms ease-in forwards;
+/* 主页同页点击"主页"按钮：背景"跳动"加载动画（scaleY 脉冲，内容不动，无透明度/高度起点跳变） */
+#wallpaper-wrapper.home-jumping {
+    animation: homeJump 1.1s ease-in-out;
+    transform-origin: top;
 }
-@keyframes pageFadeOut {
-    from { opacity: 1; }
-    to   { opacity: 0; }
+@keyframes homeJump {
+    0%   { transform: scaleY(1); }
+    40%  { transform: scaleY(1.06); }
+    70%  { transform: scaleY(0.99); }
+    100% { transform: scaleY(1); }
 }

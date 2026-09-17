@@ -519,11 +519,11 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
     <!-- Font Setup (Astro Font API) -->
     <FontSetup />
 
-    <!-- AI 问答助手（CF Pages Function 代理） -->
-    <script src="/ai-chat.js" is:inline></script>
+    <!-- AI 问答助手（CF Pages Function 代理）；defer 不阻塞首屏解析 -->
+    <script src="/ai-chat.js" is:inline defer></script>
 
-    <!-- Cloudflare Web Analytics -->
-    <script is:inline type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "092a891a22f0434890303a58e99052f6"}'></script>
+    <!-- Cloudflare Web Analytics；async 异步加载不阻塞渲染 -->
+    <script is:inline type="module" async src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "092a891a22f0434890303a58e99052f6"}'></script>
     <!-- End Cloudflare Web Analytics -->
   </head>
   <body

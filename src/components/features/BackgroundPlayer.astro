@@ -152,8 +152,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			return urlList[currentIndex];
 		}
 
-				function doPlay() {
-			var hlsInstance = null;
+				var hlsInstance = null;
 
 			function destroyHls() {
 				if (hlsInstance) {
@@ -207,7 +206,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 					.catch(function () { onFail(); });
 			}
 
-			function doPlay() {
+		function doPlay() {
 				var url = getCurrentUrl();
 				// 单视频 + 有 HLS 配置 + 未启用备用源时优先走 HLS（多视频列表仍走 mp4）
 				if (hlsUrl && !isMultiple && !fallbackTried) {
@@ -216,7 +215,6 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 					playMp4(url);
 				}
 			}
-		}
 
 		function switchTrack(index) {
 			// 手动切歌（多视频模式）：切回主列表，重置备用状态

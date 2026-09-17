@@ -257,6 +257,27 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			window.swup.hooks.on("page:view", applyHomeStretch);
 		}
 
+		// 已经在首页时再点导航"主页"按钮：重放"加载一下"的拉长动画
+		// （页面切换场景由 applyHomeStretch 处理；这里是同页点击，无导航事件，手动重放）
+		document.addEventListener("click", function (e) {
+			var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+			if (!a) return;
+			var href = a.getAttribute("href") || "";
+			var path;
+			try { path = new URL(href, location.href).pathname; }
+			catch (err) { path = href.split("#")[0].split("?")[0]; }
+			var isHomeLink = path === "/" || path === "/index.html";
+			if (!isHomeLink) return;
+			// 不在首页时交给 applyHomeStretch（页面切换自带拉长），这里只处理同页点击
+			if (location.pathname !== "/" && location.pathname !== "/index.html") return;
+			var w = document.getElementById("wallpaper-wrapper");
+			if (!w) return;
+			// 先缩回 65vh，强制回流后再拉长，重放过渡动画
+			w.classList.remove("bg-home-active");
+			void w.offsetHeight;
+			w.classList.add("bg-home-active");
+		}, true);
+
 		function toggle() {
 			isPlaying = !isPlaying;
 			if (isPlaying) {

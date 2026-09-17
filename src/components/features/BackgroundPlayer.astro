@@ -272,8 +272,12 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			if (!isHomeLink) return;
 			// 不在首页时交给 applyHomeStretch（页面切换自带拉长），这里只处理同页点击
 			if (location.pathname !== "/" && location.pathname !== "/index.html") return;
-			// 整页重新加载：浏览器级操作，Swup 无法拦截，背景加载后重新入场拉长
-			location.reload();
+			// 整页重新加载前先让页面淡出（约 350ms），"加载一下"更有慢节奏；
+			// reload 是浏览器级操作，Swup 无法拦截，背景加载后重新入场拉长
+			document.documentElement.classList.add("page-fade-out");
+			setTimeout(function () {
+				location.reload();
+			}, 350);
 		}, true);
 
 		function toggle() {

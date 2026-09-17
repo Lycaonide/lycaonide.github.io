@@ -112,10 +112,14 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
           this.element.textContent = segments
             .slice(0, this.currentIndex)
             .join("");
+          // 正在打字：显示光标
+          this.element.classList.remove("typewriter-done");
 
           this.timeoutId = window.setTimeout(() => this.type(), this.speed);
         } else {
           // 打字完成，暂停后开始删除（如果有多条文本）
+          // 行已打完整：隐藏光标，下一行开始打字时再出现
+          this.element.classList.add("typewriter-done");
           if (this.texts.length > 1) {
             this.isDeleting = true;
             this.timeoutId = window.setTimeout(
@@ -191,6 +195,11 @@ const textData = Array.isArray(text) ? JSON.stringify(text) : text;
     content: "|";
     animation: blink 1s infinite;
     margin-left: 2px;
+  }
+
+  /* 一行打完后光标消失，下一行开始打字时移除该类恢复光标 */
+  .typewriter-done::after {
+    display: none;
   }
 
   @keyframes blink {

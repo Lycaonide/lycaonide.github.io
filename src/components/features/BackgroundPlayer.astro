@@ -257,8 +257,9 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			window.swup.hooks.on("page:view", applyHomeStretch);
 		}
 
-		// 已经在首页时再点导航"主页"按钮：自然的"加载一下"效果
-		// 淡入 + 从 65vh 拉长到 72vh（轻微弹性过冲），不先缩回，视觉自然
+		// 已经在首页时再点导航"主页"按钮："加载一下"动画（仅高度一次拉长）
+		// 关键：动画只有 height 单属性变化，视觉上只有一次变化；
+		// 起点 72→65 在禁用过渡后同一帧内完成（强制回流），用户不可见
 		// （页面切换场景由 applyHomeStretch 处理；这里是同页点击，无导航事件）
 		document.addEventListener("click", function (e) {
 			var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
@@ -274,14 +275,24 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			var w = document.getElementById("wallpaper-wrapper");
 			if (!w) return;
 			if (w.classList.contains("home-reloading")) return; // 动画进行中，忽略重复点击
-			// 临时移除稳态类（72vh !important 会压过 keyframes），动画由 keyframes 全程控制
+			// 1) 禁用过渡，同一帧内把高度从 72 落回 65（强制回流），用户看不到"缩回"
+			w.style.transition = "none";
 			w.classList.remove("bg-home-active");
+			void w.offsetHeight;
+			// 2) 加动画类：纯 height 65→72 一次平滑拉长
 			w.classList.add("home-reloading");
-			w.addEventListener("animationend", function onEnd() {
+			// 3) 动画结束：恢复稳态类与过渡
+			var cleanup = function () {
 				w.classList.remove("home-reloading");
 				w.classList.add("bg-home-active");
-				w.removeEventListener("animationend", onEnd);
-			});
+				w.style.transition = "";
+				w.removeEventListener("animationend", cleanup);
+			};
+			w.addEventListener("animationend", cleanup);
+			// 兜底：动画被外部逻辑打断时 1.3s 后清理残留状态
+			setTimeout(function () {
+				if (w.classList.contains("home-reloading")) cleanup();
+			}, 1300);
 		}, true);
 
 		function toggle() {

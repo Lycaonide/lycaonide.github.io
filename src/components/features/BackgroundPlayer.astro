@@ -7,9 +7,15 @@ export interface Props {
 	playerUrl: string | string[];
 	playerMode?: "order" | "random";
 	playerFallbackUrl?: string | string[];
+	playerHlsUrl?: string;
 }
 
-const { playerUrl, playerMode = "order", playerFallbackUrl } = Astro.props;
+const {
+	playerUrl,
+	playerMode = "order",
+	playerFallbackUrl,
+	playerHlsUrl,
+} = Astro.props;
 
 const urls = Array.isArray(playerUrl) ? playerUrl : [playerUrl];
 const hasMultiple = urls.length > 1;
@@ -20,6 +26,7 @@ const fallbackUrls = Array.isArray(playerFallbackUrl)
 		? [playerFallbackUrl]
 		: [];
 const fallbackUrlsJson = JSON.stringify(fallbackUrls);
+const hlsUrl = playerHlsUrl || "";
 
 const tPrev = i18n(I18nKey.videoPrev);
 const tNext = i18n(I18nKey.videoNext);
@@ -78,7 +85,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 	)
 }
 
-<script is:inline define:vars={{ urls: urlsJson, playerMode, hasMultiple, fallbackUrls: fallbackUrlsJson }}>
+<script is:inline define:vars={{ urls: urlsJson, playerMode, hasMultiple, fallbackUrls: fallbackUrlsJson, hlsUrl }}>
 	(() => {
 		var urlList = JSON.parse(urls);
 		if (!urlList.length) return;
@@ -86,9 +93,8 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		var fallbackList = JSON.parse(fallbackUrls);
 		var fallbackTried = false;
 
-		// 主源走 io(GitHub Pages)：支持 Range(206)，浏览器渐进播放点击后秒出画面；
-		// dev(CF Pages) 不支持 Range，15MB 需整体下载很慢，仅作备用兜底。
-		// 跨域媒体(<video>)加载不需要 CORS，io/dev 页面均可直接拉取 io 视频。
+		// 播放链路：HLS 分片（dev, m3u8，每片几百 KB 边下边播）→ mp4（跟随域名）→ 备用 → 图片。
+		// HLS 绕开 CF 不支持 Range、io 线路慢的硬伤，任意网络下小分片都能快速加载。
 
 		var overlay = document.getElementById("bg-player-overlay");
 		var video = document.getElementById("bg-player-video");
@@ -146,12 +152,70 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			return urlList[currentIndex];
 		}
 
-		function doPlay() {
-			video.src = getCurrentUrl();
-			video.muted = true;
-			video.play()
-				.then(function () { setTimeout(function () { if (video) video.muted = false; }, 100); })
-				.catch(function () { isPlaying = false; syncAttr(); });
+				function doPlay() {
+			var hlsInstance = null;
+
+			function destroyHls() {
+				if (hlsInstance) {
+					try { hlsInstance.destroy(); } catch (e) {}
+					hlsInstance = null;
+				}
+			}
+
+			// mp4 直播（原逻辑拆出）
+			function playMp4(url) {
+				destroyHls();
+				video.src = url;
+				video.muted = true;
+				video.play()
+					.then(function () { setTimeout(function () { if (video) video.muted = false; }, 100); })
+					.catch(function () { isPlaying = false; syncAttr(); });
+			}
+
+			// HLS 分片播放：绕开 CF 无 Range 只能整包下载的硬伤，每片几百 KB 边下边播
+			function playHls(url, onFail) {
+				function startWith(Hls) {
+					if (!Hls.isSupported()) { onFail(); return; }
+					destroyHls();
+					try {
+						hlsInstance = new Hls({ maxBufferLength: 40, maxMaxBufferLength: 120 });
+						hlsInstance.loadSource(url);
+						hlsInstance.attachMedia(video);
+						hlsInstance.on(Hls.Events.MANIFEST_PARSED, function () {
+							video.muted = true;
+							video.play()
+								.then(function () { setTimeout(function () { if (video) video.muted = false; }, 100); })
+								.catch(function () { isPlaying = false; syncAttr(); });
+						});
+						hlsInstance.on(Hls.Events.ERROR, function (evt, data) {
+							if (data && data.fatal) {
+								// HLS 致命错误 → 退回 mp4 播放
+								destroyHls();
+								onFail();
+							}
+						});
+					} catch (e) { onFail(); }
+				}
+				// is:inline 脚本不走打包，用站点根绝对路径加载 public 下的 hls.min.js（UMD，挂 window.Hls）
+				if (window.Hls) { startWith(window.Hls); return; }
+				import('/assets/js/hls.min.js')
+					.then(function (mod) {
+						var Hls = mod.default || window.Hls;
+						if (!Hls) { onFail(); return; }
+						startWith(Hls);
+					})
+					.catch(function () { onFail(); });
+			}
+
+			function doPlay() {
+				var url = getCurrentUrl();
+				// 单视频 + 有 HLS 配置 + 未启用备用源时优先走 HLS（多视频列表仍走 mp4）
+				if (hlsUrl && !isMultiple && !fallbackTried) {
+					playHls(hlsUrl, function () { playMp4(url); });
+				} else {
+					playMp4(url);
+				}
+			}
 		}
 
 		function switchTrack(index) {

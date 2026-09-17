@@ -10,6 +10,7 @@ export type BackgroundWallpaperConfig = {
 				desktop?: string | string[];
 				mobile?: string | string[];
 				playerUrl?: string | string[]; // 背景视频播放地址，支持单个视频路径或数组（多视频列表循环）
+				playerHlsUrl?: string; // HLS 分片播放地址（.m3u8）：优先用 HLS 边下边播（不受 Range 限制），失败才退回 playerUrl
 				playerFallbackUrl?: string | string[]; // 备用视频地址：主视频加载失败时自动切换（不显示切歌按钮），全部失败才退回图片壁纸
 		  }; // 支持单个图片、图片数组或分别设置桌面端和移动端图片
 	// 横幅壁纸和全屏壁纸共享配置

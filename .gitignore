@@ -52,3 +52,9 @@ src/content/docs/kb/.obsidian/
 .dev.vars
 .wrangler/
 preview.log
+
+# build/preview logs and ffmpeg temp
+build-*.log
+preview-*.log
+ffmpeg2pass-*
+

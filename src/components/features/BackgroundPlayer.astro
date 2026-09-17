@@ -240,7 +240,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 				if (currentIndex >= urlList.length) currentIndex = 0;
 				syncAttr();
 				if (overlay) { overlay.classList.remove("opacity-0"); overlay.classList.add("opacity-100"); }
-				requestAnimationFrame(function () { doPlay(); });
+				doPlay();
 			} else {
 				video.pause();
 				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }

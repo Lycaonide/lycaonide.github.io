@@ -1,53 +1,101 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 480" font-family="'Microsoft YaHei','PingFang SC',system-ui,sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" font-family="'Microsoft YaHei','PingFang SC',system-ui,sans-serif">
   <title>双域名分工与自定义域名的真相</title>
   <defs>
-    <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#111c33"/>
+    </linearGradient>
+    <linearGradient id="ioG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="devG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f472b6"/>
+      <stop offset="1" stop-color="#db2777"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
       <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
     </marker>
   </defs>
 
-  <text x="500" y="42" text-anchor="middle" font-size="22" font-weight="700" fill="#e2e8f0">双域名分工：io 主站 + dev 视频仓库</text>
+  <rect width="1000" height="640" fill="url(#bg)"/>
 
-  <!-- io 节点 -->
-  <rect x="40" y="90" width="300" height="170" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
-  <text x="190" y="120" text-anchor="middle" font-size="16" font-weight="700" fill="#7dd3fc">lycaonide.github.io（io）</text>
-  <text x="190" y="145" text-anchor="middle" font-size="12" fill="#94a3b8">GitHub Pages · 主站</text>
-  <text x="190" y="170" text-anchor="middle" font-size="12" fill="#94a3b8">用户访问 / 微信分享的域名</text>
-  <text x="190" y="195" text-anchor="middle" font-size="12" fill="#94a3b8">支持 Range（206）但国内线路慢</text>
-  <text x="190" y="220" text-anchor="middle" font-size="12" fill="#94a3b8">页面跨域拉取 dev 的分片</text>
-  <text x="190" y="245" text-anchor="middle" font-size="12" fill="#94a3b8">自身也保留 mp4 / 分片兜底</text>
+  <text x="500" y="46" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">双域名分工：io 主站 + dev 视频仓库</text>
+  <text x="500" y="72" text-anchor="middle" font-size="13.5" fill="#94a3b8">主站页面跨域拉取 dev 的分片 —— 分工明确，各干各的</text>
 
-  <!-- 箭头：io -> dev -->
-  <line x1="340" y1="175" x2="430" y2="175" stroke="#64748b" stroke-width="2.5" marker-end="url(#arrow2)"/>
-  <text x="385" y="162" text-anchor="middle" font-size="12" fill="#fbbf24">跨域请求</text>
-  <text x="385" y="195" text-anchor="middle" font-size="11.5" fill="#94a3b8">CORS ✓</text>
+  <!-- ============ 用户设备 ============ -->
+  <g filter="url(#shadow)">
+    <rect x="30" y="100" width="160" height="150" rx="16" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <text x="110" y="138" text-anchor="middle" font-size="30">📱</text>
+    <text x="110" y="176" text-anchor="middle" font-size="15" font-weight="700" fill="#e2e8f0">访客设备</text>
+    <text x="110" y="198" text-anchor="middle" font-size="11.5" fill="#94a3b8">手机 / 微信 / 电脑</text>
+    <text x="110" y="218" text-anchor="middle" font-size="11.5" fill="#94a3b8">打开的就是 io 域名</text>
+    <rect x="50" y="232" width="120" height="8" rx="4" fill="#38bdf8"/>
+  </g>
 
-  <!-- dev 节点 -->
-  <rect x="435" y="90" width="300" height="170" rx="12" fill="#052e16" stroke="#22c55e" stroke-width="2"/>
-  <text x="585" y="120" text-anchor="middle" font-size="16" font-weight="700" fill="#4ade80">my-firefly-blog.pages.dev（dev）</text>
-  <text x="585" y="145" text-anchor="middle" font-size="12" fill="#94a3b8">Cloudflare Pages · 视频仓库</text>
-  <text x="585" y="170" text-anchor="middle" font-size="12" fill="#94a3b8">国内下载快（实测约 833KB/s）</text>
-  <text x="585" y="195" text-anchor="middle" font-size="12" fill="#94a3b8">不支持 Range，但分片无需 Range</text>
-  <text x="585" y="220" text-anchor="middle" font-size="12" fill="#94a3b8">存放 m3u8 + 41 个 ts 分片</text>
-  <text x="585" y="245" text-anchor="middle" font-size="12" fill="#94a3b8">_headers 配置 CORS 允许跨域</text>
+  <line x1="195" y1="175" x2="245" y2="175" stroke="#64748b" stroke-width="2.5" marker-end="url(#arr2)"/>
+  <text x="220" y="163" text-anchor="middle" font-size="10.5" fill="#64748b">访问</text>
 
-  <!-- 用户节点 -->
-  <rect x="820" y="90" width="150" height="170" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
-  <text x="895" y="125" text-anchor="middle" font-size="15" font-weight="700" fill="#e2e8f0">访客</text>
-  <text x="895" y="150" text-anchor="middle" font-size="12" fill="#94a3b8">手机 / 电脑 / 微信</text>
-  <text x="895" y="175" text-anchor="middle" font-size="12" fill="#94a3b8">打开 io 主站</text>
-  <text x="895" y="200" text-anchor="middle" font-size="12" fill="#94a3b8">点击播放背景视频</text>
-  <text x="895" y="225" text-anchor="middle" font-size="12" fill="#94a3b8">分片从 dev 快速拉取</text>
+  <!-- ============ io 主站 ============ -->
+  <g filter="url(#shadow)">
+    <rect x="250" y="100" width="300" height="230" rx="16" fill="#0c1a2e" stroke="#38bdf8" stroke-width="2"/>
+    <rect x="250" y="100" width="300" height="46" rx="16" fill="url(#ioG)" opacity="0.15"/>
+    <text x="270" y="130" font-size="14" font-weight="700" fill="#7dd3fc">🌐 io（GitHub Pages）· 主站</text>
+    <text x="270" y="168" font-size="12.5" fill="#e2e8f0">lycaonide.github.io</text>
+    <text x="270" y="194" font-size="12" fill="#94a3b8">· 用户访问 / 微信分享的域名</text>
+    <text x="270" y="216" font-size="12" fill="#94a3b8">· 页面、CSS、JS、字体（走 dev CDN）</text>
+    <text x="270" y="238" font-size="12" fill="#94a3b8">· 不支持自定义缓存头（字体只能 10 分钟缓存）</text>
+    <text x="270" y="260" font-size="12" fill="#94a3b8">· 支持 Range 但国内线路慢</text>
+    <rect x="270" y="278" width="260" height="34" rx="8" fill="#0ea5e9" opacity="0.15"/>
+    <text x="280" y="300" font-size="11.5" fill="#7dd3fc">视频"播放"不在 io 干 —— 只负责把用户请进门</text>
+  </g>
 
-  <!-- 访客 -> io -->
-  <line x1="970" y1="60" x2="970" y2="88" stroke="#64748b" stroke-width="2" marker-end="url(#arrow2)"/>
-  <text x="1005" y="78" font-size="11.5" fill="#94a3b8">访问</text>
+  <!-- 跨域拉取箭头 -->
+  <line x1="555" y1="175" x2="625" y2="175" stroke="#64748b" stroke-width="2.5" marker-end="url(#arr2)"/>
+  <text x="590" y="158" text-anchor="middle" font-size="11" fill="#64748b">跨域拉取</text>
+  <text x="590" y="196" text-anchor="middle" font-size="10.5" fill="#64748b">（CORS *）</text>
 
-  <!-- 底部：自定义域名 -->
-  <rect x="40" y="290" width="920" height="160" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1"/>
-  <text x="60" y="318" font-size="15" font-weight="700" fill="#cbd5e1">那自定义域名呢？—— 只是换个"门牌号"</text>
-  <text x="60" y="345" font-size="12.5" fill="#94a3b8">自定义域名 = 把 lycaonide.github.io 绑成你自己的域名（如 lycaonide.com），访问时底层仍是同一台 GitHub / Cloudflare 服务器：</text>
-  <text x="60" y="370" font-size="12.5" fill="#94a3b8">• 服务器是否支持 Range → 不变（这是平台能力，与域名无关）</text>
-  <text x="60" y="395" font-size="12.5" fill="#94a3b8">• 国内线路快慢 → 不变（域名不改变服务器所在线路）</text>
-  <text x="60" y="420" font-size="12.5" fill="#fbbf24">结论：仅换域名解决不了视频问题。真正能让 mp4 直接边下边播的条件 = 自定义域名 + 托管到"支持 Range 且国内快"的平台（如国内对象存储 + CDN）。</text>
+  <!-- ============ dev 视频仓库 ============ -->
+  <g filter="url(#shadow)">
+    <rect x="630" y="100" width="340" height="230" rx="16" fill="#2a0f1f" stroke="#f472b6" stroke-width="2"/>
+    <rect x="630" y="100" width="340" height="46" rx="16" fill="url(#devG)" opacity="0.15"/>
+    <text x="650" y="130" font-size="14" font-weight="700" fill="#f9a8d4">⚡ dev（Cloudflare Pages）· 视频仓库</text>
+    <text x="650" y="168" font-size="12.5" fill="#e2e8f0">my-firefly-blog.pages.dev</text>
+    <text x="650" y="194" font-size="12" fill="#94a3b8">· 存放 m3u8 播放清单 + 41 个分片</text>
+    <text x="650" y="216" font-size="12" fill="#94a3b8">· 国内下载快（分片实测约 0.4s/片）</text>
+    <text x="650" y="238" font-size="12" fill="#94a3b8">· _headers 配了 1 年 immutable 缓存</text>
+    <text x="650" y="260" font-size="12" fill="#94a3b8">· 字体也在这里（CORS + 1 年缓存）</text>
+    <!-- 分片缩略 -->
+    <g>
+      <rect x="650" y="278" width="26" height="16" rx="3" fill="#f472b6"/>
+      <rect x="682" y="278" width="26" height="16" rx="3" fill="#f472b6"/>
+      <rect x="714" y="278" width="26" height="16" rx="3" fill="#f472b6"/>
+      <rect x="746" y="278" width="26" height="16" rx="3" fill="#f472b6"/>
+      <rect x="778" y="278" width="26" height="16" rx="3" fill="#334155"/>
+      <rect x="810" y="278" width="26" height="16" rx="3" fill="#334155"/>
+      <rect x="842" y="278" width="26" height="16" rx="3" fill="#334155"/>
+      <text x="878" y="291" font-size="11" fill="#f9a8d4">seg_0000 ~ 0040</text>
+    </g>
+  </g>
+
+  <!-- ============ 底部：自定义域名真相 ============ -->
+  <rect x="30" y="370" width="940" height="240" rx="18" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>
+  <text x="500" y="410" text-anchor="middle" font-size="17" font-weight="700" fill="#f1f5f9">关于自定义域名：只是换"门牌号"，解决不了视频问题</text>
+
+  <rect x="60" y="432" width="400" height="58" rx="10" fill="#1e293b"/>
+  <text x="80" y="456" font-size="13" fill="#e2e8f0">绑之前：lycaonide.github.io</text>
+  <text x="80" y="478" font-size="12" fill="#94a3b8">底层：GitHub Pages 服务器</text>
+
+  <text x="505" y="466" text-anchor="middle" font-size="24">➡️</text>
+
+  <rect x="540" y="432" width="400" height="58" rx="10" fill="#1e293b"/>
+  <text x="560" y="456" font-size="13" fill="#e2e8f0">绑之后：lycaonide.com</text>
+  <text x="560" y="478" font-size="12" fill="#94a3b8">底层：还是同一台 GitHub Pages 服务器</text>
+
+  <text x="70" y="520" font-size="13" fill="#fca5a5">❌ 域名不会改变：Range 支不支持、服务器在哪条线上 —— 该卡还是卡</text>
+  <text x="70" y="550" font-size="13" fill="#93c5fd">✅ 想让 mp4 直接边下边播：自定义域名 + 视频托管到"支持 Range 且国内快"的平台（如国内 OSS/CDN）</text>
+  <text x="70" y="580" font-size="13" fill="#6ee7b7">✅ 现在的 HLS 分片方案对"不支持 Range"天然免疫，与域名无关 —— 绑不绑域名都不用动视频部分</text>
 </svg>

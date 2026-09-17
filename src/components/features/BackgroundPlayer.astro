@@ -240,6 +240,23 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			else { w.classList.remove("bg-video-active"); }
 		}
 
+		// 进入首页（点击导航"主页"按钮 / 首次加载首页）时背景拉长：加载时拉长效果，离开首页恢复
+		function applyHomeStretch() {
+			var isHome = location.pathname === "/" || location.pathname === "/index.html";
+			var w = document.getElementById("wallpaper-wrapper");
+			if (!w) return;
+			if (isHome) { w.classList.add("bg-home-active"); }
+			else { w.classList.remove("bg-home-active"); }
+		}
+		applyHomeStretch();
+		// Swup 无刷新导航后重算（覆盖：从其他页点击"主页"返回首页、首次加载）
+		document.addEventListener("swup:page:view", applyHomeStretch);
+		document.addEventListener("swup:contentReplaced", applyHomeStretch);
+		document.addEventListener("swup:content:replace", applyHomeStretch);
+		if (typeof window !== "undefined" && window.swup && window.swup.hooks) {
+			window.swup.hooks.on("page:view", applyHomeStretch);
+		}
+
 		function toggle() {
 			isPlaying = !isPlaying;
 			if (isPlaying) {

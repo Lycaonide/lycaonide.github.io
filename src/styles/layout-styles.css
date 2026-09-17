@@ -985,3 +985,9 @@ html[data-wallpaper-mode="fullscreen"][data-fullscreen-layout="classic"] #wallpa
     height: 72vh !important;
     transition: height 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
+/* 进入首页时背景拉长（导航"主页"→ 加载时拉长效果），离开首页恢复 */
+#wallpaper-wrapper.bg-home-active {
+    height: 72vh !important;
+    transition: height 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}

@@ -86,6 +86,13 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		var fallbackList = JSON.parse(fallbackUrls);
 		var fallbackTried = false;
 
+		// 跨域降级：主源若配的是 GitHub Pages 绝对地址，而当前页面不在该域名（如微信里打开 dev），
+		// 自动改成本域名相对路径——微信内置浏览器对跨域媒体加载不稳定，同域最稳
+		var MAIN_HOST = "lycaonide.github.io";
+		if (location.host !== MAIN_HOST && urlList[0].indexOf("https://" + MAIN_HOST) === 0) {
+			urlList[0] = "/assets/videos/firefly.mp4";
+		}
+
 		var overlay = document.getElementById("bg-player-overlay");
 		var video = document.getElementById("bg-player-video");
 		var prevBtn = document.getElementById("bg-prev-btn");

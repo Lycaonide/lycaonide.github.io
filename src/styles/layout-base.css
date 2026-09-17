@@ -30,7 +30,7 @@
     --content-top: 100vh;
   }
 
-  /* banner wrapper：统一顶到顶部、高 72vh（不再用 -30vh/translateY 抵消；短屏高度由 layout-styles 媒体查询覆盖） */
+  /* banner wrapper：统一顶到顶部、高 65vh（不再用 -30vh/translateY 抵消；短屏高度由 layout-styles 媒体查询覆盖） */
   html[data-wallpaper-mode="banner"] #wallpaper-wrapper {
     position: absolute;
     top: 0;

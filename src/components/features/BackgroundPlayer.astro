@@ -232,16 +232,26 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			}
 		}
 
+		// 播放时横幅拉长（bg-video-active），暂停/结束恢复原高度
+		function setBgActive(active) {
+			var w = document.getElementById("wallpaper-wrapper");
+			if (!w) return;
+			if (active) { w.classList.add("bg-video-active"); }
+			else { w.classList.remove("bg-video-active"); }
+		}
+
 		function toggle() {
 			isPlaying = !isPlaying;
 			if (isPlaying) {
 				if (currentIndex >= urlList.length) currentIndex = 0;
 				syncAttr();
 				if (overlay) { overlay.classList.remove("opacity-0"); overlay.classList.add("opacity-100"); }
+				setBgActive(true);
 				doPlay();
 			} else {
 				video.pause();
 				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
+				setBgActive(false);
 				syncAttr();
 			}
 		}
@@ -253,6 +263,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			} else {
 				isPlaying = false;
 				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
+				setBgActive(false);
 				syncAttr();
 			}
 		}
@@ -278,6 +289,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 				// 全部失败 → 退回图片壁纸
 				isPlaying = false;
 				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
+				setBgActive(false);
 				syncAttr();
 				showToast();
 			}

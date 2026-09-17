@@ -365,6 +365,30 @@ async function main() {
 		}
 	}
 
+	// 7. 字体 URL 统一重写到 CF Pages(dev) CDN
+	// 背景：io(GitHub Pages) 不支持自定义缓存头（字体仅 max-age=600 且 GitHub 线路慢），
+	// 首次访问字体加载慢 → 页面字体加载期"变来变去"。dev(CF Pages) 有 1 年 immutable 缓存且国内快，
+	// 因此字体文件统一从 dev 分发（与视频 HLS 分片同一思路），io 页面字体也能秒出、稳定不闪。
+	const FONT_CDN = "https://my-firefly-blog.pages.dev/_astro/fonts/";
+	const fontAssetFiles = await glob("**/*.{css,html}", {
+		cwd: DIST_DIR,
+		absolute: true,
+	});
+	let rewrittenCount = 0;
+	for (const file of fontAssetFiles) {
+		const content = await fs.readFile(file, "utf8");
+		if (!content.includes("/_astro/fonts/")) continue;
+		const updated = content.replaceAll("/_astro/fonts/", FONT_CDN);
+		await fs.writeFile(file, updated);
+		rewrittenCount++;
+		console.log(`   ✔ Font URL → CDN: ${path.relative(DIST_DIR, file)}`);
+	}
+	console.log(
+		rewrittenCount > 0
+			? `✨ Font URLs rewritten to CF Pages CDN (${rewrittenCount} files)`
+			: "⚠ No font URLs found to rewrite",
+	);
+
 	console.log("✨ Font subsetting completed!");
 }
 

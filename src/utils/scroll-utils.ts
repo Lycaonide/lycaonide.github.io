@@ -60,7 +60,7 @@ export function scrollFunction(): void {
 		lastScrollTop = scrollTop;
 		operations.push(() => {
 			const isHome = document.body.classList.contains("is-home");
-			// 壁纸/hero 边界：banner 首页 72vh、非首页 45vh；fullscreen 仅首页整屏（100lvh），非首页无 hero 为 0。
+			// 壁纸/hero 边界：banner 首页 65vh、非首页 45vh；fullscreen 仅首页整屏（100lvh），非首页无 hero 为 0。
 			// 越过该边界才启用「下滑隐藏 / 上滑显示」。overHero 不 gate isHome，故非首页 banner 也会跨壁纸保持
 			const heroBoundary = isFullscreenMode()
 				? isHome

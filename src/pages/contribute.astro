@@ -1,0 +1,43 @@
+---
+import { getEntry, render } from "astro:content";
+import Markdown from "@components/common/Markdown.astro";
+import { Icon } from "astro-icon/components";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+const contributePost = await getEntry("spec", "contribute");
+
+if (!contributePost) {
+	throw new Error("Contribute page content not found");
+}
+
+const { Content } = await render(contributePost);
+
+const title = "投稿 / Contribute";
+const description = "投稿请提 GitHub Issue 或 PR，稿件直接进入 git 审核流程";
+---
+<MainGridLayout title={title} description={description}>
+	<div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
+		<div class="card-base z-10 px-9 py-6 relative w-full">
+			<div class="mb-4">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
+						<Icon name="material-symbols:edit-document" class="text-[1.5rem]" />
+					</div>
+					<div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+						{title}
+					</div>
+				</div>
+				{
+					description && (
+						<p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
+							{description}
+						</p>
+					)
+				}
+			</div>
+			<Markdown class="mt-2">
+				<Content />
+			</Markdown>
+		</div>
+	</div>
+</MainGridLayout>

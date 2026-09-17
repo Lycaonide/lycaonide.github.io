@@ -47,6 +47,13 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 
 			// 友链页面
 			LinkPresets.Friends,
+
+			// 投稿页面（GitHub Issue / PR 驱动）
+			{
+				name: "投稿",
+				url: "/contribute/",
+				icon: "material-symbols:edit-document",
+			},
 		],
 	});
 

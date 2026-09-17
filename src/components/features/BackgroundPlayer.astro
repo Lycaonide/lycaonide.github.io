@@ -6,13 +6,20 @@ import { i18n } from "@/i18n/translation";
 export interface Props {
 	playerUrl: string | string[];
 	playerMode?: "order" | "random";
+	playerFallbackUrl?: string | string[];
 }
 
-const { playerUrl, playerMode = "order" } = Astro.props;
+const { playerUrl, playerMode = "order", playerFallbackUrl } = Astro.props;
 
 const urls = Array.isArray(playerUrl) ? playerUrl : [playerUrl];
 const hasMultiple = urls.length > 1;
 const urlsJson = JSON.stringify(urls);
+const fallbackUrls = Array.isArray(playerFallbackUrl)
+	? playerFallbackUrl
+	: playerFallbackUrl
+		? [playerFallbackUrl]
+		: [];
+const fallbackUrlsJson = JSON.stringify(fallbackUrls);
 
 const tPrev = i18n(I18nKey.videoPrev);
 const tNext = i18n(I18nKey.videoNext);
@@ -71,11 +78,13 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 	)
 }
 
-<script is:inline define:vars={{ urls: urlsJson, playerMode, hasMultiple }}>
+<script is:inline define:vars={{ urls: urlsJson, playerMode, hasMultiple, fallbackUrls: fallbackUrlsJson }}>
 	(() => {
 		var urlList = JSON.parse(urls);
 		if (!urlList.length) return;
 		var isMultiple = urlList.length > 1;
+		var fallbackList = JSON.parse(fallbackUrls);
+		var fallbackTried = false;
 
 		var overlay = document.getElementById("bg-player-overlay");
 		var video = document.getElementById("bg-player-video");
@@ -127,8 +136,14 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			window.dispatchEvent(new CustomEvent("bg-player-state-change", { detail: { playing: isPlaying } }));
 		}
 
+		function getCurrentUrl() {
+			// 备用源已启用时读备用列表（主源全部失败后的兜底）
+			if (fallbackTried) return fallbackList[currentIndex % fallbackList.length];
+			return urlList[currentIndex];
+		}
+
 		function doPlay() {
-			video.src = urlList[currentIndex];
+			video.src = getCurrentUrl();
 			video.muted = true;
 			video.play()
 				.then(function () { setTimeout(function () { if (video) video.muted = false; }, 100); })
@@ -136,6 +151,11 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		}
 
 		function switchTrack(index) {
+			// 手动切歌（多视频模式）：切回主列表，重置备用状态
+			if (fallbackTried) {
+				fallbackTried = false;
+				errorCount = 0;
+			}
 			if (index < 0 || index >= urlList.length) return;
 			currentIndex = index;
 			if (isPlaying) {
@@ -173,13 +193,23 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 
 		function onError() {
 			errorCount++;
-			if (isMultiple && errorCount < urlList.length) {
-				// 多视频模式下自动尝试下一个
+			if (isMultiple && !fallbackTried && errorCount < urlList.length) {
+				// 多视频模式：主列表内自动尝试下一个
 				currentIndex = pickIndex(currentIndex);
 				video.src = urlList[currentIndex];
 				video.load();
+			} else if (!fallbackTried && fallbackList.length) {
+				// 主源全部失败 → 切到备用视频（io 挂了走 dev，不退回图片）
+				fallbackTried = true;
+				currentIndex = 0;
+				errorCount = 0;
+				doPlay();
+			} else if (fallbackTried && fallbackList.length > 1 && errorCount < fallbackList.length) {
+				// 备用源也是多个 → 依次尝试
+				currentIndex = (currentIndex + 1) % fallbackList.length;
+				doPlay();
 			} else {
-				// 所有视频都失败或只有单个视频
+				// 全部失败 → 退回图片壁纸
 				isPlaying = false;
 				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
 				syncAttr();

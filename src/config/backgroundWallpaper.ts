@@ -61,8 +61,10 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 支持单个视频路径（字符串）或多个视频循环（数组，参考上面壁纸配置）
 		// 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
 		// playerUrl: "/assets/videos/firefly.mp4",
-		// 用 GitHub Pages 绝对地址：io 支持 Range 流式播放（走东京节点，微信/国内更快），CF Pages 不响应 Range 只能整体下载
+		// 主源用 GitHub Pages 绝对地址：io 支持 Range 流式播放（走东京节点，微信/国内快），CF Pages 不响应 Range 只能整体下载
 		playerUrl: "https://lycaonide.github.io/assets/videos/firefly.mp4",
+		// 备用源：主源（io）加载失败时自动切换；相对路径跟随当前页面域名（dev 慢但能播），都失败才退回图片壁纸
+		playerFallbackUrl: "/assets/videos/firefly.mp4",
 	},
 	// 横幅壁纸和全屏壁纸共享配置
 	common: {

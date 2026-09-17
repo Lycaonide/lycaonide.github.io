@@ -2,7 +2,7 @@
 draft: false
 title: 从Hexo迁移到Astro部署记录
 published: 2026-09-14
-updated: 2026-09-15
+updated: 2026-09-17
 description: 记录本站从 Hexo 迁移到 Astro 的全过程：技术选型、双站并存、字体本地化、站点美化、Giscus 评论接入、GitHub Actions 自动部署与 Cloudflare Pages 国内加速。
 tags: [Astro, Hexo, 博客, 部署, GitHub Pages, Cloudflare Pages]
 category: 技术笔记
@@ -1103,22 +1103,25 @@ push 部署后等几分钟，回到 Web Analytics 看板，能看到 PV / 独立
 
 > 经验：用了 Swup 这类过渡库后，所有"特殊跳转"——返回、外链、必须整页刷新的链接——都要显式加 `data-no-swup`，别让它和库的拦截逻辑打架。
 
-##### 2. 背景视频压到 13MB 反而糊
+##### 2. 背景视频：清晰度和移动端播放的平衡
 
-**现象**：首版背景视频从 36MB 压到 13MB，体积是小了，但樱花飘落 + 人物的动画画面明显发糊。
+**现象**：背景视频第一版压到 13MB 后，720p 动画画面明显发糊；后来为了清晰压回 **24.27MB**（约 875kbps），桌面端没问题，但**手机上打开页面点播放，浏览器直接弹下载而不是播放**；微信里点分享链接、按播放按钮完全没反应。
 
-**原因**：720p 视频码率压到了约 448kbps（crf 35）。这种带动态细节的动画画面，720p 码率低于约 700kbps 就会糊。
+**原因**（两个独立问题）：
+- **糊**：720p 码率压到约 448kbps（crf 35）太低，带动态细节的动画画面低于约 700kbps 就会糊；
+- **手机上变下载 / 微信放不了**：Cloudflare Pages 的静态资源**不响应 Range 请求**（实测带 `Range: bytes=0-1023` 也返回 200 全量，pages.dev 域名不走 CF 边缘缓存），浏览器没法"边下边播"，超过 ~15MB 就直接转下载；微信内置浏览器（X5/WKWebView）对无 Range 的大视频直接拒绝播放。GitHub Pages 支持 Range（返回 206）所以之前能播，但国内访问慢所以卡。
 
-**解决**：重新压制，把 crf 提到 30，码率回到约 875kbps（清晰近 2 倍），成品 **24.27MB**，正好卡在 Cloudflare Pages 单文件 25MB 上限内。中间试了几版都不合适：
+**解决**：换思路——**降分辨率、保码率密度**。降到 854×480 后用 2-pass 精确压到约 410kbps，成品 **14.94MB**：分辨率减半但每像素码率是 720p@448k 的两倍，手机上（屏幕小）反而更清晰，体积也落在手机浏览器愿意整体缓冲的区间。中间试过的版本：
 
 | 方案 | 参数 | 结果 | 取舍 |
 | --- | --- | --- | --- |
-| 第一版 | crf 35 | 13MB / 约 448kbps | 太糊，弃 |
-| 试 crf 27 | crf 27 / preset slow | 30.3MB | 超 25MB 上限，弃 |
-| 试 ABR 两遍 | `-b:v 900k -pass 2` | 29.3MB | ABR 有偏差仍超限（没加 `-maxrate`），弃 |
-| **最终** ✅ | **crf 30 / preset medium** | **24.27MB / 约 875kbps** | **限内且清晰，采用** |
+| 第一版 | crf 35 / 720p | 13MB / 约 448kbps | 太糊，弃 |
+| 试 crf 27 | crf 27 / preset slow / 720p | 30.3MB | 超 25MB 上限，弃 |
+| 试 ABR 两遍 | `-b:v 900k -pass 2` / 720p | 29.3MB | ABR 有偏差仍超限（没加 `-maxrate`），弃 |
+| 清晰版 | crf 30 / preset medium / 720p | 24.27MB / 约 875kbps | 桌面清晰，但手机上变下载、微信放不了，弃 |
+| **最终** ✅ | **2-pass 410k / 854×480** | **14.94MB / 约 408kbps** | **手机上能播、微信能播、小屏观感够清晰，采用** |
 
-压制前先用 `ffprobe` 查源视频参数，确认分辨率和时长（算 25MB 码率预算要用）：
+压制前先用 `ffprobe` 查源视频参数，确认分辨率和时长（算码率预算要用）：
 
 ```bash
 # 查源视频分辨率/时长/码率
@@ -1127,17 +1130,20 @@ ffprobe -v error -select_streams v:0 -show_entries stream=width,height,bit_rate 
 # 实际结果：1280x720，时长 245s
 ```
 
-最终压制命令：
+最终压制命令（2-pass，Windows 用 NUL，Linux/macOS 用 /dev/null）：
 
 ```bash
-# 源视频 1280x720、245s；最终压成 firefly.mp4（24.27MB）
-ffmpeg -y -i 源视频.mp4 -c:v libx264 -preset medium -crf 30 \
-  -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart firefly.mp4
+# 源视频 1280x720、245s；最终压成 firefly.mp4（14.94MB，854×480）
+ffmpeg -y -i 源视频.mp4 -vf scale=854:480 -c:v libx264 -preset medium \
+  -b:v 410k -maxrate 600k -bufsize 1.2M -pass 1 -an -f null NUL
+ffmpeg -y -i 源视频.mp4 -vf scale=854:480 -c:v libx264 -preset medium \
+  -b:v 410k -maxrate 600k -bufsize 1.2M -pass 2 \
+  -c:a aac -b:a 96k -movflags +faststart firefly.mp4
 ```
 
-参数：`-crf` 越小越清晰、体积越大（动画 720p 用 30 可接受）；`-movflags +faststart` 把索引放到文件头，浏览器能边下边播；`-pix_fmt yuv420p` 兼容性最好。
+参数：`-vf scale=854:480` 降到 480p——手机屏幕小，分辨率减半不影响观感，码率密度翻倍反而更清晰；`-b:v 410k` 目标视频码率，2-pass 先跑一遍摸清画面复杂度再精确分配码率，比 CRF 更能卡体积（配合 `-maxrate 600k` 防码率尖峰）；`-movflags +faststart` 把索引放到文件头，浏览器能边下边播；`-pix_fmt yuv420p` 兼容性最好。
 
-配套的加载优化：背景视频不做首屏自动加载，而是挂在导航栏"播放背景视频"按钮上，点击时才给 `<video>` 赋 `src`——访客不点就不下载这 24MB，首屏更快也更省流量：
+配套的加载优化：背景视频不做首屏自动加载，而是挂在导航栏"播放背景视频"按钮上，点击时才给 `<video>` 赋 `src`——访客不点就不下载这 15MB，首屏更快也更省流量：
 
 ```js
 // BackgroundPlayer：点击播放才赋 src，访客不点就不下载
@@ -1148,7 +1154,14 @@ playBtn.addEventListener("click", () => {
 });
 ```
 
-> 经验：① 动画类 720p 视频码率别低于 700kbps，否则动态细节必糊；② CF Pages 单文件 25MB，长视频先算预算——可用码率 ≈ 25MB × 8 ÷ 时长(秒)；③ 体积 / 清晰 / 加载速度三者不可兼得，按场景取舍。
+另外 `<video>` 标签要加移动端内联播放属性，否则 iOS Safari 全屏、微信 X5 内核不播：
+
+```html
+<video preload="metadata" playsinline webkit-playsinline
+  x5-playsinline x5-video-player-type="h5" ...></video>
+```
+
+> 经验：① 动画类 720p 码率别低于 700kbps，否则动态细节必糊；② **CF Pages 静态资源不响应 Range 请求**，移动端大视频会变下载、微信放不了——要么控制在 ~15MB 内让浏览器整体缓冲，要么绑自定义域名走 CDN 缓存；③ 清晰度看"每像素码率"：降分辨率 + 足码率，小屏上比高分辨率低码率更清晰；④ 体积 / 清晰 / 加载速度三者不可兼得，按场景取舍。
 #### 十六、总结
 
 这次迁移的核心经验：

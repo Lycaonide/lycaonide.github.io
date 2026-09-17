@@ -35,6 +35,15 @@ const SYSTEM_FONT_STACK =
 const MONO_FONT_STACK =
 	'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 const selectedFontVars = selectedIds.filter((v) => v !== "system");
+// preload 集合 = 全局 selected 字体 + 各区域显式字体（banner 主/副标题、导航栏标题）
+// 区域字体是首屏视觉关键（横幅标题等），必须尽早发现并并行下载；
+// 之前 preload 只看 selected（默认 system 时为 0 个），导致字体在 CSS 解析后才被发现，io(GitHub) 上慢网络下延迟明显
+const regionFontVars = [
+	fontConfig.bannerTitleFont,
+	fontConfig.bannerSubtitleFont,
+	fontConfig.navbarTitleFont,
+].filter((v): v is string => Boolean(v));
+const preloadFontVars = new Set([...selectedFontVars, ...regionFontVars]);
 const bodyFontFamily =
 	selectedFontVars.length > 0
 		? [...selectedFontVars.map((v) => `var(${v})`), SYSTEM_FONT_STACK].join(
@@ -64,7 +73,7 @@ const codeFontFamily = codeFontVar
 {Array.from(allCssVars).map((cssVar) => (
   <Font
     cssVariable={cssVar as any}
-    preload={selectedFontVars.includes(cssVar)}
+    preload={preloadFontVars.has(cssVar)}
   />
 ))}
 

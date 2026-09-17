@@ -2,7 +2,6 @@
    构建时 scripts/subset-fonts.ts 会自动扫描页面字符生成轻量子集并替换 URL */
 
 :root {
-  --font-noto-sans-sc: "Noto Sans SC", sans-serif;
   --font-lxgw-wenkai: "LXGW WenKai", sans-serif;
   --font-space-grotesk: "Space Grotesk", sans-serif;
   --font-jetbrains-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
@@ -15,14 +14,6 @@
   font-weight: 500;
   font-display: swap;
   src: url("/assets/fonts/lxgw-wenkai-500.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Noto Sans SC";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/assets/fonts/noto-sans-sc-500.woff2") format("woff2");
 }
 
 @font-face {

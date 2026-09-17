@@ -86,8 +86,9 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		var fallbackList = JSON.parse(fallbackUrls);
 		var fallbackTried = false;
 
-		// 主源固定走 dev(CF Pages)：实测 io(GitHub) 上视频国内下载极慢会卡死，dev 快一个数量级
-		// （历史版本曾按域名降级到同域视频，实测 io 反而更慢，已移除）
+		// 主源走 io(GitHub Pages)：支持 Range(206)，浏览器渐进播放点击后秒出画面；
+		// dev(CF Pages) 不支持 Range，15MB 需整体下载很慢，仅作备用兜底。
+		// 跨域媒体(<video>)加载不需要 CORS，io/dev 页面均可直接拉取 io 视频。
 
 		var overlay = document.getElementById("bg-player-overlay");
 		var video = document.getElementById("bg-player-video");

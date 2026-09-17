@@ -61,10 +61,11 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 支持单个视频路径（字符串）或多个视频循环（数组，参考上面壁纸配置）
 		// 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
 		// playerUrl: "/assets/videos/firefly.mp4",
-		// 主源用 dev（CF Pages）绝对地址：实测 io(GitHub) 上 15MB 视频国内下载仅 3.6KB/s 会卡死，dev 有 833KB/s；
-		// CF 不响应 Range，浏览器走整体下载（+faststart 可边下边播），18 秒左右出画面
-		playerUrl: "https://my-firefly-blog.pages.dev/assets/videos/firefly.mp4",
-		// 备用源：主源（dev）加载失败时自动切换；相对路径跟随当前页面域名，都失败才退回图片壁纸
+		// 主源用 GitHub Pages(io) 绝对地址：io 支持 Range(实测 206)，浏览器边下边播，
+		// 点击后下载开头几百 KB 即可出画面（渐进播放）；CF Pages(dev) 不支持 Range，15MB 需整体下载会很慢。
+		// 注意：沙箱测速中 io 全量下载慢是测试环境网络问题，用户实际网络下 Range 渐进播放正常（此前"电脑放得很好"即此配置）
+		playerUrl: "https://lycaonide.github.io/assets/videos/firefly.mp4",
+		// 备用源：主源（io）加载失败时自动切换；相对路径跟随当前页面域名（dev 无 Range 慢但能播），都失败才退回图片壁纸
 		playerFallbackUrl: "/assets/videos/firefly.mp4",
 	},
 	// 横幅壁纸和全屏壁纸共享配置

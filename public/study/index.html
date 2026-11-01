@@ -534,18 +534,18 @@ function readObsidian(root){
           counts[o] = names.length; info.mathChapters = names;
           return readExamDate(dir);
         }).then(function(d){ info.examDate = d; });
-      }));
+      })).catch(function(e){ console.warn("math-notes:", e); }));
     } else if (o === "sentence"){
       jobs.push(descend(root, ["考研", "英语", "每日一句", "完成进度（不做真题先听2010-2019）.md"])
         .then(function(h){ return h.getFile(); }).then(countSentences).then(function(r){
           counts[o] = r.n; info.sentenceLast = r.last;
-        }));
+        }).catch(function(e){ console.warn("sentence:", e); }));
     } else if (o.indexOf("dir:") === 0){
       var rel = o.slice(4);
-      jobs.push(descend(root, rel.split("/")).then(countMathNotes).then(function(names){ counts[o] = names.length; }));
+      jobs.push(descend(root, rel.split("/")).then(countMathNotes).then(function(names){ counts[o] = names.length; }).catch(function(e){ console.warn("dir:", e); }));
     } else if (o.indexOf("tbl:") === 0){
       var rel2 = o.slice(4);
-      jobs.push(descend(root, rel2.split("/")).then(function(h){ return h.getFile(); }).then(countSentences).then(function(r){ counts[o] = r.n; }));
+      jobs.push(descend(root, rel2.split("/")).then(function(h){ return h.getFile(); }).then(countSentences).then(function(r){ counts[o] = r.n; }).catch(function(e){ console.warn("tbl:", e); }));
     }
   });
   // 固定读复盘中心：今天到期未打勾的题数

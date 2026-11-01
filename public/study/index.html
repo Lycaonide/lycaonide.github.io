@@ -102,7 +102,7 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 .gmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .gmeta .cell{background:#F8FAFC;border:1px solid #EEF2F7;border-radius:8px;padding:6px 8px;text-align:center}
 .gmeta .cell .k{font-size:11px;color:var(--muted);display:block;font-weight:600;letter-spacing:.3px}
-.gmeta .cell .v{font-size:16px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.gmeta .cell .v{font-size:17px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
 .gmeta .cell .v small{font-weight:600;color:var(--muted);font-size:11px}
 .gact{display:grid;grid-template-columns:90px 1fr 80px;gap:10px;align-items:end;margin-top:14px}
 .gact .field label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:5px}
@@ -121,7 +121,7 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 .rec .time{margin-left:auto;color:var(--muted);font-size:12px}
 .obstacle{margin-top:12px;font-size:13.5px;color:var(--ink2);background:#FBFDFC;border:1px dashed #CBD5E1;border-radius:12px;padding:9px 11px;line-height:1.6}
 .obstacle b{color:var(--ink);font-weight:700}
-.auto-hint{margin-top:6px;font-size:13px;color:#3B82F6;background:#DBEAFE;border:1px solid #BFDBFE;border-radius:6px;padding:4px 8px;font-weight:600}
+.auto-hint{margin-top:6px;font-size:12px;color:#60A5FA;background:#EFF6FF;border:1px solid #DBEAFE;border-radius:6px;padding:4px 8px;font-weight:400}
 .auto-sub{margin-top:6px;font-size:12.5px;color:var(--muted);font-weight:500}
 .examline{margin:0 0 14px;font-size:13px;font-weight:600;color:var(--brand-ink);background:linear-gradient(90deg,rgba(37,99,235,.12),rgba(37,99,235,.04));border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:10px 14px}
 .review-today{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin-bottom:12px;border-left:4px solid var(--amber);background:#FFFBF2}
@@ -941,7 +941,7 @@ function goalCard(g){
       '</div>' +
       '<div class="gadd"><button class="btn plain" data-goal="' + g.id + '" data-act="backfill">补记最近 6 天</button></div>';
   }
-  var streakTxt = auto ? '<span style="font-size:16px;color:var(--ink2);font-weight:600">自动</span>' : streak(g) + " 天";
+  var streakTxt = auto ? '<span style="font-size:17px;color:var(--ink2);font-weight:600">自动</span>' : streak(g) + " 天";
   return '<div class="card gcard" style="--gc:' + g.color + '">' +
     '<div class="ghead"><span class="gdot"></span><span class="gname">' + esc(g.name) + '</span>' +
     blogLink(g) +
@@ -951,7 +951,7 @@ function goalCard(g){
     '<div class="gmeta">' +
       '<div class="cell"><span class="k">完成率</span><span class="v">' + pct(g) + '% <small>' + doneTotal(g) + '/' + g.total + '</small></span></div>' +
       '<div class="cell"><span class="k">连续天数</span><span class="v">' + streakTxt + '</span></div>' +
-      '<div class="cell"><span class="k">预计完成</span><span class="v" style="font-size:16px">' + et + '</span></div>' +
+      '<div class="cell"><span class="k">预计完成</span><span class="v" style="font-size:17px">' + et + '</span></div>' +
     '</div>' +
     gact + recHtml + obs + '</div>';
 }

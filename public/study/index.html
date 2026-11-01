@@ -163,6 +163,22 @@ main{max-width:1080px;margin:0 auto;padding:16px 20px calc(96px + env(safe-area-
 .td-name{font-size:12px;color:var(--muted);font-weight:600}
 .td-n{font-size:18px;font-weight:800;color:var(--brand-ink)}
 .td-m{font-size:11px;color:var(--muted)}
+.cl-legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:8px}
+.cl-legend span{display:flex;align-items:center;gap:4px}
+.cl-list{display:flex;flex-direction:column}
+.cl-row{display:grid;grid-template-columns:34px 1fr auto auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #EFF4F1;font-size:13px}
+.cl-row:last-child{border-bottom:none}
+.cl-no{font-weight:800;color:var(--brand-ink);font-size:14px}
+.cl-name{font-weight:600}
+.cl-count{color:var(--muted);font-size:12px}
+.cl-lv{display:flex;gap:4px}
+.cl-lv i,.cl-legend i{font-style:normal;font-size:11px;padding:2px 7px;border-radius:8px;font-weight:700}
+.lv-a{background:#D4EDDA;color:#155724}
+.lv-b{background:#FFF3CD;color:#856404}
+.lv-c{background:#F8D7DA;color:#721C24}
+.cl-due{color:var(--red);font-weight:700;font-size:12px}
+.cl-week{color:var(--amber);font-size:12px}
+.cl-ok{color:var(--muted);font-size:12px}
 .rlab ~ textarea, .card textarea.weekout{width:100%;box-sizing:border-box;border:1px solid #DCE7E1;border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;resize:vertical}
 .wn-wrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .wline{font-size:13px}
@@ -172,6 +188,8 @@ main{max-width:1080px;margin:0 auto;padding:16px 20px calc(96px + env(safe-area-
   .feed-n{min-width:0}
   .heat-cell{width:18px;height:18px}
   .tdist{grid-template-columns:repeat(2,1fr)}
+  .cl-row{grid-template-columns:28px 1fr;grid-template-rows:auto auto;row-gap:4px}
+  .cl-count,.cl-lv,.cl-due,.cl-week,.cl-ok{grid-column:2}
 }
 .gadd{margin-top:14px;text-align:center}
 
@@ -503,6 +521,44 @@ function readObsidian(root){
       });
       info.reviewToday = todayDue; info.reviewOverdue = overdue;
     }).catch(function(){ info.reviewToday = 0; info.reviewOverdue = 0; }));
+  // 遍历所有 0X-*.md 章节，读台账数据，聚合成章节闭环视图
+  jobs.push(descend(root, ["考研", "数学", "零基础通关讲义"])
+    .then(function(dir){
+      var CHAP_NAMES = { "01":"基本逻辑", "02":"解析式", "03":"方程与不等式", "04":"函数", "05":"数列", "06":"坐标系" };
+      var chapMap = {};
+      return dir.values().then(function(entries){
+        var fileEntries = entries.filter(function(e){ return e.kind === "file" && /^\d{2}-.*\.md$/.test(e.name); });
+        return Promise.all(fileEntries.map(function(e){
+          return e.getFile().then(function(f){ return f.text(); }).then(function(txt){
+            var no = e.name.slice(0, 2);
+            if (!chapMap[no]) chapMap[no] = { no: no, name: CHAP_NAMES[no] || "", total: 0, A: 0, B: 0, C: 0, dueToday: 0, dueWeek: 0 };
+            var today = todayKey();
+            var weekEnd = toKey(addDays(fromKey(today), 7));
+            var blocks = txt.split("#### 台账数据").pop().split(/\n\s*\n/);
+            blocks.forEach(function(b){
+              if (!/title::/.test(b)) return;
+              function field(name){
+                var m = new RegExp(name + "::\\s*(.+)").exec(b);
+                return m ? m[1].trim() : "";
+              }
+              var iv = parseFloat(field("interval"));
+              if (!(iv >= 1)) iv = ({ C: 2, B: 4, A: 15 })[field("level").toUpperCase()] || 2;
+              var lv = iv >= 15 ? "A" : (iv >= 4 ? "B" : "C");
+              var last = field("last_review") || field("study_date");
+              chapMap[no].total++;
+              chapMap[no][lv]++;
+              if (last){
+                var next = toKey(addDays(fromKey(last), iv));
+                if (next <= today) chapMap[no].dueToday++;
+                else if (next <= weekEnd) chapMap[no].dueWeek++;
+              }
+            });
+          });
+        }));
+      }).then(function(){
+        info.chapterLoop = Object.keys(chapMap).sort().map(function(k){ return chapMap[k]; });
+      });
+    }).catch(function(){ info.chapterLoop = []; }));
   return Promise.all(jobs).then(function(){ return { counts: counts, info: info }; });
 }
 function applyObsidian(counts, info, dirName){
@@ -514,7 +570,8 @@ function applyObsidian(counts, info, dirName){
     mathChapters: (info && info.mathChapters && info.mathChapters.length) ? info.mathChapters : (oi.mathChapters || []),
     sentenceLast: (info && info.sentenceLast) || oi.sentenceLast || "",
     reviewToday: (info && info.reviewToday != null) ? info.reviewToday : (oi.reviewToday || 0),
-    reviewOverdue: (info && info.reviewOverdue != null) ? info.reviewOverdue : (oi.reviewOverdue || 0)
+    reviewOverdue: (info && info.reviewOverdue != null) ? info.reviewOverdue : (oi.reviewOverdue || 0),
+    chapterLoop: (info && info.chapterLoop) ? info.chapterLoop : (oi.chapterLoop || [])
   };
   save(); render();
 }
@@ -878,9 +935,26 @@ function renderBoard(){
   });
   h += '</div>';
   h += '<div class="card chart-card"><h3>近 14 天打卡量（分钟优先，无分钟记数量）</h3>' + chart14() + legendHTML() + '</div>';
+  h += chapterLoopCard();
   h += heat35();
   h += recentFeed();
   $("tab-board").innerHTML = h;
+}
+function chapterLoopCard(){
+  var loop = (state.obsidianInfo && state.obsidianInfo.chapterLoop) || [];
+  if (!loop.length) return "";
+  var rows = loop.map(function(c){
+    var due = c.dueToday ? '<span class="cl-due">今日到期 ' + c.dueToday + '</span>' : (c.dueWeek ? '<span class="cl-week">7日内 ' + c.dueWeek + '</span>' : '<span class="cl-ok">已排期</span>');
+    return '<div class="cl-row">' +
+      '<span class="cl-no">' + c.no + '</span>' +
+      '<span class="cl-name">' + esc(c.name) + '</span>' +
+      '<span class="cl-count">' + c.total + ' 题</span>' +
+      '<span class="cl-lv"><i class="lv-a">A' + c.A + '</i><i class="lv-b">B' + c.B + '</i><i class="lv-c">C' + c.C + '</i></span>' +
+      due + '</div>';
+  }).join("");
+  return '<div class="card"><h3>数学章节闭环 · 学习→练习→复盘→记背</h3>' +
+    '<div class="cl-legend"><span><i class="lv-a"></i>掌握(≥15天)</span><span><i class="lv-b"></i>提示(4-14天)</span><span><i class="lv-c"></i>卡壳(≤3天)</span></div>' +
+    '<div class="cl-list">' + rows + '</div></div>';
 }
 function heat35(){
   var t = fromKey(todayKey());

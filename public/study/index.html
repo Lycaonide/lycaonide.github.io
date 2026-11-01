@@ -67,7 +67,7 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .card h3::before{content:"";width:4px;height:14px;border-radius:3px;background:var(--grad);flex:none}
 
 /* 每日一句 */
-.quote{position:relative;background:linear-gradient(180deg,#F2FAF6,#EAF6F0);border-color:rgba(37,99,235,.18);padding:20px 20px 18px 22px;overflow:hidden}
+.quote{position:relative;background:linear-gradient(180deg,#F5F9FF,#EFF4FF);border-color:rgba(37,99,235,.15);padding:16px 20px;overflow:hidden}
 .quote::before{content:"“";position:absolute;right:14px;top:-10px;font-size:92px;line-height:1;color:rgba(37,99,235,.14);font-family:Georgia,serif;pointer-events:none}
 .quote .q{font-size:16px;line-height:1.75;font-weight:600;color:var(--ink)}
 .quote .qtag{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;color:var(--brand-ink);background:rgba(37,99,235,.12);border-radius:999px;padding:3px 10px;letter-spacing:1px}
@@ -98,7 +98,7 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .gfill{height:100%;border-radius:5px;background:var(--gc);transition:width .35s cubic-bezier(.22,.61,.36,1);position:relative}
 .gfill::after{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:rgba(255,255,255,.22);border-radius:inherit}
 .gmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.gmeta .cell{background:#F6FAF8;border:1px solid #EDF4F0;border-radius:13px;padding:9px 8px;text-align:center}
+.gmeta .cell{background:#F8FAFC;border:1px solid #EEF2F7;border-radius:8px;padding:6px 8px;text-align:center}
 .gmeta .cell .k{font-size:11px;color:var(--muted);display:block;font-weight:600;letter-spacing:.3px}
 .gmeta .cell .v{font-size:17px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
 .gmeta .cell .v small{font-weight:600;color:var(--muted);font-size:11px}
@@ -107,7 +107,7 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .gact input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:#FBFDFC;min-height:44px;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
 .gact input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(37,99,235,.14)}
 .gact .ttype{grid-column:1/-1}
-.gact .btn.primary{grid-column:1/-1}
+.gact .btn.primary{grid-column:auto;justify-self:end;min-width:100px}
 .unit-holder{position:relative}
 .unit-holder input{padding-right:36px}
 .unit-holder .u{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none;font-weight:600}

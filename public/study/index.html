@@ -121,7 +121,7 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 .rec .time{margin-left:auto;color:var(--muted);font-size:12px}
 .obstacle{margin-top:12px;font-size:13.5px;color:var(--ink2);background:#FBFDFC;border:1px dashed #CBD5E1;border-radius:12px;padding:9px 11px;line-height:1.6}
 .obstacle b{color:var(--ink);font-weight:700}
-.auto-hint{margin-top:6px;font-size:14px;color:#60A5FA;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:4px 8px;font-weight:600}
+.auto-hint{margin-top:6px;font-size:14px;color:#3B82F6;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:4px 8px;font-weight:600}
 .auto-sub{margin-top:6px;font-size:12.5px;color:var(--muted);font-weight:500}
 .examline{margin:0 0 14px;font-size:13px;font-weight:600;color:var(--brand-ink);background:linear-gradient(90deg,rgba(37,99,235,.12),rgba(37,99,235,.04));border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:10px 14px}
 .review-today{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin-bottom:12px;border-left:4px solid var(--amber);background:#FFFBF2}
@@ -926,7 +926,7 @@ function goalCard(g){
     }
   }
   var autoHint = auto ? '<div class="auto-hint">' +
-    'Obsidian 自动统计 · 已完成 ' + autoCount(g) + '/' + g.total + ' ' + esc(g.unit) + '</div>' + sub
+    'Obsidian 统计 · 已完成 ' + autoCount(g) + '/' + g.total + ' ' + esc(g.unit) + '</div>' + sub
     : (g.obsidian ? '<div class="auto-hint">Obsidian 未连接 · 暂用手动打卡，连接后自动统计</div>' : "");
   var gact = "";
   if (!auto){

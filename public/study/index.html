@@ -33,9 +33,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 /* ===== 顶栏 ===== */
 .layout{display:flex;min-height:100vh}
 .sidebar{width:220px;flex:none;background:#F8FAFC;border-right:1px solid var(--line);padding:24px 12px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sb-brand{display:flex;flex-direction:column;gap:8px;padding:0 0 24px;align-items:flex-start}
+.sb-brand{display:flex;flex-direction:row;justify-content:space-between;align-items:center;padding:0 0 20px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.back-link{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border-radius:6px;background:transparent;color:var(--brand-ink);text-decoration:none;font-size:13px;font-weight:500;flex:none;align-self:flex-start;margin-bottom:4px}
+.back-link{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border-radius:6px;background:transparent;color:var(--brand-ink);text-decoration:none;font-size:13px;font-weight:500}
 .back-link:hover{background:#E2E8F0}
 .brand-mark{width:28px;height:28px;border-radius:6px;background:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
 .brand-mark svg{width:16px;height:16px;stroke:#fff}
@@ -323,7 +323,7 @@ textarea.sent{width:100%;border:1px solid var(--line);border-radius:13px;padding
 <div class="layout">
 <aside class="sidebar">
   <div class="sb-brand">
-    <a href="/" class="back-link" title="返回博客主页">返回博客</a>
+    <a href="/" class="back-link" title="返回博客主页">返回</a>
     <div class="brand">
       <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
       <h1>学习打卡</h1>
@@ -1297,8 +1297,6 @@ function renderMine(){
     '<div class="card"><h3>Obsidian 自动同步</h3>' + obsCardHTML() + '</div>' +
     '<div class="card"><h3>休息日</h3><div class="setrow"><div><div class="sk">每周休息日</div><div class="sd">休息日漏打不计断更</div></div>' +
     '<select id="restDay">' + opts + '</select></div></div>' +
-    '<div class="card"><h3>每日一句</h3><textarea id="sentIn" class="sent" placeholder="写一句今天的话…">' + esc(state.settings.dailySentence || todaySentence()) + '</textarea>' +
-    '<div class="macts" style="margin-top:10px"><button class="btn" data-act="save-sent">保存</button><button class="btn ghost" data-act="next-sent">换一句</button></div></div>' +
     '<div class="card"><h3>目标管理</h3><div class="glist">' + goals + '</div>' +
     '<div class="gadd"><button class="btn ghost block" data-act="add-goal">＋ 添加目标</button></div></div>' +
     '<div class="card"><h3>数据</h3>' +
@@ -1459,18 +1457,7 @@ function confirmDel(gid){
     save(); render(); toast("已删除");
   });
 }
-function saveSentence(){
-  state.settings.dailySentence = $("sentIn").value.trim();
-  save(); render(); toast("已保存每日一句");
-}
-function nextSentence(){
-  var bank = state.settings.sentenceBank || [];
-  if (!bank.length){ toast("没有句子库"); return; }
-  var cur = todaySentence();
-  var idx = bank.indexOf(cur);
-  state.settings.dailySentence = bank[(idx + 1) % bank.length];
-  save(); render(); toast("已换一句");
-}
+
 function exportData(){
   state.lastBackup = Date.now(); save();
   var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
@@ -1570,8 +1557,6 @@ function boot(){
     if (act === "add-goal"){ openGoalModal(null); return; }
     if (act === "save-goal"){ saveGoal(); return; }
     if (act === "save-backfill"){ saveBackfill(); return; }
-    if (act === "save-sent"){ saveSentence(); return; }
-    if (act === "next-sent"){ nextSentence(); return; }
     if (act === "export"){ exportData(); return; }
     if (act === "copy-backup"){ copyBackup(); return; }
     if (act === "import"){ $("importFile").click(); return; }

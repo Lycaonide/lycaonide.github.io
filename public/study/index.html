@@ -2,45 +2,1078 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2EA88C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>学习打卡 · 考研进度管理</title>
-<meta name="referrer" content="no-referrer">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%232EA88C'/%3E%3Cpath d='M9 12l2 2 4-4' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%232EA88C'/%3E%3Cpath d='M9 12l2 2 4-4' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
-  :root{--brand:#2EA88C;--ink:#1B2B27;--muted:#6B7F7A;--bg:#F5FAF9}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
-    background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
-  .card{max-width:420px;width:100%;text-align:center;background:#fff;border:1px solid #E3EFEB;
-    border-radius:20px;padding:32px 26px;box-shadow:0 12px 32px rgba(46,168,140,.08)}
-  .icon{width:56px;height:56px;margin:0 auto 18px;border-radius:16px;
-    background:linear-gradient(135deg,#2EA88C,#3FC0A4);display:flex;align-items:center;justify-content:center}
-  h1{font-size:19px;font-weight:600;letter-spacing:.3px}
-  p{margin-top:10px;font-size:14px;line-height:1.7;color:var(--muted)}
-  a.btn{display:block;margin-top:22px;padding:14px 18px;border-radius:14px;background:var(--brand);
-    color:#fff;text-decoration:none;font-size:15px;font-weight:600;min-height:48px;line-height:20px}
-  a.btn:active{transform:translateY(1px)}
-  .hint{margin-top:14px;font-size:12px;color:#9AAFA9}
+:root{
+  --brand:#2EA88C;--brand2:#3FC0A4;--brand-ink:#147A64;
+  --ink:#16322B;--ink2:#435B53;--muted:#7C918A;
+  --bg:#F2F8F5;--card:#FFFFFF;--line:#E1EDE7;
+  --amber:#E8A33D;--red:#E25B5B;--blue:#4A90D9;--green:#7FB069;--rose:#E882B0;
+  --grad:linear-gradient(135deg,#2EA88C 0%,#3FC0A4 100%);
+  --grad-soft:linear-gradient(180deg,#F7FCF9 0%,#EFF7F2 100%);
+  --shadow-sm:0 1px 2px rgba(20,60,50,.04),0 6px 16px rgba(20,60,50,.06);
+  --shadow-md:0 2px 6px rgba(20,60,50,.05),0 14px 32px rgba(20,60,50,.10);
+  --r-lg:20px;--r-md:14px;--r-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--grad-soft) fixed;color:var(--ink);font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit;font-size:16px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+[hidden]{display:none!important}
+::selection{background:rgba(46,168,140,.18)}
+
+/* ===== 顶栏 ===== */
+.appbar{position:sticky;top:0;z-index:20;background:rgba(247,252,249,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(225,237,231,.8)}
+.appbar-inner{max-width:680px;margin:0 auto;padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{width:32px;height:32px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(46,168,140,.35);flex:none}
+.brand-mark svg{width:18px;height:18px;stroke:#fff}
+.brand h1{font-size:19px;font-weight:800;letter-spacing:.2px;white-space:nowrap}
+.brand h1 em{font-style:normal;color:var(--brand-ink)}
+.date{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px;white-space:nowrap;box-shadow:var(--shadow-sm)}
+
+/* ===== Tab 栏：移动端固定底部，桌面端吸顶 ===== */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;gap:4px;padding:8px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.tab-btn{flex:1;min-height:46px;border-radius:14px;font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px;transition:color .15s,background .15s}
+.tab-btn svg{width:18px;height:18px;flex:none}
+.tab-btn.active{background:var(--grad);color:#fff;box-shadow:0 4px 12px rgba(46,168,140,.35)}
+@media(min-width:768px){
+  .tabs{position:sticky;top:57px;max-width:680px;margin:0 auto;border:none;border-radius:16px;background:rgba(255,255,255,.85);box-shadow:var(--shadow-sm);padding:6px;gap:6px;z-index:25}
+  .tab-btn{min-height:40px;border-radius:11px;font-size:14px}
+  main{padding-bottom:48px}
+}
+
+/* ===== 主区 ===== */
+main{max-width:680px;margin:0 auto;padding:16px 16px calc(96px + env(safe-area-inset-bottom))}
+@media(min-width:768px){main{padding-top:18px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow-sm);margin-bottom:12px}
+.card h3{font-size:15px;font-weight:750;letter-spacing:.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3::before{content:"";width:4px;height:14px;border-radius:3px;background:var(--grad);flex:none}
+
+/* 每日一句 */
+.quote{position:relative;background:linear-gradient(180deg,#F2FAF6,#EAF6F0);border-color:rgba(46,168,140,.18);padding:20px 20px 18px 22px;overflow:hidden}
+.quote::before{content:"“";position:absolute;right:14px;top:-10px;font-size:92px;line-height:1;color:rgba(46,168,140,.14);font-family:Georgia,serif;pointer-events:none}
+.quote .q{font-size:16px;line-height:1.75;font-weight:600;color:var(--ink)}
+.quote .qtag{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;color:var(--brand-ink);background:rgba(46,168,140,.12);border-radius:999px;padding:3px 10px;letter-spacing:1px}
+
+/* 漏卡提示 */
+.miss{--mcol:var(--amber);background:linear-gradient(180deg,#FFFBF2,#FFF7E6);border-color:rgba(232,163,61,.28)}
+.miss.red{--mcol:var(--red);background:linear-gradient(180deg,#FFF6F4,#FEEBE9);border-color:rgba(226,91,91,.28)}
+.miss-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.miss-head b{font-size:14.5px}
+.miss-dot{width:10px;height:10px;border-radius:50%;background:var(--mcol);flex:none;box-shadow:0 0 0 4px rgba(232,163,61,.15)}
+.miss.red .miss-dot{box-shadow:0 0 0 4px rgba(226,91,91,.15)}
+.miss p{font-size:13px;color:var(--ink2)}
+.miss-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* 目标卡片 */
+.gcard{--gc:var(--brand)}
+.ghead{display:flex;align-items:center;gap:9px}
+.gdot{width:11px;height:11px;border-radius:4px;background:var(--gc);flex:none}
+.gname{font-size:16px;font-weight:750;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.2px}
+.chip{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;flex:none}
+.chip.ok{background:rgba(46,168,140,.13);color:var(--brand-ink)}
+.chip.info{background:rgba(74,144,217,.12);color:#2F6FAD}
+.chip.warn{background:rgba(232,163,61,.15);color:#A86F12}
+.chip.bad{background:rgba(226,91,91,.12);color:#C04444}
+.gbar{height:8px;border-radius:5px;background:#EDF4F0;margin:14px 0 4px;overflow:hidden;position:relative}
+.gfill{height:100%;border-radius:5px;background:var(--gc);transition:width .35s cubic-bezier(.22,.61,.36,1);position:relative}
+.gfill::after{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:rgba(255,255,255,.22);border-radius:inherit}
+.gmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.gmeta .cell{background:#F6FAF8;border:1px solid #EDF4F0;border-radius:13px;padding:9px 8px;text-align:center}
+.gmeta .cell .k{font-size:11px;color:var(--muted);display:block;font-weight:600;letter-spacing:.3px}
+.gmeta .cell .v{font-size:15px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.gmeta .cell .v small{font-weight:600;color:var(--muted);font-size:11px}
+.gact{display:grid;grid-template-columns:1.2fr 1fr auto;gap:8px;align-items:end;margin-top:14px}
+.gact .field label{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:5px}
+.gact input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:#FBFDFC;min-height:46px;transition:border-color .15s,box-shadow .15s}
+.gact input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(46,168,140,.14)}
+.unit-holder{position:relative}
+.unit-holder input{padding-right:36px}
+.unit-holder .u{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none;font-weight:600}
+.reclist{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px}
+.rl-title{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:4px;letter-spacing:.3px}
+.rec{display:flex;align-items:center;gap:8px;font-size:13px;padding:5px 0}
+.rec .amt{font-weight:800;color:var(--brand-ink);font-variant-numeric:tabular-nums}
+.rec .tag{font-size:10px;background:rgba(46,168,140,.12);color:var(--brand-ink);border-radius:6px;padding:2px 7px;font-weight:700}
+.rec .time{margin-left:auto;color:var(--muted);font-size:12px}
+.obstacle{margin-top:12px;font-size:12.5px;color:var(--ink2);background:#FBFDFC;border:1px dashed var(--line);border-radius:12px;padding:9px 11px;line-height:1.6}
+.obstacle b{color:var(--ink);font-weight:700}
+.auto-hint{margin-top:12px;font-size:12px;color:var(--brand-ink);background:rgba(46,168,140,.08);border:1px solid rgba(46,168,140,.18);border-radius:10px;padding:8px 11px;font-weight:600}
+.gadd{margin-top:14px;text-align:center}
+
+/* 按钮 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 18px;border-radius:13px;font-size:14px;font-weight:700;background:var(--grad);color:#fff;transition:transform .08s,box-shadow .15s,filter .15s;box-shadow:0 4px 12px rgba(46,168,140,.28)}
+.btn:hover{filter:brightness(1.04)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.primary{background:var(--grad);color:#fff}
+.btn.ghost{background:#EDF7F3;color:var(--brand-ink);box-shadow:none}
+.btn.plain{background:transparent;color:#2F6FAD;min-height:36px;padding:4px 8px;font-weight:700;box-shadow:none}
+.btn.danger{background:#FCEFED;color:#C04444;box-shadow:none}
+.btn.sm{min-height:38px;padding:8px 14px;font-size:13px;border-radius:11px;box-shadow:none}
+.btn.block{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;filter:none}
+
+/* ===== 看板 ===== */
+.board-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:768px){.board-grid{grid-template-columns:repeat(3,1fr)}}
+.bcard{text-align:center;padding:20px 14px 16px}
+.bcard .ring{display:block;margin:0 auto}
+.bname{font-size:13.5px;font-weight:750;margin-top:10px;letter-spacing:.2px}
+.bstats{font-size:12px;color:var(--muted);margin-top:4px}
+.bchip{margin-top:10px;display:inline-block}
+.chart-card h3{font-size:14px;margin-bottom:12px}
+.chart{width:100%;height:auto;display:block;margin-top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:600}
+.legend i{width:10px;height:10px;border-radius:4px;flex:none}
+
+/* ===== 周报 ===== */
+.weekhead{font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:6px;letter-spacing:.3px}
+.wrow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.wrow:last-child{border-bottom:none}
+.wrow .gdot{width:9px;height:9px;border-radius:3px;flex:none}
+.wrow .wn{flex:1;min-width:0;font-size:13.5px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wrow .wv{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.wrow .wv b{color:var(--ink);font-weight:750;font-variant-numeric:tabular-nums}
+.delta{font-size:12px;font-weight:800;white-space:nowrap;min-width:54px;text-align:right;font-variant-numeric:tabular-nums}
+.delta.up{color:var(--brand-ink)}
+.delta.down{color:#C04444}
+.delta.flat{color:var(--muted)}
+.four{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.fcell{background:#F6FAF8;border:1px solid #EDF4F0;border-radius:14px;padding:12px 14px}
+.fcell .k{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+.fcell .v{font-size:16px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
+.fcell .v.small{font-size:12.5px;line-height:1.55;font-weight:600}
+.weekout{width:100%;min-height:132px;border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:#FBFDFC;resize:vertical;font-size:13px;line-height:1.65;font-family:inherit}
+
+/* ===== 我的 ===== */
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.setrow:last-of-type{border-bottom:none}
+.setrow .sk{font-size:13.5px;font-weight:700}
+.setrow .sd{font-size:12px;color:var(--muted);margin-top:2px}
+.setrow select{border:1px solid var(--line);border-radius:11px;padding:9px 12px;background:#FBFDFC;min-height:42px;font-weight:600}
+.glist .gitem{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.gitem .gdot{width:11px;height:11px;border-radius:4px;flex:none}
+.gitem .ginfo{flex:1;min-width:0}
+.gitem .ginfo .gn{font-size:13.5px;font-weight:700}
+.gitem .ginfo .gm{font-size:11.5px;color:var(--muted);margin-top:2px}
+.data-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note{font-size:12.5px;color:var(--muted);line-height:1.7}
+.note b{color:var(--ink)}
+textarea.sent{width:100%;border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:#FBFDFC;resize:vertical;min-height:76px}
+/* Obsidian 同步 */
+.obs-body{display:flex;flex-direction:column;gap:10px}
+.obs-status{font-size:13px;line-height:1.6;border-radius:12px;padding:10px 12px}
+.obs-status.on{background:#EDF7F3;border:1px solid rgba(46,168,140,.2);color:var(--ink2)}
+.obs-status.on b{color:var(--brand-ink)}
+.obs-status.off{background:#F6FAF8;border:1px dashed var(--line);color:var(--ink2)}
+.obs-ts{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.obs-acts{display:flex;gap:8px;flex-wrap:wrap}
+.obs-counts{font-size:12px;color:var(--brand-ink);font-weight:700}
+
+/* ===== 弹窗 / 提示 ===== */
+.modal-wrap{position:fixed;inset:0;z-index:50;background:rgba(18,42,35,.45);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+@media(min-width:768px){.modal-wrap{align-items:center}}
+.modal{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:520px;max-height:88vh;overflow:auto;padding:22px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:var(--shadow-md)}
+@media(min-width:768px){.modal{border-radius:24px}}
+.modal h3{font-size:16.5px;font-weight:800;margin-bottom:16px}
+.mfield{margin-bottom:14px}
+.mfield label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:700;letter-spacing:.3px}
+.mfield input,.mfield select,.mfield textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:#FBFDFC;min-height:46px;transition:border-color .15s,box-shadow .15s}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(46,168,140,.14)}
+.mfield textarea{resize:vertical;min-height:66px}
+.swatches{display:flex;gap:9px;flex-wrap:wrap}
+.sw{width:34px;height:34px;border-radius:11px;border:2px solid transparent;cursor:pointer;transition:transform .1s}
+.sw:hover{transform:scale(1.08)}
+.sw.sel{border-color:var(--ink);box-shadow:0 0 0 2px #fff inset}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.macts{display:flex;gap:10px;margin-top:18px}
+.macts .btn{flex:1}
+.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:60;background:rgba(18,42,35,.92);color:#fff;font-size:13px;font-weight:600;padding:11px 20px;border-radius:14px;max-width:82vw;text-align:center;box-shadow:0 10px 28px rgba(0,0,0,.22);animation:toastIn .18s ease}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}
+@media(min-width:768px){.toast{bottom:40px}}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
 </style>
 </head>
 <body>
-  <div class="card">
-    <div class="icon">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
-           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-      </svg>
+<header class="appbar">
+  <div class="appbar-inner">
+    <div class="brand">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      <h1><em>学</em>习打卡</h1>
     </div>
-    <h1>正在打开学习打卡台</h1>
-    <p>如果你的浏览器没有自动跳转，点下面的按钮。<br>用手机浏览器打开后，可以「添加到主屏幕」当 APP 用。</p>
-    <a class="btn" id="go" href="https://workbuddy.link/p/Pir0aS42QyX4rm6dVeuvUb">打开学习打卡台</a>
-    <p class="hint">数据在线存储，换设备打开进度都在</p>
+    <span class="date" id="topDate"></span>
   </div>
+  <nav class="tabs" id="tabBar" aria-label="主导航">
+    <button class="tab-btn active" data-tab="today" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      今日
+    </button>
+    <button class="tab-btn" data-tab="board">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M13 16V8"/><path d="M18 16v-3"/></svg>
+      看板
+    </button>
+    <button class="tab-btn" data-tab="week">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18"/><path d="M5 5v14h14V5"/><path d="M9 10h2M13 10h2M9 14h2M13 14h2"/></svg>
+      周报
+    </button>
+    <button class="tab-btn" data-tab="mine">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+      我的
+    </button>
+  </nav>
+</header>
+<main id="view">
+  <section id="tab-today" class="tab"></section>
+  <section id="tab-board" class="tab" hidden></section>
+  <section id="tab-week" class="tab" hidden></section>
+  <section id="tab-mine" class="tab" hidden></section>
+</main>
+<div id="toast" class="toast" hidden></div>
+<div id="modalWrap" class="modal-wrap" hidden></div>
 <script>
-  // 顶层跳转而不是 iframe：跨站 iframe 会丢第三方 Cookie，导致认不出登录态、弹扫码
-  var target = "https://workbuddy.link/p/Pir0aS42QyX4rm6dVeuvUb";
-  try { window.location.replace(target); } catch (e) {}
+/* ================= 数据 ================= */
+var LS = "study-tracker-v1";
+var state = load();
+
+function defaultState(){
+  return {
+    version: 1,
+    goals: [
+      {id:"g1", name:"考研数学 · 讲义", unit:"讲", total:20, deadline:"2027-12-20", color:"#2EA88C", base:0, obsidian:"math-notes", obstacle:"", countermeasure:""},
+      {id:"g2", name:"考研英语 · 每日一句", unit:"句", total:100, deadline:"2027-12-20", color:"#4A90D9", base:0, obsidian:"sentence", obstacle:"", countermeasure:""},
+      {id:"g3", name:"考研英语 · 单词", unit:"词", total:6024, deadline:"2027-12-20", color:"#E8A33D", base:581, obsidian:"", obstacle:"", countermeasure:""},
+      {id:"g4", name:"408 · 数据结构", unit:"轮", total:3, deadline:"2027-09-30", color:"#E25B5B", base:0, obsidian:"", obstacle:"", countermeasure:""},
+      {id:"g5", name:"408 · 计算机组成原理", unit:"轮", total:3, deadline:"2027-09-30", color:"#7FB069", base:0, obsidian:"", obstacle:"", countermeasure:""},
+      {id:"g6", name:"408 · 操作系统", unit:"轮", total:3, deadline:"2027-09-30", color:"#E882B0", base:0, obsidian:"", obstacle:"", countermeasure:""},
+      {id:"g7", name:"408 · 计算机网络", unit:"轮", total:3, deadline:"2027-09-30", color:"#C77D5A", base:0, obsidian:"", obstacle:"", countermeasure:""}
+    ],
+    records: [],
+    obsidianCounts: {},
+    obsidianInfo: { dir: "", ts: 0, supported: false },
+    settings: {
+      restWeekday: 7,
+      sentenceBank: [
+        "道阻且长，行则将至；行而不辍，未来可期。",
+        "种一棵树最好的时间是十年前，其次是现在。",
+        "流水不争先，争的是滔滔不绝。",
+        "知不足而奋进，望远山而前行。",
+        "博观而约取，厚积而薄发。",
+        "日拱一卒，功不唐捐。",
+        "慢慢来，比较快。",
+        "所有的为时已晚，其实都是恰逢其时。"
+      ],
+      dailySentence: ""
+    },
+    dismissed: {}
+  };
+}
+function normalize(s){
+  var d = defaultState();
+  s.settings = Object.assign({}, d.settings, s.settings || {});
+  s.dismissed = s.dismissed && typeof s.dismissed === "object" ? s.dismissed : {};
+  s.goals = (Array.isArray(s.goals) ? s.goals : []).filter(function(g){ return g && g.id && g.name && g.total != null && g.deadline; })
+    .map(function(g){
+      return { id: String(g.id), name: String(g.name), unit: String(g.unit || "次"), total: +g.total || 0,
+        deadline: String(g.deadline), color: g.color || d.goals[0].color,
+        base: +g.base || 0,
+        obsidian: g.obsidian === "math-notes" || g.obsidian === "sentence" ? g.obsidian : "",
+        obstacle: String(g.obstacle || ""), countermeasure: String(g.countermeasure || "") };
+    });
+  s.records = (Array.isArray(s.records) ? s.records : []).filter(function(r){
+    return r && r.goalId && r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date) && (+r.amount) > 0;
+  }).map(function(r){
+    return { id: String(r.id || uid()), goalId: String(r.goalId), date: String(r.date), amount: +r.amount,
+      minutes: +r.minutes || 0, backfill: !!r.backfill, ts: r.ts || 0 };
+  });
+  s.obsidianCounts = s.obsidianCounts && typeof s.obsidianCounts === "object" ? s.obsidianCounts : {};
+  s.obsidianInfo = s.obsidianInfo && typeof s.obsidianInfo === "object"
+    ? Object.assign({ dir: "", ts: 0, supported: false }, s.obsidianInfo) : { dir: "", ts: 0, supported: false };
+  if (!s.goals.length) s.goals = d.goals;
+  return s;
+}
+function load(){
+  try {
+    var raw = localStorage.getItem(LS);
+    if (raw) { var s = JSON.parse(raw); if (s && Array.isArray(s.goals)) return normalize(s); }
+  } catch (e) {}
+  return defaultState();
+}
+function save(){ try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) {} }
+
+/* ================= Obsidian 自动同步（桌面 Edge/Chrome） ================= */
+function obsSupported(){ return typeof window !== "undefined" && typeof window.showDirectoryPicker === "function"; }
+function idbOpen(){
+  return new Promise(function(res, rej){
+    var r = indexedDB.open("study-obsidian", 1);
+    r.onupgradeneeded = function(){ r.result.createObjectStore("kv"); };
+    r.onsuccess = function(){ res(r.result); };
+    r.onerror = function(){ rej(r.error); };
+  });
+}
+function idbGet(key){
+  return idbOpen().then(function(db){
+    return new Promise(function(res, rej){
+      var q = db.transaction("kv", "readonly").objectStore("kv").get(key);
+      q.onsuccess = function(){ res(q.result); };
+      q.onerror = function(){ rej(q.error); };
+    });
+  });
+}
+function idbSet(key, val){
+  return idbOpen().then(function(db){
+    return new Promise(function(res, rej){
+      var tx = db.transaction("kv", "readwrite"); tx.objectStore("kv").put(val, key);
+      tx.oncomplete = function(){ res(); };
+      tx.onerror = function(){ rej(tx.error); };
+    });
+  });
+}
+function idbDel(key){
+  return idbOpen().then(function(db){
+    return new Promise(function(res, rej){
+      var tx = db.transaction("kv", "readwrite"); tx.objectStore("kv").delete(key);
+      tx.oncomplete = function(){ res(); };
+      tx.onerror = function(){ rej(tx.error); };
+    });
+  });
+}
+function descend(root, parts){
+  if (!parts.length) return Promise.resolve(root);
+  return root.getDirectoryHandle(parts[0]).then(function(h){ return descend(h, parts.slice(1)); });
+}
+function countMathNotes(dir){
+  var re = /^\d{2}-.*\.md$/;
+  return dir.entries().then(function(entries){
+    var n = 0;
+    return Promise.all(entries.map(function(pair){
+      var name = pair[0], h = pair[1];
+      if (h.kind !== "file" || !re.test(name)) return Promise.resolve();
+      return h.getFile().then(function(){ n++; });
+    })).then(function(){ return n; });
+  });
+}
+function countSentences(file){
+  return file.text().then(function(txt){
+    var re = /\d{4}-\d{1,2}-\d{1,2}/, n = 0;
+    txt.split("\n").forEach(function(line){
+      if (line.charAt(0) === "|" && re.test(line)) n++;
+    });
+    return n;
+  });
+}
+function readObsidian(root){
+  var jobs = [];
+  if (state.goals.some(function(g){ return g.obsidian === "math-notes"; })){
+    jobs.push(descend(root, ["考研", "数学", "零基础通关讲义"]).then(countMathNotes).then(function(n){ return ["math-notes", n]; }));
+  }
+  if (state.goals.some(function(g){ return g.obsidian === "sentence"; })){
+    jobs.push(descend(root, ["考研", "英语", "每日一句", "完成进度（不做真题先听2010-2019）.md"])
+      .then(function(h){ return h.getFile(); }).then(countSentences).then(function(n){ return ["sentence", n]; }));
+  }
+  return Promise.all(jobs).then(function(pairs){
+    var counts = {};
+    pairs.forEach(function(p){ counts[p[0]] = p[1]; });
+    return counts;
+  });
+}
+function applyObsidian(counts, dirName){
+  state.obsidianCounts = counts || {};
+  state.obsidianInfo = { dir: dirName || state.obsidianInfo.dir || "", ts: Date.now(), supported: obsSupported() };
+  save(); render();
+}
+function obsConnect(){
+  if (!obsSupported()){ toast("当前浏览器不支持，请用桌面版 Edge 或 Chrome"); return; }
+  window.showDirectoryPicker({ mode: "read" }).then(function(handle){
+    return idbSet("vault", handle).then(function(){
+      return handle.queryPermission({ mode: "read" }).then(function(st){
+        if (st === "granted") return readObsidian(handle);
+        return handle.requestPermission({ mode: "read" }).then(function(st2){
+          if (st2 !== "granted") throw new Error("denied");
+          return readObsidian(handle);
+        });
+      });
+    }).then(function(counts){ applyObsidian(counts, handle.name); toast("Obsidian 已连接并同步"); });
+  }).catch(function(e){
+    if (e && e.name === "AbortError") return;
+    toast("连接失败或未授权读取");
+  });
+}
+function obsRefresh(quiet){
+  idbGet("vault").then(function(handle){
+    if (!handle) throw new Error("none");
+    return handle.queryPermission({ mode: "read" }).then(function(st){
+      if (st !== "granted") throw new Error("denied");
+      return readObsidian(handle);
+    }).then(function(counts){
+      applyObsidian(counts, handle.name);
+      if (!quiet) toast("已从 Obsidian 重新统计");
+    });
+  }).catch(function(){
+    if (!quiet) toast("未连接或没有读取权限，请先连接");
+  });
+}
+function obsDisconnect(){
+  idbDel("vault").then(function(){
+    state.obsidianCounts = {}; state.obsidianInfo = { dir: "", ts: 0, supported: obsSupported() };
+    save(); render(); toast("已断开 Obsidian");
+  });
+}
+function obsInit(){
+  if (!state.obsidianInfo) state.obsidianInfo = {};
+  state.obsidianInfo.supported = obsSupported();
+  idbGet("vault").then(function(handle){
+    if (!handle) return;
+    return handle.queryPermission({ mode: "read" }).then(function(st){
+      if (st !== "granted") return;
+      return readObsidian(handle).then(function(counts){ applyObsidian(counts, handle.name); });
+    });
+  }).catch(function(){});
+}
+
+/* ================= 日期工具 ================= */
+function pad(n){ return (n < 10 ? "0" : "") + n; }
+function toKey(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+function fromKey(k){ var p = k.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function todayKey(){ return toKey(new Date()); }
+function addDays(d, n){ var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; }
+function weekdayCN(d){ var jd = d.getDay(); return jd === 0 ? 7 : jd; }
+function fmtDate(k){ var p = k.split("-"); return (+p[1]) + "月" + (+p[2]) + "日"; }
+function fmtShort(k){ var p = k.split("-"); return p[1] + "/" + p[2]; }
+function fmtTime(ts){ if (!ts) return ""; var d = new Date(ts); return pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+function uid(){ return "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+/* ================= 统计（纯函数） ================= */
+function getGoal(id){ for (var i = 0; i < state.goals.length; i++) if (state.goals[i].id === id) return state.goals[i]; return null; }
+function recsOn(gid, k){ return state.records.filter(function(r){ return r.goalId === gid && r.date === k; }); }
+function amountOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + r.amount; }, 0); }
+function minutesOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + (r.minutes || 0); }, 0); }
+function autoCount(g){ if (!g.obsidian) return 0; return (state.obsidianCounts && state.obsidianCounts[g.obsidian]) || 0; }
+function doneTotal(g){ return (+g.base || 0) + state.records.reduce(function(s, r){ return r.goalId === g.id ? s + r.amount : s; }, 0) + autoCount(g); }
+function remaining(g){ return Math.max(0, (+g.total || 0) - doneTotal(g)); }
+function daysLeft(g){ var t = fromKey(todayKey()), dl = fromKey(g.deadline); return Math.round((dl - t) / 86400000) + 1; }
+function suggest(g){
+  var rem = remaining(g), dl = daysLeft(g);
+  if (rem <= 0) return { v: 0, note: "目标已完成" };
+  if (dl <= 0) return { v: 0, note: "已到截止日" };
+  return { v: Math.ceil(rem / dl), note: "" };
+}
+function pace7(g){
+  var t = fromKey(todayKey()), sum = 0, cnt = 0;
+  for (var i = 0; i < 7; i++) { var a = amountOn(g.id, toKey(addDays(t, -i))); sum += a; if (a > 0) cnt++; }
+  if (cnt < 3) return null;
+  return sum / 7;
+}
+function eta(g){
+  var p = pace7(g);
+  if (p === null || p <= 0) return null;
+  var rem = remaining(g);
+  if (rem <= 0) return todayKey();
+  return toKey(addDays(fromKey(todayKey()), Math.ceil(rem / p)));
+}
+function streak(g){
+  var rest = state.settings.restWeekday;
+  var d = fromKey(todayKey()), n = 0, miss = 0;
+  for (var i = 0; i < 400; i++){
+    var k = toKey(d);
+    if (amountOn(g.id, k) > 0) { n++; miss = 0; }
+    else if (weekdayCN(d) !== rest) { miss++; if (miss >= 2) break; }
+    d = addDays(d, -1);
+  }
+  return n;
+}
+function missInfo(g){
+  if (g.obsidian) return null;
+  if (!state.records.some(function(r){ return r.goalId === g.id; })) return null;
+  if (amountOn(g.id, todayKey()) > 0) return null;
+  if (state.dismissed && state.dismissed[g.id] === todayKey()) return null;
+  var y = addDays(fromKey(todayKey()), -1), yk = toKey(y);
+  if (amountOn(g.id, yk) > 0) return null;
+  if (weekdayCN(y) === state.settings.restWeekday) return { type: "rest", days: 0 };
+  var miss = 0, d = y;
+  for (var i = 0; i < 60; i++){
+    var k = toKey(d);
+    if (amountOn(g.id, k) > 0) break;
+    if (weekdayCN(d) !== state.settings.restWeekday) miss++;
+    d = addDays(d, -1);
+  }
+  if (miss <= 1) return { type: "grace", days: 1 };
+  return { type: "overdue", days: miss - 1 };
+}
+function weekRange(off){
+  var t = fromKey(todayKey()), wd = weekdayCN(t);
+  var mon = addDays(t, -(wd - 1) + (off || 0) * 7), sun = addDays(mon, 6);
+  return { mon: toKey(mon), sun: toKey(sun) };
+}
+function weekSum(g, range){
+  return state.records.reduce(function(s, r){ return r.goalId === g.id && r.date >= range.mon && r.date <= range.sun ? s + r.amount : s; }, 0);
+}
+function pct(g){ var t = +g.total || 0; if (t <= 0) return 0; return Math.min(100, Math.round(doneTotal(g) / t * 100)); }
+function statusOf(g){
+  if (remaining(g) <= 0) return { cls: "ok", t: "已完成" };
+  if (daysLeft(g) <= 0) return { cls: "bad", t: "已逾期" };
+  if (doneTotal(g) > 0) return { cls: "info", t: "进行中" };
+  return { cls: "warn", t: "未开始" };
+}
+function deltaPct(cur, prev){
+  if (prev <= 0) return cur > 0 ? "+" : "—";
+  var d = Math.round((cur - prev) / prev * 100);
+  return (d > 0 ? "+" : "") + d + "%";
+}
+function dayOfYear(){
+  var t = new Date();
+  return Math.floor((t - new Date(t.getFullYear(), 0, 0)) / 86400000);
+}
+function todaySentence(){
+  var bank = state.settings.sentenceBank || [];
+  if (state.settings.dailySentence) return state.settings.dailySentence;
+  if (bank.length) return bank[dayOfYear() % bank.length];
+  return "";
+}
+
+/* ================= UI ================= */
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]; }); }
+function $(id){ return document.getElementById(id); }
+function toast(msg){
+  var t = $("toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._t); toast._t = setTimeout(function(){ t.hidden = true; }, 2200);
+}
+function openModal(html){ $("modalWrap").innerHTML = html; $("modalWrap").hidden = false; document.body.style.overflow = "hidden"; }
+function closeModal(){ $("modalWrap").innerHTML = ""; $("modalWrap").hidden = true; document.body.style.overflow = ""; }
+function confirmBox(msg, cb){
+  window._confirmYes = cb;
+  openModal('<div class="modal"><h3>确认操作</h3><p class="note">' + esc(msg) + '</p>' +
+    '<div class="macts"><button class="btn" data-act="confirm-yes">确定</button><button class="btn ghost" data-act="confirm-no">取消</button></div></div>');
+}
+function weekdayName(d){ return "周" + "一二三四五六日".charAt(weekdayCN(d) - 1); }
+
+function render(){
+  renderToday(); renderBoard(); renderWeek(); renderMine();
+  var t = new Date();
+  $("topDate").textContent = t.getFullYear() + "年" + fmtDate(todayKey()) + " " + weekdayName(t);
+}
+
+/* ---- 今日 ---- */
+function renderToday(){
+  var h = "";
+  var s = todaySentence();
+  if (s) h += '<div class="card quote"><div class="q">' + esc(s) + '</div><span class="qtag">每日一句</span></div>';
+  state.goals.forEach(function(g){
+    var mi = missInfo(g);
+    if (mi) h += missCard(g, mi);
+  });
+  state.goals.forEach(function(g){ h += goalCard(g); });
+  if (!state.goals.length) h += '<div class="card"><p class="note">还没有目标，去「我的」页添加一个吧。</p></div>';
+  $("tab-today").innerHTML = h;
+}
+function missCard(g, mi){
+  var isRed = mi.type === "overdue";
+  var title = isRed ? "已断更 " + mi.days + " 天" : (mi.type === "rest" ? "昨天是休息日" : "昨天漏打卡了");
+  var sub = isRed
+    ? esc(g.name) + " 连续记录已中断 " + mi.days + " 天。补记昨天的量可挽回进度，或调整目标让计划更现实。"
+    : (mi.type === "rest" ? "昨天是休息日，不计断更，今天正常打卡即可。" : "首次漏打不断更，今天补上，连续天数不受影响。");
+  var btns = "";
+  if (mi.type !== "rest"){
+    btns = '<button class="btn sm" data-goal="' + g.id + '" data-act="backfill">补记昨天</button>';
+    btns += isRed
+      ? '<button class="btn sm ghost" data-goal="' + g.id + '" data-act="adjust">调整目标</button>'
+      : '<button class="btn sm ghost" data-goal="' + g.id + '" data-act="dismiss">今天开始</button>';
+  }
+  return '<div class="card miss ' + (isRed ? "red" : "yellow") + '">' +
+    '<div class="miss-head"><span class="miss-dot"></span><b>' + esc(title) + '</b></div>' +
+    '<p>' + sub + '</p>' +
+    (btns ? '<div class="miss-acts">' + btns + '</div>' : "") + '</div>';
+}
+function goalCard(g){
+  var auto = !!g.obsidian;
+  var sug = auto ? null : suggest(g);
+  var st = statusOf(g);
+  var e = eta(g);
+  var et = e === null ? "暂无推算" : (remaining(g) <= 0 ? "已完成" : fmtDate(e));
+  var sugLabel = sug && sug.note ? "今日建议量（" + sug.note + "）" : "今日建议量";
+  var recHtml = "";
+  if (!auto){
+    var recs = recsOn(g.id, todayKey());
+    if (recs.length){
+      recHtml = '<div class="reclist"><div class="rl-title">今日已记录 ' + recs.length + ' 次</div>' + recs.map(function(r){
+        return '<div class="rec"><span class="amt">' + r.amount + ' ' + esc(g.unit) + '</span>' +
+          (r.minutes ? '<span class="tag">' + r.minutes + ' 分钟</span>' : "") +
+          (r.backfill ? '<span class="tag">补</span>' : "") +
+          '<span class="time">' + fmtTime(r.ts) + '</span></div>';
+      }).join("") + '</div>';
+    }
+  }
+  var obs = "";
+  if (g.obstacle || g.countermeasure){
+    obs = '<div class="obstacle"><b>障碍：</b>' + esc(g.obstacle || "—") + '　<b>对策：</b>' + esc(g.countermeasure || "—") + '</div>';
+  }
+  var autoHint = auto ? '<div class="auto-hint">Obsidian 自动统计 · 当前已完成 ' + autoCount(g) + ' ' + esc(g.unit) + '，无需手动打卡</div>' : "";
+  var gact = "";
+  if (!auto){
+    var disabled = sug.v <= 0;
+    gact = '<div class="gact">' +
+      '<div class="field"><label>' + sugLabel + '</label><div class="unit-holder"><input id="amt-' + g.id + '" type="number" inputmode="numeric" min="0" value="' + sug.v + '"' + (disabled ? ' disabled' : '') + '><span class="u">' + esc(g.unit) + '</span></div></div>' +
+      '<div class="field"><label>分钟（选填）</label><input id="min-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
+      '<button class="btn primary" data-goal="' + g.id + '" data-act="checkin"' + (disabled ? ' disabled' : '') + '>打卡</button>' +
+      '</div>' +
+      '<div class="gadd"><button class="btn plain" data-goal="' + g.id + '" data-act="backfill">补记最近 6 天</button></div>';
+  }
+  var streakTxt = auto ? "自动" : streak(g) + " 天";
+  return '<div class="card gcard" style="--gc:' + g.color + '">' +
+    '<div class="ghead"><span class="gdot"></span><span class="gname">' + esc(g.name) + '</span>' +
+    '<span class="chip ' + st.cls + '">' + st.t + '</span></div>' +
+    '<div class="gbar"><div class="gfill" style="width:' + pct(g) + '%;background:' + g.color + '"></div></div>' +
+    autoHint +
+    '<div class="gmeta">' +
+      '<div class="cell"><span class="k">完成率</span><span class="v">' + pct(g) + '% <small>' + doneTotal(g) + '/' + g.total + '</small></span></div>' +
+      '<div class="cell"><span class="k">连续天数</span><span class="v">' + streakTxt + '</span></div>' +
+      '<div class="cell"><span class="k">预计完成</span><span class="v" style="font-size:13px">' + et + '</span></div>' +
+    '</div>' +
+    gact + recHtml + obs + '</div>';
+}
+
+/* ---- 看板 ---- */
+function renderBoard(){
+  var h = '<div class="board-grid">';
+  state.goals.forEach(function(g){
+    var st = statusOf(g);
+    var e = eta(g);
+    var et = e === null ? "暂无推算" : (remaining(g) <= 0 ? "已完成" : fmtDate(e));
+    h += '<div class="card bcard">' + ring(g) +
+      '<div class="bname">' + esc(g.name) + '</div>' +
+      '<div class="bstats">' + (g.obsidian ? "Obsidian 自动 · 预计 " + et : "连续 " + streak(g) + " 天 · 预计 " + et) + '</div>' +
+      '<span class="chip bchip ' + st.cls + '">' + st.t + '</span>' +
+      (g.obstacle ? '<div class="obstacle" style="text-align:left"><b>障碍：</b>' + esc(g.obstacle) + '</div>' : "") +
+      '</div>';
+  });
+  h += '</div>';
+  h += '<div class="card chart-card"><h3>近 14 天打卡量（分钟优先，无分钟记数量）</h3>' + chart14() + legendHTML() + '</div>';
+  $("tab-board").innerHTML = h;
+}
+function ring(g){
+  var p = pct(g), C = 2 * Math.PI * 34;
+  var dash = (p / 100 * C).toFixed(1) + " " + C.toFixed(1);
+  return '<svg class="ring" viewBox="0 0 88 88" width="92" height="92" role="img" aria-label="' + esc(g.name) + ' 完成率 ' + p + '%">' +
+    '<circle cx="44" cy="44" r="34" fill="none" stroke="#EDF4F1" stroke-width="9"/>' +
+    '<circle cx="44" cy="44" r="34" fill="none" stroke="' + g.color + '" stroke-width="9" stroke-linecap="round" stroke-dasharray="' + dash + '" transform="rotate(-90 44 44)"/>' +
+    '<text x="44" y="43" text-anchor="middle" font-size="15" font-weight="700" fill="' + g.color + '">' + p + '%</text>' +
+    '<text x="44" y="57" text-anchor="middle" font-size="9" fill="#6B7F7A">' + doneTotal(g) + '/' + g.total + '</text></svg>';
+}
+function chart14(){
+  var t = fromKey(todayKey()), days = [];
+  for (var i = 13; i >= 0; i--) days.push(toKey(addDays(t, -i)));
+  var rows = state.goals.map(function(g){
+    return { g: g, vals: days.map(function(k){ var m = minutesOn(g.id, k), a = amountOn(g.id, k); return m || a || 0; }) };
+  });
+  var max = 0;
+  rows.forEach(function(r){ r.vals.forEach(function(v){ if (v > max) max = v; }); });
+  if (max < 1) max = 1;
+  var W = 700, H = 220, ml = 34, mr = 8, mt = 16, mb = 26;
+  var pw = W - ml - mr, ph = H - mt - mb;
+  var bw = pw / 14;
+  var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="近14天打卡量堆叠柱状图">';
+  for (var gv = 0; gv <= 4; gv++){
+    var y = mt + ph - gv / 4 * ph;
+    var val = gv / 4 * max;
+    var lab = val >= 10 ? Math.round(val).toString() : val.toFixed(1);
+    svg += '<line x1="' + ml + '" y1="' + y.toFixed(1) + '" x2="' + (W - mr) + '" y2="' + y.toFixed(1) + '" stroke="#EDF4F1" stroke-width="1"/>';
+    svg += '<text x="' + (ml - 6) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="#9AAFA9">' + lab + '</text>';
+  }
+  for (var di = 0; di < 14; di++){
+    var x = ml + di * bw + 2, w = bw - 4, yB = mt + ph, stack = 0;
+    rows.forEach(function(r){
+      var v = r.vals[di];
+      if (!v) return;
+      var hh = Math.max(2, v / max * ph);
+      var yy = yB - stack - hh;
+      svg += '<rect x="' + x.toFixed(1) + '" y="' + yy.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="2" fill="' + r.g.color + '"><title>' + esc(r.g.name) + ' ' + v + '</title></rect>';
+      stack += hh;
+    });
+    if (di % 2 === 0 || di === 13){
+      svg += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" fill="#9AAFA9">' + fmtShort(days[di]) + '</text>';
+    }
+  }
+  svg += '</svg>';
+  return svg;
+}
+function legendHTML(){
+  return '<div class="legend">' + state.goals.map(function(g){
+    return '<span><i style="background:' + g.color + '"></i>' + esc(g.name) + '</span>';
+  }).join("") + '</div>';
+}
+
+/* ---- 周报 ---- */
+function renderWeek(){
+  var cur = weekRange(0), prev = weekRange(-1);
+  var h = '<div class="card"><div class="weekhead">本周 ' + fmtDate(cur.mon) + ' – ' + fmtDate(cur.sun) + '（周一开始）</div>';
+  var curAll = 0, prevAll = 0, over = 0, best = 0;
+  state.goals.forEach(function(g){
+    var c = weekSum(g, cur), p = weekSum(g, prev);
+    curAll += c; prevAll += p;
+    var dcls = c > p ? "up" : (c < p ? "down" : "flat");
+    h += '<div class="wrow"><span class="gdot" style="background:' + g.color + '"></span>' +
+      '<span class="wn">' + esc(g.name) + '</span>' +
+      '<span class="wv">本周 <b>' + c + '</b> / 上周 ' + p + '</span>' +
+      '<span class="delta ' + dcls + '">' + deltaPct(c, p) + '</span></div>';
+    var mi = missInfo(g);
+    if (mi && mi.type === "overdue") over++;
+    var s = streak(g);
+    if (s > best) best = s;
+  });
+  h += '</div>';
+  h += '<div class="four">' +
+    '<div class="fcell"><span class="k">本周记录</span><span class="v">' + curAll + '</span></div>' +
+    '<div class="fcell"><span class="k">环比上周</span><span class="v">' + deltaPct(curAll, prevAll) + '</span></div>' +
+    '<div class="fcell"><span class="k">最长连续</span><span class="v">' + best + ' 天</span></div>' +
+    '<div class="fcell"><span class="k">逾期提醒</span><span class="v">' + (over ? over + ' 个' : '无') + '</span></div>' +
+    '</div>';
+  h += '<div class="card"><h3>周报文本</h3><textarea id="weekOut" class="weekout" readonly></textarea>' +
+    '<div style="margin-top:10px"><button class="btn block" data-act="gen-week">生成并复制周报文本</button></div></div>';
+  $("tab-week").innerHTML = h;
+  $("weekOut").value = buildWeekText(cur, prev, curAll, prevAll, over, best);
+}
+function buildWeekText(cur, prev, curAll, prevAll, over, best){
+  var L = [];
+  L.push("【考研学习周报】" + fmtDate(cur.mon) + " – " + fmtDate(cur.sun));
+  L.push("");
+  L.push("一、本周打卡");
+  var autos = state.goals.filter(function(g){ return g.obsidian; });
+  state.goals.forEach(function(g){
+    if (g.obsidian) return;
+    var c = weekSum(g, cur);
+    L.push("· " + g.name + "：" + c + " / " + g.total + " " + g.unit + "（本周 +" + c + "）");
+  });
+  if (autos.length) L.push("· Obsidian 自动统计：" + autos.map(function(g){ return g.name; }).join("、") + "（进度随 Obsidian 更新，无需打卡）");
+  L.push("");
+  L.push("二、环比上周：" + deltaPct(curAll, prevAll) + "（本周总计 " + curAll + "）");
+  L.push("");
+  L.push("三、复盘");
+  var bg = null, bc = -1;
+  state.goals.forEach(function(g){ if (g.obsidian) return; var c = weekSum(g, cur); if (c > bc) { bc = c; bg = g; } });
+  if (bg) L.push("· 完成最好：" + bg.name + "（" + bc + "）");
+  var bads = state.goals.filter(function(g){ return !g.obsidian && weekSum(g, cur) <= 0; });
+  if (bads.length) L.push("· 需要加强：" + bads.map(function(g){ return g.name; }).join("、") + "（本周未打卡）");
+  L.push("· 最长连续：" + best + " 天" + (over ? "；逾期目标 " + over + " 个" : ""));
+  L.push("");
+  L.push("四、下周建议");
+  state.goals.forEach(function(g){
+    var sg = suggest(g);
+    if (sg.v > 0) L.push("· " + g.name + "：建议每日 ≥ " + sg.v + " " + g.unit);
+    else if (sg.note) L.push("· " + g.name + "：" + sg.note);
+  });
+  if (over) L.push("· 先把逾期目标补记或调整，别让它拖进度。");
+  return L.join("\n");
+}
+
+/* ---- 我的 ---- */
+function obsCardHTML(){
+  var sup = obsSupported();
+  var info = state.obsidianInfo || {};
+  var status, btnHtml = "";
+  if (!sup){
+    status = '<div class="obs-status off">当前浏览器不支持读取本地文件夹，请用桌面版 Edge 或 Chrome。手机端请手动打卡 + 备份导入。</div>';
+  } else if (info.dir){
+    var ts = info.ts ? new Date(info.ts) : null;
+    var tsTxt = ts ? (ts.getMonth() + 1) + "月" + ts.getDate() + "日 " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) : "";
+    status = '<div class="obs-status on"><b>已连接：</b>' + esc(info.dir) + '<span class="obs-ts">上次同步 ' + tsTxt + '，打开页面会自动更新</span></div>';
+    btnHtml = '<button class="btn sm ghost" data-act="obs-refresh">立即刷新</button><button class="btn sm danger" data-act="obs-disconnect">断开</button>';
+  } else {
+    status = '<div class="obs-status off">未连接。连接后自动统计「数学讲义」章节数、「每日一句」进度表行数，完成量不用手动维护。</div>';
+    btnHtml = '<button class="btn sm" data-act="obs-connect">连接 Obsidian 文件夹</button>';
+  }
+  var counts = "";
+  if (sup && info.dir && state.obsidianCounts){
+    var parts = [];
+    state.goals.forEach(function(g){ if (g.obsidian) parts.push(esc(g.name) + " " + (state.obsidianCounts[g.obsidian] || 0) + " " + esc(g.unit)); });
+    if (parts.length) counts = '<div class="obs-counts">' + parts.join(" · ") + '</div>';
+  }
+  return '<div class="obs-body">' + status + (btnHtml ? '<div class="obs-acts">' + btnHtml + '</div>' : "") + counts + '</div>';
+}
+function renderMine(){
+  var rest = state.settings.restWeekday;
+  var opts = "";
+  for (var i = 1; i <= 7; i++) opts += '<option value="' + i + '"' + (i === rest ? " selected" : "") + '>周' + "一二三四五六日".charAt(i - 1) + '</option>';
+  var goals = "";
+  state.goals.forEach(function(g){
+    goals += '<div class="gitem"><span class="gdot" style="background:' + g.color + '"></span>' +
+      '<div class="ginfo"><div class="gn">' + esc(g.name) + '</div>' +
+      '<div class="gm">单位 ' + esc(g.unit) + ' · 总量 ' + g.total + ' · 截止 ' + g.deadline + '</div></div>' +
+      '<button class="btn plain" data-goal="' + g.id + '" data-act="edit-goal">编辑</button>' +
+      '<button class="btn plain" style="color:var(--red)" data-goal="' + g.id + '" data-act="del-goal">删除</button></div>';
+  });
+  var h =
+    '<div class="card"><h3>Obsidian 自动同步</h3>' + obsCardHTML() + '</div>' +
+    '<div class="card"><h3>休息日</h3><div class="setrow"><div><div class="sk">每周休息日</div><div class="sd">休息日漏打不计断更</div></div>' +
+    '<select id="restDay">' + opts + '</select></div></div>' +
+    '<div class="card"><h3>每日一句</h3><textarea id="sentIn" class="sent" placeholder="写一句今天的话…">' + esc(state.settings.dailySentence || todaySentence()) + '</textarea>' +
+    '<div class="macts" style="margin-top:10px"><button class="btn" data-act="save-sent">保存</button><button class="btn ghost" data-act="next-sent">换一句</button></div></div>' +
+    '<div class="card"><h3>目标管理</h3><div class="glist">' + goals + '</div>' +
+    '<div class="gadd"><button class="btn ghost block" data-act="add-goal">＋ 添加目标</button></div></div>' +
+    '<div class="card"><h3>数据</h3>' +
+    '<div class="data-acts">' +
+    '<button class="btn ghost" data-act="export">导出备份</button>' +
+    '<button class="btn ghost" data-act="copy-backup">复制备份文本</button>' +
+    '<button class="btn ghost" data-act="import">导入备份</button>' +
+    '<button class="btn danger" data-act="reset">清空数据</button>' +
+    '</div>' +
+    '<input type="file" id="importFile" accept="application/json,.json" hidden>' +
+    '<p class="note" style="margin-top:10px">数据只存在<b>这台设备的浏览器</b>里，不经过任何服务器、不需要登录。Obsidian 只读本地文件夹，数据不上传。换设备：本机「导出备份」下载 JSON，新设备「导入备份」（Obsidian 目标重新连接一次即可）。<br>「复制备份文本」可把内容存进 Obsidian 等任意笔记。</p></div>' +
+    '<div class="card"><h3>关于</h3><p class="note">纯静态页面，随博客部署在 GitHub Pages，完全免费、无第三方依赖。打卡数据不会上传。</p></div>';
+  $("tab-mine").innerHTML = h;
+}
+
+/* ---- 动作 ---- */
+function doCheckin(gid){
+  var g = getGoal(gid); if (!g) return;
+  var a = +( $("amt-" + gid).value ) || 0;
+  if (a <= 0){ toast("请输入大于 0 的数量"); return; }
+  var m = +( $("min-" + gid).value ) || 0;
+  addRecord(gid, todayKey(), a, m, false);
+  toast("已记录 " + a + " " + g.unit);
+  render();
+}
+function addRecord(gid, date, amount, minutes, backfill){
+  state.records.push({ id: uid(), goalId: gid, date: date, amount: amount, minutes: minutes, backfill: backfill, ts: Date.now() });
+  save();
+}
+function openBackfill(gid){
+  var g = getGoal(gid); if (!g) return;
+  var sug = suggest(g);
+  var opts = "";
+  var t = fromKey(todayKey());
+  for (var i = 0; i < 6; i++){
+    var d = addDays(t, -i), k = toKey(d);
+    var has = amountOn(gid, k) > 0;
+    opts += '<option value="' + k + '">' + fmtDate(k) + (i === 0 ? "（今天）" : "") + (has ? "（已记录）" : "") + '</option>';
+  }
+  openModal(
+    '<div class="modal"><h3>补记 · ' + esc(g.name) + '</h3>' +
+    '<div class="mfield"><label>日期（最近 6 天）</label><select id="bfDate">' + opts + '</select></div>' +
+    '<div class="mrow">' +
+    '<div class="mfield"><label>数量（' + esc(g.unit) + '）</label><input id="bfAmt" type="number" inputmode="numeric" min="1" value="' + sug.v + '"></div>' +
+    '<div class="mfield"><label>分钟（选填）</label><input id="bfMin" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
+    '</div>' +
+    '<div class="macts"><button class="btn" data-act="save-backfill">保存补记</button><button class="btn ghost" data-act="close-modal">取消</button></div></div>'
+  );
+  window._bfGoal = gid;
+}
+function saveBackfill(){
+  var gid = window._bfGoal, g = getGoal(gid);
+  if (!g){ closeModal(); return; }
+  var k = $("bfDate").value, a = +($("bfAmt").value) || 0;
+  if (a <= 0){ toast("数量需大于 0"); return; }
+  var m = +($("bfMin").value) || 0;
+  addRecord(gid, k, a, m, true);
+  closeModal();
+  toast("已补记 " + fmtDate(k));
+  render();
+}
+function openGoalModal(gid){
+  var g = gid ? getGoal(gid) : null;
+  var palette = ["#2EA88C", "#4A90D9", "#E8A33D", "#E25B5B", "#7FB069", "#E882B0", "#C77D5A"];
+  var sw = palette.map(function(c){
+    return '<button type="button" class="sw' + ((g && g.color === c) || (!g && c === "#2EA88C") ? " sel" : "") + '" data-color="' + c + '" style="background:' + c + '" aria-label="颜色 ' + c + '"></button>';
+  }).join("");
+  openModal(
+    '<div class="modal"><h3>' + (g ? "编辑目标" : "添加目标") + '</h3>' +
+    '<div class="mfield"><label>目标名称</label><input id="glName" maxlength="20" value="' + esc(g ? g.name : "") + '" placeholder="如 408 · 计算机网络"></div>' +
+    '<div class="mrow">' +
+    '<div class="mfield"><label>单位</label><input id="glUnit" maxlength="4" value="' + esc(g ? g.unit : "次") + '"></div>' +
+    '<div class="mfield"><label>总量</label><input id="glTotal" type="number" inputmode="numeric" min="1" value="' + (g ? g.total : "") + '"></div>' +
+    '</div>' +
+    '<div class="mfield"><label>截止日期</label><input id="glDeadline" type="date" value="' + (g ? g.deadline : "2027-12-20") + '"></div>' +
+    '<div class="mfield"><label>自动统计来源（可选）</label><select id="glObsidian">' +
+      '<option value="">无（手动打卡）</option>' +
+      '<option value="math-notes"' + (g && g.obsidian === "math-notes" ? " selected" : "") + '>数学讲义（统计 Obsidian 章节数）</option>' +
+      '<option value="sentence"' + (g && g.obsidian === "sentence" ? " selected" : "") + '>每日一句（统计 Obsidian 进度表行数）</option>' +
+    '</select></div>' +
+    '<div class="mfield"><label>配色</label><div class="swatches">' + sw + '</div></div>' +
+    '<div class="mfield"><label>障碍（可选）</label><input id="glObs" maxlength="60" value="' + esc(g ? g.obstacle : "") + '" placeholder="最近卡在哪"></div>' +
+    '<div class="mfield"><label>对策（可选）</label><input id="glCnt" maxlength="60" value="' + esc(g ? g.countermeasure : "") + '" placeholder="打算怎么解决"></div>' +
+    '<div class="macts"><button class="btn" data-act="save-goal">保存</button><button class="btn ghost" data-act="close-modal">取消</button></div></div>'
+  );
+  window._goalId = gid || null;
+  document.querySelectorAll(".sw").forEach(function(b){
+    b.addEventListener("click", function(){
+      document.querySelectorAll(".sw").forEach(function(x){ x.classList.remove("sel"); });
+      b.classList.add("sel");
+    });
+  });
+}
+function saveGoal(){
+  var name = $("glName").value.trim();
+  var unit = $("glUnit").value.trim() || "次";
+  var total = +($("glTotal").value) || 0;
+  var deadline = $("glDeadline").value;
+  if (!name){ toast("请填写目标名称"); return; }
+  if (total <= 0){ toast("总量需大于 0"); return; }
+  if (!deadline){ toast("请选择截止日期"); return; }
+  var color = "#2EA88C";
+  var sel = document.querySelector(".sw.sel");
+  if (sel) color = sel.getAttribute("data-color");
+  var id = window._goalId;
+  if (id){
+    var g = getGoal(id);
+    if (g){ g.name = name; g.unit = unit; g.total = total; g.deadline = deadline; g.color = color;
+      g.obsidian = $("glObsidian").value;
+      g.obstacle = $("glObs").value.trim(); g.countermeasure = $("glCnt").value.trim(); }
+  } else {
+    state.goals.push({ id: uid(), name: name, unit: unit, total: total, deadline: deadline, color: color,
+      base: 0, obsidian: $("glObsidian").value,
+      obstacle: $("glObs").value.trim(), countermeasure: $("glCnt").value.trim() });
+  }
+  save(); closeModal(); render(); toast("已保存");
+  if (state.obsidianInfo && state.obsidianInfo.dir && state.goals.some(function(x){ return x.obsidian; })) obsRefresh(true);
+}
+function confirmDel(gid){
+  var g = getGoal(gid); if (!g) return;
+  confirmBox("删除目标「" + g.name + "」？该目标的打卡记录也会一并删除。", function(){
+    state.goals = state.goals.filter(function(x){ return x.id !== gid; });
+    state.records = state.records.filter(function(r){ return r.goalId !== gid; });
+    save(); render(); toast("已删除");
+  });
+}
+function saveSentence(){
+  state.settings.dailySentence = $("sentIn").value.trim();
+  save(); render(); toast("已保存每日一句");
+}
+function nextSentence(){
+  var bank = state.settings.sentenceBank || [];
+  if (!bank.length){ toast("没有句子库"); return; }
+  var cur = todaySentence();
+  var idx = bank.indexOf(cur);
+  state.settings.dailySentence = bank[(idx + 1) % bank.length];
+  save(); render(); toast("已换一句");
+}
+function exportData(){
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "study-backup-" + todayKey() + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 3000);
+  toast("备份已下载");
+}
+function copyText(txt){
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){}, function(){ fallbackCopy(txt); });
+  } else fallbackCopy(txt);
+}
+function fallbackCopy(txt){
+  var ta = document.createElement("textarea");
+  ta.value = txt; document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); } catch(e){}
+  ta.remove();
+}
+function copyBackup(){ copyText(JSON.stringify(state)); toast("备份文本已复制"); }
+function importData(input){
+  var f = input.files && input.files[0];
+  if (!f) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try {
+      var s = JSON.parse(reader.result);
+      if (!s || !Array.isArray(s.goals)) throw new Error("bad");
+      var backup = JSON.stringify(state);
+      confirmBox("导入将覆盖当前数据（当前数据会先复制到剪贴板备存）。确认导入？", function(){
+        try { if (navigator.clipboard) navigator.clipboard.writeText(backup); } catch(e){}
+        state = normalize(s);
+        save(); render(); toast("导入成功");
+      });
+    } catch(e){ toast("文件格式不对，未导入"); }
+    input.value = "";
+  };
+  reader.readAsText(f, "utf-8");
+}
+function confirmReset(){
+  confirmBox("清空全部打卡数据？此操作不可恢复（可先「导出备份」）。", function(){
+    state = defaultState(); save(); render(); toast("已清空");
+  });
+}
+function genWeek(){
+  var cur = weekRange(0), prev = weekRange(-1);
+  var curAll = 0, prevAll = 0, over = 0, best = 0;
+  state.goals.forEach(function(g){
+    curAll += weekSum(g, cur); prevAll += weekSum(g, prev);
+    var mi = missInfo(g);
+    if (mi && mi.type === "overdue") over++;
+    var s = streak(g);
+    if (s > best) best = s;
+  });
+  $("weekOut").value = buildWeekText(cur, prev, curAll, prevAll, over, best);
+  copyText($("weekOut").value);
+  toast("周报文本已复制");
+}
+function switchTab(name){
+  ["today", "board", "week", "mine"].forEach(function(t){ $("tab-" + t).hidden = t !== name; });
+  document.querySelectorAll(".tab-btn").forEach(function(b){
+    var on = b.getAttribute("data-tab") === name;
+    b.classList.toggle("active", on);
+    if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+  });
+  window.scrollTo(0, 0);
+}
+
+/* ================= 事件与启动 ================= */
+function boot(){
+  document.addEventListener("click", function(e){
+    if (e.target && e.target.id === "modalWrap"){ closeModal(); return; }
+    var el = e.target.closest ? e.target.closest("[data-act],[data-tab]") : null;
+    if (!el) return;
+    var act = el.getAttribute("data-act");
+    var tab = el.getAttribute("data-tab");
+    if (tab){ switchTab(tab); return; }
+    if (act === "confirm-yes"){ var cb = window._confirmYes; closeModal(); window._confirmYes = null; if (cb) cb(); return; }
+    if (act === "confirm-no"){ closeModal(); window._confirmYes = null; return; }
+    if (act === "close-modal"){ closeModal(); return; }
+    var gid = el.getAttribute("data-goal");
+    if (gid){
+      if (act === "checkin"){ doCheckin(gid); return; }
+      if (act === "backfill"){ openBackfill(gid); return; }
+      if (act === "dismiss"){ state.dismissed[gid] = todayKey(); save(); render(); toast("已忽略，今天开始"); return; }
+      if (act === "adjust"){ openGoalModal(gid); return; }
+      if (act === "edit-goal"){ openGoalModal(gid); return; }
+      if (act === "del-goal"){ confirmDel(gid); return; }
+    }
+    if (act === "add-goal"){ openGoalModal(null); return; }
+    if (act === "save-goal"){ saveGoal(); return; }
+    if (act === "save-backfill"){ saveBackfill(); return; }
+    if (act === "save-sent"){ saveSentence(); return; }
+    if (act === "next-sent"){ nextSentence(); return; }
+    if (act === "export"){ exportData(); return; }
+    if (act === "copy-backup"){ copyBackup(); return; }
+    if (act === "import"){ $("importFile").click(); return; }
+    if (act === "reset"){ confirmReset(); return; }
+    if (act === "gen-week"){ genWeek(); return; }
+    if (act === "obs-connect"){ obsConnect(); return; }
+    if (act === "obs-refresh"){ obsRefresh(false); return; }
+    if (act === "obs-disconnect"){ obsDisconnect(); return; }
+  });
+  document.addEventListener("change", function(e){
+    if (e.target && e.target.id === "restDay"){ state.settings.restWeekday = +e.target.value; save(); render(); toast("休息日已更新"); }
+    if (e.target && e.target.id === "importFile"){ importData(e.target); }
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape") closeModal();
+  });
+  render();
+  try { obsInit(); } catch(e){}
+}
+if (typeof document !== "undefined" && typeof window !== "undefined"){
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+}
 </script>
 </body>
 </html>

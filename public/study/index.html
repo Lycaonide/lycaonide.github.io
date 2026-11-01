@@ -153,6 +153,11 @@ main{max-width:1080px;margin:0 auto;padding:16px 20px calc(96px + env(safe-area-
 .feed-a{color:var(--muted);flex:1}
 .feed-d{color:var(--muted);font-size:12px;white-space:nowrap}
 .rlab{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:10px 0 4px}
+.tdist{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.td-cell{background:#F4F9F6;border-radius:12px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.td-name{font-size:12px;color:var(--muted);font-weight:600}
+.td-n{font-size:18px;font-weight:800;color:var(--brand-ink)}
+.td-m{font-size:11px;color:var(--muted)}
 .rlab ~ textarea, .card textarea.weekout{width:100%;box-sizing:border-box;border:1px solid #DCE7E1;border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;resize:vertical}
 .wn-wrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .wline{font-size:13px}
@@ -161,6 +166,7 @@ main{max-width:1080px;margin:0 auto;padding:16px 20px calc(96px + env(safe-area-
   .ov-grid{grid-template-columns:repeat(2,1fr)}
   .feed-n{min-width:0}
   .heat-cell{width:18px;height:18px}
+  .tdist{grid-template-columns:repeat(2,1fr)}
 }
 .gadd{margin-top:14px;text-align:center}
 
@@ -983,6 +989,16 @@ function renderWeek(){
     '<div class="fcell"><span class="k">最长连续</span><span class="v">' + best + ' 天</span></div>' +
     '<div class="fcell"><span class="k">本周活跃</span><span class="v">' + active + ' 天</span></div>' +
     '</div>';
+  var tDist = REC_TYPES.map(function(t){
+    var n = 0, m = 0;
+    state.records.forEach(function(r){
+      if (r.date >= cur.mon && r.date <= cur.sun && r.type === t[0]){ n++; m += (+r.minutes || 0); }
+    });
+    return { key: t[0], name: t[1], n: n, m: m };
+  });
+  h += '<div class="card"><h3>本周类型分布</h3><div class="tdist">' + tDist.map(function(t){
+    return '<div class="td-cell"><span class="td-name">' + t.name + '</span><span class="td-n">' + t.n + ' 次</span><span class="td-m">' + t.m + ' 分钟</span></div>';
+  }).join("") + '</div></div>';
   h += '<div class="card"><h3>周报文本</h3><textarea id="weekOut" class="weekout" readonly></textarea>' +
     '<div style="margin-top:10px"><button class="btn block" data-act="gen-week">生成并复制周报文本</button></div></div>';
   var rv = state.reviews[cur.mon] || { keep: "", problem: "", try: "", plan: "" };

@@ -102,7 +102,7 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 .gmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .gmeta .cell{background:#F8FAFC;border:1px solid #EEF2F7;border-radius:8px;padding:6px 8px;text-align:center}
 .gmeta .cell .k{font-size:11px;color:var(--muted);display:block;font-weight:600;letter-spacing:.3px}
-.gmeta .cell .v{font-size:14px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.gmeta .cell .v{font-size:16px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
 .gmeta .cell .v small{font-weight:600;color:var(--muted);font-size:11px}
 .gact{display:grid;grid-template-columns:90px 1fr 80px;gap:10px;align-items:end;margin-top:14px}
 .gact .field label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:5px}
@@ -941,7 +941,7 @@ function goalCard(g){
       '</div>' +
       '<div class="gadd"><button class="btn plain" data-goal="' + g.id + '" data-act="backfill">补记最近 6 天</button></div>';
   }
-  var streakTxt = auto ? '<span style="font-size:14px;color:var(--ink2);font-weight:600">自动</span>' : streak(g) + " 天";
+  var streakTxt = auto ? '<span style="font-size:16px;color:var(--ink2);font-weight:600">自动</span>' : streak(g) + " 天";
   return '<div class="card gcard" style="--gc:' + g.color + '">' +
     '<div class="ghead"><span class="gdot"></span><span class="gname">' + esc(g.name) + '</span>' +
     blogLink(g) +
@@ -951,7 +951,7 @@ function goalCard(g){
     '<div class="gmeta">' +
       '<div class="cell"><span class="k">完成率</span><span class="v">' + pct(g) + '% <small>' + doneTotal(g) + '/' + g.total + '</small></span></div>' +
       '<div class="cell"><span class="k">连续天数</span><span class="v">' + streakTxt + '</span></div>' +
-      '<div class="cell"><span class="k">预计完成</span><span class="v" style="font-size:14px">' + et + '</span></div>' +
+      '<div class="cell"><span class="k">预计完成</span><span class="v" style="font-size:16px">' + et + '</span></div>' +
     '</div>' +
     gact + recHtml + obs + '</div>';
 }

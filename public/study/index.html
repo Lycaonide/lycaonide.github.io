@@ -806,8 +806,6 @@ function render(){
 /* ---- 今日 ---- */
 function renderToday(){
   var h = "";
-  var s = todaySentence();
-  if (s) h += '<div class="card quote"><div class="q">' + esc(s) + '</div><span class="qtag">每日一句</span></div>';
   h += todayOverview();
   var ed = examDays();
   if (ed !== null && ed >= 0) h += '<div class="examline">距考研初试 <b>' + esc(state.obsidianInfo.examDate) + '</b> 还有 <b>' + ed + '</b> 天</div>';

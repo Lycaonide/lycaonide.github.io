@@ -822,7 +822,7 @@ function renderToday(){
       (ro ? '<span class="rv-overdue"> · 已逾期 ' + ro + ' 题</span>' : '') +
       '<div class="rv-sub">Obsidian 复盘中心到期清单 · 做完去 Obsidian 打勾</div></div></div>';
   }
-  h += '<div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:12px">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1;margin-top:0;margin-bottom:0">') + '<div style="display:flex;flex-direction:column;gap:8px;width:140px"><button class="btn ghost" data-act="add-goal" style="padding:8px 12px;font-size:13px;margin-top:0;color:var(--ink2)">添加打卡类型</button><button class="btn ghost" data-act="add-goal" style="padding:8px 12px;font-size:13px;margin-top:0;color:var(--ink2)">删除打卡类型</button><button class="btn ghost" data-act="add-goal" style="padding:8px 12px;font-size:13px;margin-top:0;color:var(--ink2)">完成打卡类型</button></div></div>';
+  h += '<div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:12px">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1;margin-top:0;margin-bottom:0">') + '<div style="display:flex;flex-direction:column;gap:6px;width:140px"><button class="btn ghost" data-act="add-goal" style="padding:6px 12px;font-size:13px;margin-top:0;color:var(--ink2)">添加打卡类型</button><button class="btn ghost" data-act="add-goal" style="padding:6px 12px;font-size:13px;margin-top:0;color:var(--ink2)">删除打卡类型</button><button class="btn ghost" data-act="add-goal" style="padding:6px 12px;font-size:13px;margin-top:0;color:var(--ink2)">完成打卡类型</button></div></div>';
   state.goals.forEach(function(g){
     var mi = missInfo(g);
     if (mi) h += missCard(g, mi);

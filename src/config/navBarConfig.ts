@@ -64,11 +64,12 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		icon: "material-symbols:menu-book",
 	});
 
-	// 学习打卡台（iframe 嵌入资料库在线页面）
+	// 学习打卡台（新标签打开，避免整页跳转离开博客）
 	links.push({
 		name: "学习打卡",
 		url: "/study/",
 		icon: "material-symbols:checklist-rtl",
+		target: "_blank",
 	});
 
 	// 自定义导航栏链接

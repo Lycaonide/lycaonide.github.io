@@ -243,9 +243,10 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .delta.flat{color:var(--muted)}
 .four{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
 .fcell{background:#F6FAF8;border:1px solid #EDF4F0;border-radius:14px;padding:12px 14px}
-.fcell .k{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.3px}
-.fcell .v{font-size:16px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
-.fcell .v.small{font-size:12.5px;line-height:1.55;font-weight:600}
+.fcell .k{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+.fcell .v{font-size:22px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.1}
+.fcell .v small{font-size:12px;font-weight:600;color:var(--muted);margin-left:2px}
+.fcell .v.small{font-size:14px;line-height:1.55;font-weight:600}
 .weekout{width:100%;min-height:132px;border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:#FBFDFC;resize:vertical;font-size:14px;line-height:1.65;font-family:inherit}
 
 /* ===== 我的 ===== */
@@ -1103,10 +1104,10 @@ function renderWeek(){
   }
   h += '</div>';
   h += '<div class="four">' +
-    '<div class="fcell"><span class="k">本周记录</span><span class="v">' + curAll + '</span></div>' +
+    '<div class="fcell"><span class="k">本周记录</span><span class="v">' + curAll + '<small>次</small></span></div>' +
     '<div class="fcell"><span class="k">环比上周</span><span class="v">' + deltaPct(curAll, prevAll) + '</span></div>' +
-    '<div class="fcell"><span class="k">最长连续</span><span class="v">' + best + ' 天</span></div>' +
-    '<div class="fcell"><span class="k">本周活跃</span><span class="v">' + active + ' 天</span></div>' +
+    '<div class="fcell"><span class="k">最长连续</span><span class="v">' + best + '<small>天</small></span></div>' +
+    '<div class="fcell"><span class="k">本周活跃</span><span class="v">' + active + '<small>天</small></span></div>' +
     '</div>';
   var tDist = REC_TYPES.map(function(t){
     var n = 0, m = 0;

@@ -858,9 +858,10 @@ function weekRhythm(){
     var mins = recs.reduce(function(s, r){ return s + (+r.minutes || 0); }, 0);
     totalMin += mins;
     var has = recs.length > 0;
+    var isFuture = k > todayKey();
     cells.push('<div class="rh-cell' + (has ? " on" : "") + (k === todayKey() ? " today" : "") + '">' +
       '<span class="rh-d">' + names[i] + '</span>' +
-      '<span class="rh-c">' + (has ? (mins ? mins + "分" : "✓") : "") + '</span></div>');
+      '<span class="rh-c">' + (has ? (mins ? mins + "分" : "✓") : (isFuture ? "" : "0")) + '</span></div>');
   }
   return '<div class="card rhythm"><div class="rh-head"><b>本周打卡节奏</b><span>本周已投入 ' + totalMin + ' 分钟</span></div>' +
     '<div class="rh-grid">' + cells.join("") + '</div></div>';

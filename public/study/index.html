@@ -952,11 +952,11 @@ function chapterLoopCard(){
       '<span class="cl-no">' + c.no + '</span>' +
       '<span class="cl-name">' + esc(c.name) + '</span>' +
       '<span class="cl-count">' + c.total + ' 题</span>' +
-      '<span class="cl-lv"><i class="lv-a">掌握' + c.A + '</i><i class="lv-b">提示' + c.B + '</i><i class="lv-c">卡壳' + c.C + '</i></span>' +
+      '<span class="cl-lv"><i class="lv-a">已掌握' + c.A + '</i><i class="lv-b">待巩固' + c.B + '</i><i class="lv-c">需重学' + c.C + '</i></span>' +
       due + '</div>';
   }).join("");
   return '<div class="card"><h3>数学章节闭环 · 学习→练习→复盘→记背</h3>' +
-    '<div class="cl-legend"><span><i class="lv-a"></i>掌握(≥15天)</span><span><i class="lv-b"></i>提示(4-14天)</span><span><i class="lv-c"></i>卡壳(≤3天)</span></div>' +
+    '<div class="cl-legend"><span><i class="lv-a"></i>已掌握(≥15天)</span><span><i class="lv-b"></i>待巩固(4-14天)</span><span><i class="lv-c"></i>需重学(≤3天)</span></div>' +
     '<div class="cl-list">' + rows + '</div></div>';
 }
 function heat35(){

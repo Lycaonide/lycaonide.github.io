@@ -112,6 +112,11 @@ main{max-width:1080px;margin:0 auto;padding:16px 20px calc(96px + env(safe-area-
 .auto-hint{margin-top:12px;font-size:12px;color:var(--brand-ink);background:rgba(46,168,140,.08);border:1px solid rgba(46,168,140,.18);border-radius:10px;padding:8px 11px;font-weight:600}
 .auto-sub{margin-top:6px;font-size:11.5px;color:var(--muted);font-weight:500}
 .examline{margin:0 0 14px;font-size:13px;font-weight:600;color:var(--brand-ink);background:linear-gradient(90deg,rgba(46,168,140,.12),rgba(46,168,140,.04));border:1px solid rgba(46,168,140,.2);border-radius:12px;padding:10px 14px}
+.review-today{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin-bottom:12px;border-left:4px solid var(--amber);background:#FFFBF2}
+.rv-icon{font-size:20px;color:var(--amber);flex:none;line-height:1.2}
+.rv-body b{font-size:15px}
+.rv-overdue{color:var(--red);font-weight:700}
+.rv-sub{font-size:12px;color:var(--muted);margin-top:3px}
 .addcard{width:100%;margin-top:14px;padding:16px;border:1.5px dashed rgba(46,168,140,.4);border-radius:16px;background:rgba(46,168,140,.04);color:var(--brand-ink);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
 .addcard:hover{background:rgba(46,168,140,.1)}
 .tmpls{display:flex;flex-wrap:wrap;gap:8px}
@@ -367,8 +372,8 @@ function normalize(s){
   });
   s.obsidianCounts = s.obsidianCounts && typeof s.obsidianCounts === "object" ? s.obsidianCounts : {};
   s.obsidianInfo = s.obsidianInfo && typeof s.obsidianInfo === "object"
-    ? Object.assign({ dir: "", ts: 0, supported: false, examDate: "", mathChapters: [], sentenceLast: "" }, s.obsidianInfo)
-    : { dir: "", ts: 0, supported: false, examDate: "", mathChapters: [], sentenceLast: "" };
+    ? Object.assign({ dir: "", ts: 0, supported: false, examDate: "", mathChapters: [], sentenceLast: "", reviewToday: 0, reviewOverdue: 0 }, s.obsidianInfo)
+    : { dir: "", ts: 0, supported: false, examDate: "", mathChapters: [], sentenceLast: "", reviewToday: 0, reviewOverdue: 0 };
   s.lastBackup = +s.lastBackup || 0;
   s.reviews = s.reviews && typeof s.reviews === "object" ? s.reviews : {};
   if (!s.goals.length) s.goals = d.goals;
@@ -457,7 +462,7 @@ function readExamDate(dir){
 }
 function hasObsidian(k){ return !!k; }
 function readObsidian(root){
-  var counts = {}, info = { examDate: "", mathChapters: [], sentenceLast: "" };
+  var counts = {}, info = { examDate: "", mathChapters: [], sentenceLast: "", reviewToday: 0, reviewDue: 0 };
   var jobs = [];
   state.goals.forEach(function(g){
     if (!g.obsidian) return;
@@ -482,6 +487,22 @@ function readObsidian(root){
       jobs.push(descend(root, rel2.split("/")).then(function(h){ return h.getFile(); }).then(countSentences).then(function(r){ counts[o] = r.n; }));
     }
   });
+  // 固定读复盘中心：今天到期未打勾的题数
+  jobs.push(descend(root, ["考研", "数学", "零基础通关讲义", "复盘中心.md"])
+    .then(function(h){ return h.getFile(); })
+    .then(function(f){ return f.text(); })
+    .then(function(txt){
+      var today = todayKey();
+      var todayDue = 0, overdue = 0;
+      txt.split("\n").forEach(function(line){
+        var m = /^- \[ \] 复盘 .+?\(@(\d{4}-\d{1,2}-\d{1,2})/.exec(line);
+        if (!m) return;
+        var d = m[1];
+        if (d === today) todayDue++;
+        else if (d < today) overdue++;
+      });
+      info.reviewToday = todayDue; info.reviewOverdue = overdue;
+    }).catch(function(){ info.reviewToday = 0; info.reviewOverdue = 0; }));
   return Promise.all(jobs).then(function(){ return { counts: counts, info: info }; });
 }
 function applyObsidian(counts, info, dirName){
@@ -491,7 +512,9 @@ function applyObsidian(counts, info, dirName){
     dir: dirName || oi.dir || "", ts: Date.now(), supported: obsSupported(),
     examDate: (info && info.examDate) || oi.examDate || "",
     mathChapters: (info && info.mathChapters && info.mathChapters.length) ? info.mathChapters : (oi.mathChapters || []),
-    sentenceLast: (info && info.sentenceLast) || oi.sentenceLast || ""
+    sentenceLast: (info && info.sentenceLast) || oi.sentenceLast || "",
+    reviewToday: (info && info.reviewToday != null) ? info.reviewToday : (oi.reviewToday || 0),
+    reviewOverdue: (info && info.reviewOverdue != null) ? info.reviewOverdue : (oi.reviewOverdue || 0)
   };
   save(); render();
 }
@@ -695,6 +718,15 @@ function renderToday(){
   h += todayOverview();
   var ed = examDays();
   if (ed !== null && ed >= 0) h += '<div class="examline">距考研初试 <b>' + esc(state.obsidianInfo.examDate) + '</b> 还有 <b>' + ed + '</b> 天</div>';
+  var rt = (state.obsidianInfo && state.obsidianInfo.reviewToday) || 0;
+  var ro = (state.obsidianInfo && state.obsidianInfo.reviewOverdue) || 0;
+  if (state.obsidianInfo && state.obsidianInfo.dir && (rt || ro)){
+    h += '<div class="card review-today">' +
+      '<div class="rv-icon">↻</div>' +
+      '<div class="rv-body"><b>今日复盘 ' + rt + ' 题</b>' +
+      (ro ? '<span class="rv-overdue"> · 已逾期 ' + ro + ' 题</span>' : '') +
+      '<div class="rv-sub">Obsidian 复盘中心到期清单 · 做完去 Obsidian 打勾</div></div></div>';
+  }
   state.goals.forEach(function(g){
     var mi = missInfo(g);
     if (mi) h += missCard(g, mi);

@@ -1105,7 +1105,7 @@ function renderWeek(){
   h += '</div>';
   h += '<div class="four">' +
     '<div class="fcell"><span class="k">本周记录</span><span class="v">' + curAll + '<small>次</small></span></div>' +
-    '<div class="fcell"><span class="k">环比上周</span><span class="v">' + deltaPct(curAll, prevAll) + '</span></div>' +
+    '<div class="fcell"><span class="k">比上周</span><span class="v">' + deltaPct(curAll, prevAll) + '</span></div>' +
     '<div class="fcell"><span class="k">最长连续</span><span class="v">' + best + '<small>天</small></span></div>' +
     '<div class="fcell"><span class="k">本周活跃</span><span class="v">' + active + '<small>天</small></span></div>' +
     '</div>';
@@ -1159,7 +1159,7 @@ function buildWeekText(cur, prev, curAll, prevAll, over, best){
   });
   if (autos.length) L.push("· Obsidian 自动统计：" + autos.map(function(g){ return g.name; }).join("、") + "（进度随 Obsidian 更新，无需打卡）");
   L.push("");
-  L.push("二、环比上周：" + deltaPct(curAll, prevAll) + "（本周总计 " + curAll + "）");
+  L.push("二、比上周：" + deltaPct(curAll, prevAll) + "（本周总计 " + curAll + "）");
   var tcount = { study: 0, review: 0, practice: 0, recite: 0 };
   state.records.forEach(function(r){ if (r.date >= cur.mon && r.date <= cur.sun && tcount[r.type] != null) tcount[r.type]++; });
   L.push("· 本周类型：学习 " + tcount.study + " 次 · 复习 " + tcount.review + " 次 · 练习 " + tcount.practice + " 次 · 背诵 " + tcount.recite + " 次");

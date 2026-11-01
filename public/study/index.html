@@ -505,13 +505,11 @@ function countMathNotes(dir){
 }
 function countSentences(file){
   return file.text().then(function(txt){
-    var re = /\d{4}-\d{1,2}-\d{1,2}/, n = 0, last = "";
+    var re = /20\d{2}-\d{1,2}-\d{1,2}/, n = 0, last = "";
     txt.split("\n").forEach(function(line){
-      if (line.charAt(0) === "|" && re.test(line)){
+      if (re.test(line)){
         n++;
-        var cells = line.split("|").map(function(s){ return s.trim(); }).filter(Boolean);
-        var src = cells[0] || "";
-        last = (src ? src + " · " : "") + ((line.match(re) || [""])[0]);
+        last = (line.match(re) || [""])[0];
       }
     });
     return { n: n, last: last };

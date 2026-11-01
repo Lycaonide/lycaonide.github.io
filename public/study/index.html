@@ -39,7 +39,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .back-link:hover{background:rgba(46,168,140,.2)}
 .brand-mark{width:32px;height:32px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(46,168,140,.35);flex:none}
 .brand-mark svg{width:18px;height:18px;stroke:#fff}
-.brand h1{font-size:18px;font-weight:800;letter-spacing:.2px;white-space:nowrap}
+.brand h1{font-size:20px;font-weight:800;letter-spacing:.2px;white-space:nowrap}
 .brand h1 em{font-style:normal;color:var(--brand-ink)}
 .date{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px;white-space:nowrap;box-shadow:var(--shadow-sm);align-self:flex-start}
 
@@ -62,7 +62,7 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
   main{padding:12px 14px calc(80px + env(safe-area-inset-bottom))}
 }
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow-sm);margin-bottom:12px}
-.card h3{font-size:16px;font-weight:750;letter-spacing:.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3{font-size:18px;font-weight:800;letter-spacing:.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .card h3::before{content:"";width:4px;height:14px;border-radius:3px;background:var(--grad);flex:none}
 
 /* 每日一句 */
@@ -101,9 +101,9 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .gmeta .cell .k{font-size:11px;color:var(--muted);display:block;font-weight:600;letter-spacing:.3px}
 .gmeta .cell .v{font-size:15px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
 .gmeta .cell .v small{font-weight:600;color:var(--muted);font-size:11px}
-.gact{display:grid;grid-template-columns:1.2fr 1fr auto;gap:8px;align-items:end;margin-top:14px}
-.gact .field label{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:5px}
-.gact input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:#FBFDFC;min-height:46px;transition:border-color .15s,box-shadow .15s}
+.gact{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:end;margin-top:14px}
+.gact .field label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:5px}
+.gact input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:#FBFDFC;min-height:44px;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
 .gact input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(46,168,140,.14)}
 .unit-holder{position:relative}
 .unit-holder input{padding-right:36px}
@@ -130,7 +130,8 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .tmpl{font-size:12px;font-weight:600;color:var(--brand-ink);background:rgba(46,168,140,.08);border:1px solid rgba(46,168,140,.25);border-radius:999px;padding:5px 11px;cursor:pointer}
 .tmpl:hover{background:rgba(46,168,140,.16)}
 .ttype{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
-.tt{font-size:12px;font-weight:600;color:var(--muted);background:#F2F6F4;border:1px solid #E3ECE7;border-radius:9px;padding:7px 0;cursor:pointer;text-align:center}
+.tt{font-size:13px;font-weight:700;color:var(--muted);background:#F2F6F4;border:1.5px solid #E3ECE7;border-radius:10px;padding:10px 0;cursor:pointer;text-align:center;transition:all .15s}
+.tt.on{background:rgba(46,168,140,.12);border-color:var(--brand);color:var(--brand-ink)}
 .tt.on{color:var(--brand-ink);background:rgba(46,168,140,.12);border-color:rgba(46,168,140,.35)}
 .ttag{background:rgba(46,168,140,.1);color:var(--brand-ink)}
 .obs-path{margin-top:8px;width:100%;padding:9px 11px;border:1px solid #DCE7E1;border-radius:10px;font-size:14px;box-sizing:border-box}

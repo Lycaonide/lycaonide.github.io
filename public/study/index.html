@@ -32,10 +32,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 /* ===== 顶栏 ===== */
 .layout{display:flex;min-height:100vh}
-.sidebar{width:220px;flex:none;background:rgba(255,255,255,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-right:1px solid rgba(225,237,231,.8);padding:16px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sb-brand{display:flex;flex-direction:column;gap:10px;padding:12px 0 20px;align-items:center;text-align:center}
+.sidebar{width:240px;flex:none;background:rgba(255,255,255,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-right:1px solid rgba(226,232,240,.8);padding:20px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-brand{display:flex;flex-direction:column;gap:6px;padding:8px 0 20px;align-items:center;text-align:center}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.back-link{display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 12px;border-radius:10px;background:rgba(59,130,246,.1);color:var(--brand-ink);text-decoration:none;font-size:13px;font-weight:700;flex:none;transition:background .2s;align-self:flex-start}
+.back-link{display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 12px;border-radius:10px;background:rgba(59,130,246,.1);color:var(--brand-ink);text-decoration:none;font-size:13px;font-weight:600;flex:none;transition:background .2s;align-self:flex-start;margin-bottom:8px}
+.back-link:hover{background:rgba(59,130,246,.2)}
 .back-link:hover{background:rgba(59,130,246,.2)}
 .brand-mark{width:32px;height:32px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(59,130,246,.35);flex:none}
 .brand-mark svg{width:18px;height:18px;stroke:#fff}
@@ -307,7 +308,7 @@ textarea.sent{width:100%;border:1px solid var(--line);border-radius:13px;padding
 <div class="layout">
 <aside class="sidebar">
   <div class="sb-brand">
-    <a href="/" class="back-link" title="返回博客主页"><span>← 返回</span></a>
+    <a href="/" class="back-link" title="返回博客主页">返回博客</a>
     <div class="brand">
       <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
       <h1>学习打卡</h1>

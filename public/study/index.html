@@ -822,13 +822,13 @@ function renderToday(){
       (ro ? '<span class="rv-overdue"> · 已逾期 ' + ro + ' 题</span>' : '') +
       '<div class="rv-sub">Obsidian 复盘中心到期清单 · 做完去 Obsidian 打勾</div></div></div>';
   }
+  h += '<div style="display:flex;gap:12px;align-items:stretch;margin-bottom:14px">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1">') + '<div style="display:flex;flex-direction:column;gap:8px;width:160px"><button class="btn ghost" data-act="add-goal" style="padding:10px 12px;font-size:13px;margin-top:0">添加打卡类型</button><button class="btn ghost" data-act="add-goal" style="padding:10px 12px;font-size:13px;margin-top:0;opacity:.7">删除打卡类型</button></div></div>';
   state.goals.forEach(function(g){
     var mi = missInfo(g);
     if (mi) h += missCard(g, mi);
   });
   state.goals.forEach(function(g){ h += goalCard(g); });
   if (!state.goals.length) h += '<div class="card"><p class="note">还没有目标，添加一个开始打卡吧。</p></div>';
-  h += '<div style="display:flex;gap:12px;align-items:stretch">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1;margin-top:14px">') + '<div style="display:flex;flex-direction:column;gap:8px;width:160px;margin-top:14px"><button class="addcard" data-act="add-goal" style="margin-top:0;padding:10px 12px;font-size:13px">＋ 添加打卡类型</button><button class="addcard" data-act="add-goal" style="margin-top:0;padding:10px 12px;font-size:13px;opacity:.7">删除打卡类型</button></div></div>';
   $("tab-today").innerHTML = h;
 }
 function todayOverview(){

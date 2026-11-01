@@ -64,10 +64,10 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		icon: "material-symbols:menu-book",
 	});
 
-	// 学习打卡台（新标签打开，避免整页跳转离开博客）
+	// 学习打卡台（完整URL强制新标签打开，绕过SPA软导航）
 	links.push({
 		name: "学习打卡",
-		url: "/study/",
+		url: "https://lycaonide.github.io/study/",
 		icon: "material-symbols:checklist-rtl",
 		external: true,
 	});

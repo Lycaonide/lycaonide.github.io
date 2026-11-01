@@ -1265,8 +1265,7 @@ function obsCardHTML(){
     var ts = info.ts ? new Date(info.ts) : null;
     var tsTxt = ts ? (ts.getMonth() + 1) + "月" + ts.getDate() + "日 " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) : "";
     var ed = examDays();
-    var examTxt = (info.examDate && ed !== null && ed >= 0)
-      ? '<span class="obs-ts">考研初试 ' + esc(info.examDate) + ' · 距考研 ' + ed + ' 天（读自复盘中心）</span>' : "";
+    var examTxt = "";
     status = '<div class="obs-status on"><b>已连接：</b>' + esc(info.dir) + examTxt + '<span class="obs-ts">上次同步 ' + tsTxt + '，打开页面会自动更新</span></div>';
     btnHtml = '<button class="btn sm ghost" data-act="obs-refresh">立即刷新</button><button class="btn sm danger" data-act="obs-disconnect">断开</button>';
   } else {

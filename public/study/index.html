@@ -32,8 +32,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 /* ===== 顶栏 ===== */
 .layout{display:flex;min-height:100vh}
-.sidebar{width:220px;flex:none;background:rgba(255,255,255,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-right:1px solid rgba(225,237,231,.8);padding:16px 14px;display:flex;flex-direction:column;gap:14px;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sb-brand{display:flex;flex-direction:column;gap:10px}
+.sidebar{width:220px;flex:none;background:rgba(255,255,255,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-right:1px solid rgba(225,237,231,.8);padding:16px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-brand{display:flex;flex-direction:column;gap:10px;padding:12px 0 20px;align-items:center;text-align:center}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .back-link{display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 12px;border-radius:10px;background:rgba(46,168,140,.1);color:var(--brand-ink);text-decoration:none;font-size:13px;font-weight:700;flex:none;transition:background .2s;align-self:flex-start}
 .back-link:hover{background:rgba(46,168,140,.2)}
@@ -151,7 +151,7 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .rh-cell.today{outline:2px solid var(--brand)}
 .heat{display:flex;gap:6px;justify-content:center}
 .heat-col{display:flex;flex-direction:column;gap:5px}
-.heat-cell{width:22px;height:22px;border-radius:5px;background:#EDF2F0}
+.heat-cell{width:14px;height:14px;border-radius:3px;background:#EDF2F0}
 .heat-cell.l1{background:#BFE3D7}
 .heat-cell.l2{background:#7FC9B4}
 .heat-cell.l3{background:#45A88E}
@@ -949,10 +949,26 @@ function renderBoard(){
   });
   h += '</div>';
   h += '<div class="card chart-card"><h3>近 14 天打卡量（分钟优先，无分钟记数量）</h3>' + chart14() + legendHTML() + '</div>';
+  h += typeDistCard();
   h += chapterLoopCard();
   h += heat35();
   h += recentFeed();
   $("tab-board").innerHTML = h;
+}
+function typeDistCard(){
+  var today = todayKey();
+  var weekStart = weekStartOf(today);
+  var tTypes = REC_TYPES.map(function(t){ return { key: t[0], label: t[1], today: 0, week: 0, mins: 0 }; });
+  state.records.forEach(function(r){
+    var t = tTypes.find(function(x){ return x.key === r.ttype; });
+    if (!t) return;
+    if (r.date === today){ t.today++; t.mins += (r.mins||0); }
+    if (r.date >= weekStart){ t.week++; }
+  });
+  var cells = tTypes.map(function(t){
+    return '<div class="td-cell"><span class="td-name">' + t.label + '</span><span class="td-n">' + t.today + '</span><span class="td-m">今日 · 本周' + t.week + '次</span></div>';
+  }).join("");
+  return '<div class="card"><h3>今日四类打卡分布</h3><div class="tdist">' + cells + '</div></div>';
 }
 function chapterLoopCard(){
   var loop = (state.obsidianInfo && state.obsidianInfo.chapterLoop) || [];

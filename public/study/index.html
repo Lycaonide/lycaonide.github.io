@@ -35,7 +35,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .sidebar{width:220px;flex:none;background:#F8FAFC;border-right:1px solid var(--line);padding:24px 12px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
 .sb-brand{display:flex;flex-direction:row;justify-content:space-between;align-items:center;padding:0 0 20px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.back-link{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border-radius:6px;background:transparent;color:var(--brand-ink);text-decoration:none;font-size:13px;font-weight:500}
+.back-link{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border-radius:6px;background:transparent;color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;order:2}
 .back-link:hover{background:#E2E8F0}
 .brand-mark{width:28px;height:28px;border-radius:6px;background:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
 .brand-mark svg{width:16px;height:16px;stroke:#fff}
@@ -625,7 +625,8 @@ function obsConnect(){
     }).then(function(res){ applyObsidian(res.counts, res.info, handle.name); toast("Obsidian 已连接并同步"); });
   }).catch(function(e){
     if (e && e.name === "AbortError") return;
-    toast("连接失败或未授权读取");
+    console.error("obsConnect error:", e);
+    toast("连接失败：" + (e && e.message ? e.message : "请用 Chrome/Edge 从 https 页面打开，选 Obsidian Vault 根目录"));
   });
 }
 function obsRefresh(quiet){

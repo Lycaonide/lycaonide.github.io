@@ -80,6 +80,8 @@ main{max-width:680px;margin:0 auto;padding:16px 16px calc(96px + env(safe-area-i
 .gdot{width:11px;height:11px;border-radius:4px;background:var(--gc);flex:none}
 .gname{font-size:16px;font-weight:750;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.2px}
 .chip{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;flex:none}
+.blink{font-size:12px;font-weight:600;color:#2EA88C;text-decoration:none;flex:none;padding:2px 0;white-space:nowrap}
+.blink:hover{text-decoration:underline}
 .chip.ok{background:rgba(46,168,140,.13);color:var(--brand-ink)}
 .chip.info{background:rgba(74,144,217,.12);color:#2F6FAD}
 .chip.warn{background:rgba(232,163,61,.15);color:#A86F12}
@@ -276,7 +278,8 @@ function defaultState(){
       ],
       dailySentence: ""
     },
-    dismissed: {}
+    dismissed: {},
+    lastBackup: 0
   };
 }
 function normalize(s){
@@ -300,6 +303,7 @@ function normalize(s){
   s.obsidianCounts = s.obsidianCounts && typeof s.obsidianCounts === "object" ? s.obsidianCounts : {};
   s.obsidianInfo = s.obsidianInfo && typeof s.obsidianInfo === "object"
     ? Object.assign({ dir: "", ts: 0, supported: false }, s.obsidianInfo) : { dir: "", ts: 0, supported: false };
+  s.lastBackup = +s.lastBackup || 0;
   if (!s.goals.length) s.goals = d.goals;
   return s;
 }
@@ -595,6 +599,12 @@ function missCard(g, mi){
     '<p>' + sub + '</p>' +
     (btns ? '<div class="miss-acts">' + btns + '</div>' : "") + '</div>';
 }
+function blogLink(g){
+  var SECTIONS = { "数据结构": "数据结构", "计算机组成原理": "计算机组成原理", "操作系统": "操作系统", "计算机网络": "计算机网络" };
+  var m = /^408 · (.+)$/.exec(g.name);
+  if (!m || !SECTIONS[m[1]]) return "";
+  return '<a class="blink" href="/kb/考研/' + encodeURIComponent(m[1]) + '/" target="_blank" rel="noopener">博客笔记 ↗</a>';
+}
 function goalCard(g){
   var auto = !!g.obsidian;
   var sug = auto ? null : suggest(g);
@@ -618,7 +628,10 @@ function goalCard(g){
   if (g.obstacle || g.countermeasure){
     obs = '<div class="obstacle"><b>障碍：</b>' + esc(g.obstacle || "—") + '　<b>对策：</b>' + esc(g.countermeasure || "—") + '</div>';
   }
-  var autoHint = auto ? '<div class="auto-hint">Obsidian 自动统计 · 当前已完成 ' + autoCount(g) + ' ' + esc(g.unit) + '，无需手动打卡</div>' : "";
+  var connected = !!(state.obsidianInfo && state.obsidianInfo.dir);
+  var autoHint = auto ? '<div class="auto-hint">' + (connected
+    ? 'Obsidian 自动统计 · 已完成 ' + autoCount(g) + '/' + g.total + ' ' + esc(g.unit)
+    : 'Obsidian 未连接 · 去「我的」页连接') + '</div>' : "";
   var gact = "";
   if (!auto){
     var disabled = sug.v <= 0;
@@ -632,6 +645,7 @@ function goalCard(g){
   var streakTxt = auto ? "自动" : streak(g) + " 天";
   return '<div class="card gcard" style="--gc:' + g.color + '">' +
     '<div class="ghead"><span class="gdot"></span><span class="gname">' + esc(g.name) + '</span>' +
+    blogLink(g) +
     '<span class="chip ' + st.cls + '">' + st.t + '</span></div>' +
     '<div class="gbar"><div class="gfill" style="width:' + pct(g) + '%;background:' + g.color + '"></div></div>' +
     autoHint +
@@ -652,7 +666,7 @@ function renderBoard(){
     var et = e === null ? "暂无推算" : (remaining(g) <= 0 ? "已完成" : fmtDate(e));
     h += '<div class="card bcard">' + ring(g) +
       '<div class="bname">' + esc(g.name) + '</div>' +
-      '<div class="bstats">' + (g.obsidian ? "Obsidian 自动 · 预计 " + et : "连续 " + streak(g) + " 天 · 预计 " + et) + '</div>' +
+      '<div class="bstats">' + (g.obsidian ? ((state.obsidianInfo && state.obsidianInfo.dir) ? "Obsidian 自动 · 预计 " + et : "Obsidian 未连接") : "连续 " + streak(g) + " 天 · 预计 " + et) + '</div>' +
       '<span class="chip bchip ' + st.cls + '">' + st.t + '</span>' +
       (g.obstacle ? '<div class="obstacle" style="text-align:left"><b>障碍：</b>' + esc(g.obstacle) + '</div>' : "") +
       '</div>';
@@ -676,8 +690,13 @@ function chart14(){
   var rows = state.goals.map(function(g){
     return { g: g, vals: days.map(function(k){ var m = minutesOn(g.id, k), a = amountOn(g.id, k); return m || a || 0; }) };
   });
-  var max = 0;
-  rows.forEach(function(r){ r.vals.forEach(function(v){ if (v > max) max = v; }); });
+  var dayTot = [], max = 0;
+  for (var di = 0; di < 14; di++){
+    var t = 0;
+    rows.forEach(function(r){ t += r.vals[di]; });
+    dayTot.push(t);
+    if (t > max) max = t;
+  }
   if (max < 1) max = 1;
   var W = 700, H = 220, ml = 34, mr = 8, mt = 16, mb = 26;
   var pw = W - ml - mr, ph = H - mt - mb;
@@ -731,12 +750,17 @@ function renderWeek(){
     var s = streak(g);
     if (s > best) best = s;
   });
+  var active = 0;
+  for (var dd = 0; dd < 7; dd++){
+    var k = toKey(addDays(fromKey(cur.mon), dd));
+    if (state.records.some(function(r){ return r.date === k; })) active++;
+  }
   h += '</div>';
   h += '<div class="four">' +
     '<div class="fcell"><span class="k">本周记录</span><span class="v">' + curAll + '</span></div>' +
     '<div class="fcell"><span class="k">环比上周</span><span class="v">' + deltaPct(curAll, prevAll) + '</span></div>' +
     '<div class="fcell"><span class="k">最长连续</span><span class="v">' + best + ' 天</span></div>' +
-    '<div class="fcell"><span class="k">逾期提醒</span><span class="v">' + (over ? over + ' 个' : '无') + '</span></div>' +
+    '<div class="fcell"><span class="k">本周活跃</span><span class="v">' + active + ' 天</span></div>' +
     '</div>';
   h += '<div class="card"><h3>周报文本</h3><textarea id="weekOut" class="weekout" readonly></textarea>' +
     '<div style="margin-top:10px"><button class="btn block" data-act="gen-week">生成并复制周报文本</button></div></div>';
@@ -802,6 +826,7 @@ function obsCardHTML(){
 }
 function renderMine(){
   var rest = state.settings.restWeekday;
+  var bk = state.lastBackup ? new Date(state.lastBackup) : null;
   var opts = "";
   for (var i = 1; i <= 7; i++) opts += '<option value="' + i + '"' + (i === rest ? " selected" : "") + '>周' + "一二三四五六日".charAt(i - 1) + '</option>';
   var goals = "";
@@ -827,6 +852,7 @@ function renderMine(){
     '<button class="btn ghost" data-act="import">导入备份</button>' +
     '<button class="btn danger" data-act="reset">清空数据</button>' +
     '</div>' +
+    (bk ? '<div class="obs-ts">上次备份 ' + (bk.getMonth() + 1) + '月' + bk.getDate() + '日 ' + pad(bk.getHours()) + ':' + pad(bk.getMinutes()) + ' · 建议每周导出一次</div>' : '<div class="obs-ts">尚未备份过 · 建议每周导出一次</div>') +
     '<input type="file" id="importFile" accept="application/json,.json" hidden>' +
     '<p class="note" style="margin-top:10px">数据只存在<b>这台设备的浏览器</b>里，不经过任何服务器、不需要登录。Obsidian 只读本地文件夹，数据不上传。换设备：本机「导出备份」下载 JSON，新设备「导入备份」（Obsidian 目标重新连接一次即可）。<br>「复制备份文本」可把内容存进 Obsidian 等任意笔记。</p></div>' +
     '<div class="card"><h3>关于</h3><p class="note">纯静态页面，随博客部署在 GitHub Pages，完全免费、无第三方依赖。打卡数据不会上传。</p></div>';
@@ -957,6 +983,7 @@ function nextSentence(){
   save(); render(); toast("已换一句");
 }
 function exportData(){
+  state.lastBackup = Date.now(); save();
   var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
   var a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -976,7 +1003,7 @@ function fallbackCopy(txt){
   try { document.execCommand("copy"); } catch(e){}
   ta.remove();
 }
-function copyBackup(){ copyText(JSON.stringify(state)); toast("备份文本已复制"); }
+function copyBackup(){ state.lastBackup = Date.now(); save(); copyText(JSON.stringify(state)); toast("备份文本已复制"); }
 function importData(input){
   var f = input.files && input.files[0];
   if (!f) return;

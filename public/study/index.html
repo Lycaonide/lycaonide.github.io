@@ -927,7 +927,7 @@ function goalCard(g){
   }
   var autoHint = auto ? '<div class="auto-hint">' +
     'Obsidian 统计 · 已完成 ' + autoCount(g) + '/' + g.total + ' ' + esc(g.unit) + '</div>' + sub
-    : (g.obsidian ? '<div class="auto-hint">Obsidian 未连接 · 暂用手动打卡，连接后自动统计</div>' : "");
+    : (g.obsidian ? '<div class="auto-hint">Obsidian 未连接 · 暂用手动打卡，连接后自动同步</div>' : "");
   var gact = "";
   if (!auto){
     var disabled = sug.v <= 0;

@@ -151,7 +151,7 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 .rh-cell{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border-radius:10px;background:#F2F6F4}
 .rh-cell .rh-d{font-size:11px;color:var(--muted)}
 .rh-cell .rh-c{font-size:16px;font-weight:700;color:var(--muted)}
-.rh-cell.on{background:rgba(37,99,235,.12)}
+.rh-cell.on{background:#DBEAFE}
 .rh-cell.on .rh-c{color:var(--brand-ink)}
 .rh-cell.today{outline:2px solid var(--brand)}
 .heat{display:flex;gap:4px;justify-content:center}
@@ -936,7 +936,7 @@ function goalCard(g){
     gact = '<div class="gact">' +
       '<div class="field f-amt"><label>' + sugLabel + '</label><div class="unit-holder"><input id="amt-' + g.id + '" type="number" inputmode="numeric" min="0" value="' + sug.v + '"' + (disabled ? ' disabled' : '') + '><span class="u">' + esc(g.unit) + '</span></div></div>' +
       '<div class="field f-content"><label>学习内容（选填）</label><input id="content-' + g.id + '" type="text" placeholder="如：02-例9 有理化" style="width:100%"></div>' +
-      '<div class="field f-min"><label>分钟</label><input id="min-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
+      '<div class="field f-min"><label>分钟</label><div style="display:flex;gap:6px;align-items:center"><input id="min-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"><button type="button" class="btn plain" style="min-height:36px;padding:0 10px;white-space:nowrap" data-goal="' + g.id + '" data-act="timer">开始计时</button></div></div>' +
       '<div class="ttype" data-goal="' + g.id + '">' + REC_TYPES.map(function(t, i){
         return '<button type="button" class="tt' + (i === 0 ? " on" : "") + '" data-goal="' + g.id + '" data-tt="' + t[0] + '">' + t[1] + '</button>';
       }).join("") + '<button class="btn primary" data-goal="' + g.id + '" data-act="checkin"' + (disabled ? ' disabled' : '') + '>打卡</button></div>' +
@@ -1318,6 +1318,29 @@ function renderMine(){
 }
 
 /* ---- 动作 ---- */
+var timerStart = {};
+var timerInterval = null;
+function toggleTimer(gid, el){
+  if (timerStart[gid]){
+    var mins = Math.round((Date.now() - timerStart[gid]) / 60000);
+    $("min-" + gid).value = mins;
+    delete timerStart[gid];
+    el.textContent = "开始计时";
+    el.classList.remove("on");
+    clearInterval(timerInterval);
+    toast("计时结束 " + mins + " 分钟");
+  } else {
+    timerStart[gid] = Date.now();
+    el.textContent = "计时中…点结束";
+    el.classList.add("on");
+    var t = setInterval(function(){
+      if (!timerStart[gid]){ clearInterval(t); return; }
+      var s = Math.round((Date.now() - timerStart[gid]) / 1000);
+      el.textContent = Math.floor(s/60) + ":" + String(s%60).padStart(2,"0") + " 结束";
+    }, 1000);
+    timerInterval = t;
+  }
+}
 function doCheckin(gid){
   var g = getGoal(gid); if (!g) return;
   var a = +( $("amt-" + gid).value ) || 0;
@@ -1553,6 +1576,7 @@ function boot(){
     var gid = el.getAttribute("data-goal");
     if (gid){
       if (act === "checkin"){ doCheckin(gid); return; }
+      if (act === "timer"){ toggleTimer(gid, el); return; }
       if (act === "backfill"){ openBackfill(gid); return; }
       if (act === "dismiss"){ state.dismissed[gid] = todayKey(); save(); render(); toast("已忽略，今天开始"); return; }
       if (act === "adjust"){ openGoalModal(gid); return; }

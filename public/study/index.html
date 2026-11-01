@@ -15,10 +15,10 @@
   --ink:#1E293B;--ink2:#475569;--muted:#64748B;
   --bg:#F0F7FF;--card:#FFFFFF;--line:#E2E8F0;
   --amber:#E8A33D;--red:#E25B5B;--blue:#3B82F6;--green:#7FB069;--rose:#E882B0;
-  --grad:linear-gradient(135deg,#3B82F6 0%,#2563EB 100%);
+  --grad:#3B82F6;
   --grad-soft:linear-gradient(180deg,#F8FBFF 0%,#EFF6FF 100%);
-  --shadow-sm:0 1px 2px rgba(30,64,175,.04),0 6px 16px rgba(30,64,175,.06);
-  --shadow-md:0 2px 6px rgba(30,64,175,.05),0 14px 32px rgba(30,64,175,.10);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.04);
+  --shadow-md:0 2px 8px rgba(0,0,0,.06);
   --r-lg:20px;--r-md:14px;--r-sm:10px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -48,7 +48,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .tabs{display:flex;flex-direction:column;gap:4px}
 .tab-btn{min-height:44px;border-radius:12px;font-size:14px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:10px;padding:0 12px;transition:color .15s,background .15s;text-align:left}
 .tab-btn svg{width:18px;height:18px;flex:none}
-.tab-btn.active{background:var(--grad);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,.35)}
+.tab-btn.active{background:rgba(59,130,246,.12);color:var(--brand-ink);box-shadow:none;border-left:3px solid var(--brand)}
 
 /* ===== 主区 ===== */
 main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom))}
@@ -62,8 +62,8 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
   .tab-btn{flex:1;justify-content:center;padding:0;min-height:42px;font-size:13px}
   main{padding:12px 14px calc(80px + env(safe-area-inset-bottom))}
 }
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow-sm);margin-bottom:12px}
-.card h3{font-size:18px;font-weight:600;letter-spacing:.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;box-shadow:var(--shadow-sm);margin-bottom:12px}
+.card h3{font-size:20px;font-weight:600;letter-spacing:.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .card h3::before{content:"";width:4px;height:14px;border-radius:3px;background:var(--grad);flex:none}
 
 /* 每日一句 */
@@ -218,7 +218,7 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .gadd{margin-top:14px;text-align:center}
 
 /* 按钮 */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 18px;border-radius:13px;font-size:14px;font-weight:700;background:var(--grad);color:#fff;transition:transform .08s,box-shadow .15s,filter .15s;box-shadow:0 4px 12px rgba(59,130,246,.28)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;background:var(--brand);color:#fff;transition:background .15s;box-shadow:none}
 .btn:hover{filter:brightness(1.04)}
 .btn:active{transform:translateY(1px) scale(.99)}
 .btn.primary{background:var(--grad);color:#fff}

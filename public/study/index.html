@@ -1313,7 +1313,7 @@ function renderMine(){
     '<div class="card"><h3>请假条</h3>' +
     '<div class="mrow" style="align-items:end"><div class="mfield" style="flex:none;width:130px"><label>请假日期</label><input type="date" id="leaveDate"></div>' +
     '<div class="mfield" style="flex:1"><label>原因</label><input type="text" id="leaveNote"></div>' +
-    '<button class="btn sm" data-act="add-leave" style="flex:none;margin-bottom:0">记请假</button></div>' +
+    '<button class="btn sm" data-act="add-leave" style="flex:none;margin-bottom:14px">记请假</button></div>' +
     '<div class="leavelist" style="margin-top:12px">' + ((state.settings.leaveDays||[]).map(function(l){ return '<div class="leave-item"><span>' + l.date + '</span><span>' + esc(l.note||'') + '</span></div>'; }).join("") || '<div style="font-size:13px;color:var(--muted)">暂无请假记录</div>') + '</div></div>' +
     '<div class="card"><h3>目标管理</h3><div class="glist">' + goals + '</div>' +
     '<div class="gadd"><button class="btn ghost block" data-act="add-goal">＋ 添加目标</button></div></div>' +

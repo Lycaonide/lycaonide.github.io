@@ -155,6 +155,8 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 .rh-cell.on .rh-c{color:var(--brand-ink)}
 .rh-cell.today{outline:2px solid var(--brand)}
 .heat{display:flex;gap:4px;justify-content:center}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:800px){.two-col{grid-template-columns:1fr}}
 .heat-col{display:flex;flex-direction:column;gap:3px}
 .heat-cell{width:16px;height:16px;border-radius:3px;background:#EDF2F0}
 .heat-cell.l1{background:#DBEAFE}
@@ -985,8 +987,7 @@ function renderBoard(){
   h += '</div>';
   h += '<div class="card chart-card"><h3>近 14 天打卡量（分钟优先，无分钟记数量）</h3>' + chart14() + legendHTML() + '</div>';
   h += chapterLoopCard();
-  h += heat35();
-  h += recentFeed();
+  h += '<div class="two-col"><div class="card">' + heat35() + '</div><div class="card">' + recentFeed() + '</div></div>';
   $("tab-board").innerHTML = h;
 }
 function typeDistCard(){
@@ -1056,7 +1057,7 @@ function heat35(){
     var r = m / maxMin;
     return r > 0.66 ? 4 : (r > 0.33 ? 3 : (r > 0.1 ? 2 : 1));
   }
-  var html = '<div class="card"><h3>近 35 天打卡热力</h3><div class="heat">';
+  var html = '<h3>近 35 天打卡热力</h3><div class="heat">';
   for (var w = 0; w < 5; w++){
     html += '<div class="heat-col">';
     for (var d = 0; d < 7; d++){
@@ -1066,13 +1067,13 @@ function heat35(){
     }
     html += '</div>';
   }
-  html += '</div><div class="heat-legend"><span>少</span>' + [1,2,3,4].map(function(i){ return '<i class="heat-cell l' + i + '"></i>'; }).join("") + '<span>多</span></div></div>';
+  html += '</div><div class="heat-legend"><span>少</span>' + [1,2,3,4].map(function(i){ return '<i class="heat-cell l' + i + '"></i>'; }).join("") + '<span>多</span></div>';
   return html;
 }
 function recentFeed(){
   var recs = state.records.slice().sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); }).slice(0, 15);
-  if (!recs.length) return '<div class="card"><h3>最近动态</h3><p class="note">还没有记录，今天开始打卡吧。</p></div>';
-  var h = '<div class="card"><h3>最近动态</h3><div class="feed">';
+  if (!recs.length) return '<h3>最近动态</h3><p class="note">还没有记录，今天开始打卡吧。</p>';
+  var h = '<h3>最近动态</h3><div class="feed">';
   recs.forEach(function(r){
     var g = getGoal(r.goalId);
     if (!g) return;
@@ -1082,7 +1083,7 @@ function recentFeed(){
       (r.backfill ? '<span class="tag">补</span>' : "") +
       '<span class="feed-d">' + relDate(r.date) + '</span></div>';
   });
-  return h + '</div></div>';
+  return h + '</div>';
 }
 function ring(g){
   var p = pct(g), C = 2 * Math.PI * 34;
@@ -1311,9 +1312,9 @@ function renderMine(){
   var h =
     '<div class="card"><h3>Obsidian 自动同步</h3>' + obsCardHTML() + '</div>' +
     '<div class="card"><h3>请假条</h3>' +
-    '<div class="mrow" style="align-items:end"><div class="mfield" style="flex:none"><label>请假日期</label><input type="date" id="leaveDate"></div>' +
-    '<div class="mfield" style="flex:1"><label>原因</label><input type="text" id="leaveNote" placeholder="如：生病/有事"></div>' +
-    '<button class="btn sm" data-act="add-leave" style="flex:none">记请假</button></div>' +
+    '<div class="mrow" style="align-items:end"><div class="mfield" style="flex:none;width:140px"><label>请假日期</label><input type="date" id="leaveDate"></div>' +
+    '<div class="mfield" style="flex:1"><label>原因</label><input type="text" id="leaveNote"></div>' +
+    '<button class="btn sm" data-act="add-leave" style="flex:none;margin-bottom:0">记请假</button></div>' +
     '<div class="leavelist" style="margin-top:12px">' + ((state.settings.leaveDays||[]).map(function(l){ return '<div class="leave-item"><span>' + l.date + '</span><span>' + esc(l.note||'') + '</span></div>'; }).join("") || '<div style="font-size:13px;color:var(--muted)">暂无请假记录</div>') + '</div></div>' +
     '<div class="card"><h3>目标管理</h3><div class="glist">' + goals + '</div>' +
     '<div class="gadd"><button class="btn ghost block" data-act="add-goal">＋ 添加目标</button></div></div>' +

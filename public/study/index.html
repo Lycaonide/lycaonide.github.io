@@ -941,7 +941,7 @@ function goalCard(g){
       '</div>' +
       '<div class="gadd"><button class="btn plain" data-goal="' + g.id + '" data-act="backfill">补记最近 6 天</button></div>';
   }
-  var streakTxt = auto ? '<span style="font-size:10px;color:var(--muted)">自动</span>' : streak(g) + " 天";
+  var streakTxt = auto ? '<span style="font-size:16px;color:var(--ink2);font-weight:600">自动</span>' : streak(g) + " 天";
   return '<div class="card gcard" style="--gc:' + g.color + '">' +
     '<div class="ghead"><span class="gdot"></span><span class="gname">' + esc(g.name) + '</span>' +
     blogLink(g) +

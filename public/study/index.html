@@ -35,7 +35,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .sidebar{width:240px;flex:none;background:#F8FAFC;border-right:1px solid #CBD5E1;padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
 .sb-brand{display:flex;flex-direction:row;justify-content:space-between;align-items:center;padding:0 40px 20px 0}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.back-link{position:fixed;bottom:6px;left:calc(240px - 6px);transform:translateX(-100%);display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 12px;background:transparent;color:var(--ink2);text-decoration:none;font-size:14px;font-weight:500;z-index:10}
+.back-link{position:fixed;bottom:8px;left:calc(240px - 8px);transform:translateX(-100%);display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 12px;background:transparent;color:var(--ink2);text-decoration:none;font-size:14px;font-weight:500;z-index:10}
 .back-link:hover{color:var(--brand)}
 .brand-mark{width:28px;height:28px;border-radius:6px;background:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
 .brand-mark svg{width:16px;height:16px;stroke:#fff}
@@ -64,7 +64,7 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
   main{padding:12px 14px calc(80px + env(safe-area-inset-bottom))}
 }
 .card{background:var(--card);border:1px solid #CBD5E1;border-radius:8px;padding:16px;margin-bottom:12px}
-.card h3{font-size:20px;font-weight:600;letter-spacing:.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3{font-size:22px;font-weight:600;letter-spacing:.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .card h3::before{content:"";width:4px;height:14px;border-radius:3px;background:var(--grad);flex:none}
 
 /* 每日一句 */
@@ -238,7 +238,7 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 @media(min-width:768px){.board-grid{grid-template-columns:repeat(4,1fr)}}
 .bcard{text-align:center;padding:20px 14px 16px}
 .bcard .ring{display:block;margin:0 auto}
-.bname{font-size:13.5px;font-weight:600;margin-top:10px;letter-spacing:.2px}
+.bname{font-size:16px;font-weight:600;margin-top:10px;letter-spacing:.2px}
 .bstats{font-size:12px;color:var(--muted);margin-top:4px}
 .bchip{margin-top:10px;display:inline-block}
 .chart-card h3{font-size:14px;margin-bottom:12px}
@@ -687,6 +687,7 @@ function suggest(g){
   var rem = remaining(g), dl = daysLeft(g);
   if (rem <= 0) return { v: 0, note: "目标已完成" };
   if (dl <= 0) return { v: 0, note: "已到截止日" };
+  if (g.name && g.name.indexOf("单词") >= 0) return { v: 50, note: "" };
   return { v: Math.ceil(rem / dl), note: "" };
 }
 function pace7(g){

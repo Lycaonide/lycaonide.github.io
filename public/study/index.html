@@ -1115,9 +1115,7 @@ function chart14(){
       svg += '<rect x="' + x.toFixed(1) + '" y="' + yy.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="2" fill="' + r.g.color + '"><title>' + esc(r.g.name) + ' ' + v + '</title></rect>';
       stack += hh;
     });
-    if (di % 2 === 0 || di === 13){
-      svg += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" fill="#9AAFA9">' + fmtShort(days[di]) + '</text>';
-    }
+    svg += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="#9AAFA9">' + fmtShort(days[di]) + '</text>';
   }
   svg += '</svg>';
   return svg;

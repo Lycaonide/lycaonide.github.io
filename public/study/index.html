@@ -534,7 +534,7 @@ function readObsidian(root){
           counts[o] = names.length; info.mathChapters = names;
           return readExamDate(dir);
         }).then(function(d){ info.examDate = d; });
-      })).catch(function(e){ console.warn("math-notes:", e); }));
+      }).catch(function(e){ console.warn("math-notes:", e); }));
     } else if (o === "sentence"){
       jobs.push(descend(root, ["考研", "英语", "每日一句", "完成进度（不做真题先听2010-2019）.md"])
         .then(function(h){ return h.getFile(); }).then(countSentences).then(function(r){

@@ -828,7 +828,7 @@ function renderToday(){
   });
   state.goals.forEach(function(g){ h += goalCard(g); });
   if (!state.goals.length) h += '<div class="card"><p class="note">还没有目标，添加一个开始打卡吧。</p></div>';
-  h += '<div style="display:flex;gap:12px;align-items:stretch">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1;margin-top:14px">') + '<button class="addcard" data-act="add-goal" style="width:200px;margin-top:14px">＋ 添加打卡类型</button></div>';
+  h += '<div style="display:flex;gap:12px;align-items:stretch">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1;margin-top:14px">') + '<div style="display:flex;flex-direction:column;gap:8px;width:160px;margin-top:14px"><button class="addcard" data-act="add-goal" style="margin-top:0;padding:10px 12px;font-size:13px">＋ 添加打卡类型</button><button class="addcard" data-act="add-goal" style="margin-top:0;padding:10px 12px;font-size:13px;opacity:.7">删除打卡类型</button></div></div>';
   $("tab-today").innerHTML = h;
 }
 function todayOverview(){

@@ -51,7 +51,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .tab-btn svg{width:18px;height:18px;flex:none}
 
 /* ===== 主区 ===== */
-main{flex:1;min-width:0;padding:24px 32px calc(48px + env(safe-area-inset-bottom));max-width:860px;margin:0 auto;width:100%}
+main{flex:1;min-width:0;padding:24px 32px calc(48px + env(safe-area-inset-bottom))}
+main > *{max-width:860px;margin-left:auto;margin-right:auto}
 
 /* 手机端：侧边栏收成顶部横排 */
 @media(max-width:767px){

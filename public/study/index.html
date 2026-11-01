@@ -1050,7 +1050,7 @@ function heat35(){
     for (var d = 0; d < 7; d++){
       var cell = weeks[w][d];
       var future = cell.k > todayKey();
-      html += '<div class="heat-cell l' + lvl(cell.mins) + (future ? " future" : "") + '" title="' + cell.k + ' · ' + cell.mins + ' 分钟"></div>';
+      html += '<div class="heat-cell l' + lvl(cell.mins) + (future ? " future" : "") + '"></div>';
     }
     html += '</div>';
   }

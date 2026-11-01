@@ -479,7 +479,11 @@ function idbDel(key){
 }
 function descend(root, parts){
   if (!parts.length) return Promise.resolve(root);
-  return root.getDirectoryHandle(parts[0]).then(function(h){ return descend(h, parts.slice(1)); });
+  var head = parts[0], rest = parts.slice(1);
+  if (/\.md$/.test(head)){
+    return root.getFileHandle(head);
+  }
+  return root.getDirectoryHandle(head).then(function(h){ return descend(h, rest); });
 }
 function countMathNotes(dir){
   var re = /^\d{2}-.*\.md$/;

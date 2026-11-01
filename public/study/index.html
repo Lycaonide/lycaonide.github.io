@@ -34,6 +34,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .appbar{position:sticky;top:0;z-index:20;background:rgba(247,252,249,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(225,237,231,.8)}
 .appbar-inner{max-width:1080px;margin:0 auto;padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
+.back-link{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;background:rgba(46,168,140,.1);color:var(--brand-ink);text-decoration:none;font-size:18px;font-weight:700;flex:none;transition:background .2s}
+.back-link:hover{background:rgba(46,168,140,.2)}
 .brand-mark{width:32px;height:32px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(46,168,140,.35);flex:none}
 .brand-mark svg{width:18px;height:18px;stroke:#fff}
 .brand h1{font-size:19px;font-weight:800;letter-spacing:.2px;white-space:nowrap}
@@ -296,6 +298,7 @@ textarea.sent{width:100%;border:1px solid var(--line);border-radius:13px;padding
 <header class="appbar">
   <div class="appbar-inner">
     <div class="brand">
+      <a href="/" class="back-link" title="返回博客">←</a>
       <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
       <h1><em>学</em>习打卡</h1>
     </div>

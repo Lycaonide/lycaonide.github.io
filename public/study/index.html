@@ -1311,9 +1311,9 @@ function renderMine(){
   var h =
     '<div class="card"><h3>Obsidian 自动同步</h3>' + obsCardHTML() + '</div>' +
     '<div class="card"><h3>请假条</h3>' +
-    '<div class="mrow" style="align-items:flex-end"><div class="mfield" style="flex:none;width:110px;margin-bottom:0"><label>请假日期</label><input type="text" id="leaveDate" placeholder="2026-1-1"></div>' +
+    '<div class="mrow" style="align-items:center"><div class="mfield" style="flex:none;width:110px;margin-bottom:0"><label>请假日期</label><input type="text" id="leaveDate" placeholder="2026-1-1"></div>' +
     '<div class="mfield" style="flex:none;width:220px;margin-bottom:0"><label>原因</label><input type="text" id="leaveNote"></div>' +
-    '<button class="btn sm" data-act="add-leave" style="flex:none;height:36px;margin-bottom:0">记请假</button></div>' +
+    '<button class="btn sm" data-act="add-leave" style="flex:none;height:36px;margin-top:19px">记请假</button></div>' +
     '<div class="leavelist" style="margin-top:12px">' + ((state.settings.leaveDays||[]).map(function(l){ return '<div class="leave-item"><span>' + l.date + '</span><span>' + esc(l.note||'') + '</span></div>'; }).join("") || '<div style="font-size:13px;color:var(--muted)">暂无请假记录</div>') + '</div></div>' +
     '<div class="card"><h3>目标管理</h3><div class="glist">' + goals + '</div>' +
     '<div class="gadd"><button class="btn ghost block" data-act="add-goal">＋ 添加目标</button></div></div>' +

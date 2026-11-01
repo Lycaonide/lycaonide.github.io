@@ -488,19 +488,19 @@ function descend(root, parts){
   return root.getDirectoryHandle(head).then(function(h){ return descend(h, rest); });
 }
 function countMathNotes(dir){
-  var re = /^\d{2}-.*\.md$/;
+  var re = /^(\d{2})-.*\.md$/;
   return Promise.resolve().then(async function(){
     var entries = [];
     for await (const pair of dir.entries()) entries.push(pair);
-    var names = [];
+    var seen = {};
     for (var i = 0; i < entries.length; i++){
       var name = entries[i][0], h = entries[i][1];
-      if (h.kind !== "file" || !re.test(name)) continue;
-      await h.getFile();
-      names.push(name);
+      if (h.kind !== "file") continue;
+      var m = re.exec(name);
+      if (!m) continue;
+      seen[m[1]] = true;
     }
-    names.sort();
-    return names;
+    return Object.keys(seen).sort();
   });
 }
 function countSentences(file){

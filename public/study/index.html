@@ -177,8 +177,18 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .cl-legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:8px}
 .cl-legend span{display:flex;align-items:center;gap:4px}
 .cl-list{display:flex;flex-direction:column}
-.cl-row{display:grid;grid-template-columns:34px 1fr auto auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #EFF4F1;font-size:14px}
-.cl-row:last-child{border-bottom:none}
+.cl-row{display:block;border-bottom:1px solid #EFF4F1;padding:0}
+.cl-row summary{display:grid;grid-template-columns:34px 1fr auto auto auto;gap:10px;align-items:center;padding:10px 0;cursor:pointer;list-style:none;font-size:14px}
+.cl-row summary::-webkit-details-marker{display:none}
+.cl-row[open] summary{border-bottom:1px solid #EFF4F1}
+.cl-items{padding:8px 0 8px 44px}
+.cl-item{padding:10px 0;border-bottom:1px dashed #F0F4F8}
+.cl-item:last-child{border-bottom:none}
+.ci-head{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.ci-head i{font-style:normal;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:600}
+.ci-point{font-size:12px;color:var(--muted);margin:3px 0}
+.ci-chain{display:flex;gap:12px;font-size:12px;color:var(--ink2);flex-wrap:wrap}
+.ci-next{color:var(--brand-ink);font-weight:600}
 .cl-no{font-weight:600;color:var(--brand-ink);font-size:16px}
 .cl-name{font-weight:700;font-size:15px}
 .cl-count{color:var(--muted);font-size:13px}
@@ -549,7 +559,7 @@ function readObsidian(root){
         return Promise.all(fileEntries.map(function(e){
           return e.getFile().then(function(f){ return f.text(); }).then(function(txt){
             var no = e.name.slice(0, 2);
-            if (!chapMap[no]) chapMap[no] = { no: no, name: CHAP_NAMES[no] || "", total: 0, A: 0, B: 0, C: 0, dueToday: 0, dueWeek: 0 };
+            if (!chapMap[no]) chapMap[no] = { no: no, name: CHAP_NAMES[no] || "", total: 0, A: 0, B: 0, C: 0, dueToday: 0, dueWeek: 0, items: [] };
             var today = todayKey();
             var weekEnd = toKey(addDays(fromKey(today), 7));
             var blocks = txt.split("#### 台账数据").pop().split(/\n\s*\n/);
@@ -563,13 +573,16 @@ function readObsidian(root){
               if (!(iv >= 1)) iv = ({ C: 2, B: 4, A: 15 })[field("level").toUpperCase()] || 2;
               var lv = iv >= 15 ? "A" : (iv >= 4 ? "B" : "C");
               var last = field("last_review") || field("study_date");
+              var next = last ? toKey(addDays(fromKey(last), iv)) : "";
               chapMap[no].total++;
               chapMap[no][lv]++;
-              if (last){
-                var next = toKey(addDays(fromKey(last), iv));
-                if (next <= today) chapMap[no].dueToday++;
-                else if (next <= weekEnd) chapMap[no].dueWeek++;
-              }
+              if (next <= today) chapMap[no].dueToday++;
+              else if (next <= weekEnd) chapMap[no].dueWeek++;
+              chapMap[no].items.push({
+                title: field("title"), point: field("point"),
+                study: field("study_date"), times: parseInt(field("times")) || 0,
+                last: last, next: next, lv: lv
+              });
             });
           });
         }));
@@ -978,17 +991,31 @@ function typeDistCard(){
 function chapterLoopCard(){
   var loop = (state.obsidianInfo && state.obsidianInfo.chapterLoop) || [];
   if (!loop.length) return "";
-  var rows = loop.map(function(c){
+  var rows = loop.map(function(c, ci){
     var due = c.dueToday ? '<span class="cl-due">今日到期 ' + c.dueToday + '</span>' : (c.dueWeek ? '<span class="cl-week">7日内 ' + c.dueWeek + '</span>' : '<span class="cl-ok">已排期</span>');
-    return '<div class="cl-row">' +
-      '<span class="cl-no">' + c.no + '</span>' +
+    var items = (c.items || []).map(function(it){
+      var lvCls = it.lv === "A" ? "lv-a" : (it.lv === "B" ? "lv-b" : "lv-c");
+      var lvTxt = it.lv === "A" ? "已掌握" : (it.lv === "B" ? "待巩固" : "需重学");
+      return '<div class="cl-item">' +
+        '<div class="ci-head"><b>' + esc(it.title) + '</b><i class="' + lvCls + '">' + lvTxt + '</i></div>' +
+        '<div class="ci-point">' + esc(it.point) + '</div>' +
+        '<div class="ci-chain">' +
+          '<span>学习' + (it.study ? '✅' : '—') + '</span>' +
+          '<span>练习✅</span>' +
+          '<span>复盘' + it.times + '次</span>' +
+          (it.next ? '<span class="ci-next">下次 ' + it.next.slice(5) + '</span>' : '') +
+        '</div></div>';
+    }).join("");
+    return '<details class="cl-row">' +
+      '<summary><span class="cl-no">' + c.no + '</span>' +
       '<span class="cl-name">' + esc(c.name) + '</span>' +
       '<span class="cl-count">' + c.total + ' 题</span>' +
-      '<span class="cl-lv"><i class="lv-a">已掌握' + c.A + '</i><i class="lv-b">待巩固' + c.B + '</i><i class="lv-c">需重学' + c.C + '</i></span>' +
-      due + '</div>';
+      '<span class="cl-lv"><i class="lv-a">' + c.A + '</i><i class="lv-b">' + c.B + '</i><i class="lv-c">' + c.C + '</i></span>' +
+      due + '</summary>' +
+      '<div class="cl-items">' + items + '</div></details>';
   }).join("");
   return '<div class="card"><h3>数学章节闭环 · 学习→练习→复盘→记背</h3>' +
-    '<div class="cl-legend"><span><i class="lv-a"></i>已掌握(≥15天)</span><span><i class="lv-b"></i>待巩固(4-14天)</span><span><i class="lv-c"></i>需重学(≤3天)</span></div>' +
+    '<div class="cl-legend"><span><i class="lv-a"></i>已掌握</span><span><i class="lv-b"></i>待巩固</span><span><i class="lv-c"></i>需重学</span><span style="margin-left:auto">点章节展开看每道题</span></div>' +
     '<div class="cl-list">' + rows + '</div></div>';
 }
 function heat35(){

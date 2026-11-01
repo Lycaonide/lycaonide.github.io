@@ -11,14 +11,14 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%232EA88C'/%3E%3Cpath d='M9 12l2 2 4-4' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
 :root{
-  --brand:#3B82F6;--brand2:#3FC0A4;--brand-ink:#147A64;
-  --ink:#16322B;--ink2:#435B53;--muted:#7C918A;
-  --bg:#F2F8F5;--card:#FFFFFF;--line:#E1EDE7;
-  --amber:#E8A33D;--red:#E25B5B;--blue:#4A90D9;--green:#7FB069;--rose:#E882B0;
-  --grad:linear-gradient(135deg,#3B82F6 0%,#3FC0A4 100%);
-  --grad-soft:linear-gradient(180deg,#F7FCF9 0%,#EFF7F2 100%);
-  --shadow-sm:0 1px 2px rgba(20,60,50,.04),0 6px 16px rgba(20,60,50,.06);
-  --shadow-md:0 2px 6px rgba(20,60,50,.05),0 14px 32px rgba(20,60,50,.10);
+  --brand:#3B82F6;--brand2:#2563EB;--brand-ink:#1E40AF;
+  --ink:#1E293B;--ink2:#475569;--muted:#64748B;
+  --bg:#F0F7FF;--card:#FFFFFF;--line:#E2E8F0;
+  --amber:#E8A33D;--red:#E25B5B;--blue:#3B82F6;--green:#7FB069;--rose:#E882B0;
+  --grad:linear-gradient(135deg,#3B82F6 0%,#2563EB 100%);
+  --grad-soft:linear-gradient(180deg,#F8FBFF 0%,#EFF6FF 100%);
+  --shadow-sm:0 1px 2px rgba(30,64,175,.04),0 6px 16px rgba(30,64,175,.06);
+  --shadow-md:0 2px 6px rgba(30,64,175,.05),0 14px 32px rgba(30,64,175,.10);
   --r-lg:20px;--r-md:14px;--r-sm:10px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -101,10 +101,12 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .gmeta .cell .k{font-size:11px;color:var(--muted);display:block;font-weight:600;letter-spacing:.3px}
 .gmeta .cell .v{font-size:17px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
 .gmeta .cell .v small{font-weight:600;color:var(--muted);font-size:11px}
-.gact{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:end;margin-top:14px}
+.gact{display:grid;grid-template-columns:90px 1fr 80px;gap:10px;align-items:end;margin-top:14px}
 .gact .field label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:5px}
 .gact input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:#FBFDFC;min-height:44px;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
 .gact input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(59,130,246,.14)}
+.gact .ttype{grid-column:1/-1}
+.gact .btn.primary{grid-column:1/-1}
 .unit-holder{position:relative}
 .unit-holder input{padding-right:36px}
 .unit-holder .u{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none;font-weight:600}
@@ -910,8 +912,9 @@ function goalCard(g){
   if (!auto){
     var disabled = sug.v <= 0;
     gact = '<div class="gact">' +
-      '<div class="field"><label>' + sugLabel + '</label><div class="unit-holder"><input id="amt-' + g.id + '" type="number" inputmode="numeric" min="0" value="' + sug.v + '"' + (disabled ? ' disabled' : '') + '><span class="u">' + esc(g.unit) + '</span></div></div>' +
-      '<div class="field"><label>分钟（选填）</label><input id="min-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
+      '<div class="field f-amt"><label>' + sugLabel + '</label><div class="unit-holder"><input id="amt-' + g.id + '" type="number" inputmode="numeric" min="0" value="' + sug.v + '"' + (disabled ? ' disabled' : '') + '><span class="u">' + esc(g.unit) + '</span></div></div>' +
+      '<div class="field f-content"><label>学习内容（选填）</label><input id="content-' + g.id + '" type="text" placeholder="如：02-例9 有理化" style="width:100%"></div>' +
+      '<div class="field f-min"><label>分钟</label><input id="min-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
       '<div class="ttype" data-goal="' + g.id + '">' + REC_TYPES.map(function(t, i){
         return '<button type="button" class="tt' + (i === 0 ? " on" : "") + '" data-goal="' + g.id + '" data-tt="' + t[0] + '">' + t[1] + '</button>';
       }).join("") + '</div>' +
@@ -950,7 +953,6 @@ function renderBoard(){
   });
   h += '</div>';
   h += '<div class="card chart-card"><h3>近 14 天打卡量（分钟优先，无分钟记数量）</h3>' + chart14() + legendHTML() + '</div>';
-  h += typeDistCard();
   h += chapterLoopCard();
   h += heat35();
   h += recentFeed();

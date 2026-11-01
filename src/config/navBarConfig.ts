@@ -69,7 +69,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		name: "学习打卡",
 		url: "/study/",
 		icon: "material-symbols:checklist-rtl",
-		target: "_blank",
+		external: true,
 	});
 
 	// 自定义导航栏链接

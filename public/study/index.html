@@ -39,7 +39,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .back-link:hover{background:rgba(46,168,140,.2)}
 .brand-mark{width:32px;height:32px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(46,168,140,.35);flex:none}
 .brand-mark svg{width:18px;height:18px;stroke:#fff}
-.brand h1{font-size:20px;font-weight:800;letter-spacing:.2px;white-space:nowrap}
+.brand h1{font-size:22px;font-weight:800;letter-spacing:.5px;white-space:nowrap;color:var(--ink)}
 .brand h1 em{font-style:normal;color:var(--brand-ink)}
 .date{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:4px 10px;border-radius:999px;white-space:nowrap;box-shadow:var(--shadow-sm);align-self:flex-start}
 
@@ -85,8 +85,8 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .gcard{--gc:var(--brand)}
 .ghead{display:flex;align-items:center;gap:9px}
 .gdot{width:11px;height:11px;border-radius:4px;background:var(--gc);flex:none}
-.gname{font-size:17px;font-weight:750;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.2px}
-.chip{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;flex:none}
+.gname{font-size:18px;font-weight:750;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.2px}
+.chip{font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;flex:none}
 .blink{font-size:12px;font-weight:600;color:#2EA88C;text-decoration:none;flex:none;padding:2px 0;white-space:nowrap}
 .blink:hover{text-decoration:underline}
 .chip.ok{background:rgba(46,168,140,.13);color:var(--brand-ink)}
@@ -99,7 +99,7 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .gmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .gmeta .cell{background:#F6FAF8;border:1px solid #EDF4F0;border-radius:13px;padding:9px 8px;text-align:center}
 .gmeta .cell .k{font-size:11px;color:var(--muted);display:block;font-weight:600;letter-spacing:.3px}
-.gmeta .cell .v{font-size:15px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.gmeta .cell .v{font-size:17px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
 .gmeta .cell .v small{font-weight:600;color:var(--muted);font-size:11px}
 .gact{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:end;margin-top:14px}
 .gact .field label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:5px}
@@ -137,7 +137,7 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .obs-path{margin-top:8px;width:100%;padding:9px 11px;border:1px solid #DCE7E1;border-radius:10px;font-size:14px;box-sizing:border-box}
 .ov-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
 .ov{background:var(--card);border-radius:14px;padding:14px 10px;text-align:center;display:flex;flex-direction:column;gap:4px;box-shadow:0 1px 3px rgba(20,60,50,.05)}
-.ov-v{font-size:22px;font-weight:800;color:var(--brand-ink)}
+.ov-v{font-size:24px;font-weight:800;color:var(--brand-ink)}
 .ov-k{font-size:11px;color:var(--muted)}
 .rhythm{margin-top:14px}
 .rh-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px}
@@ -176,8 +176,8 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .cl-list{display:flex;flex-direction:column}
 .cl-row{display:grid;grid-template-columns:34px 1fr auto auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #EFF4F1;font-size:14px}
 .cl-row:last-child{border-bottom:none}
-.cl-no{font-weight:800;color:var(--brand-ink);font-size:15px}
-.cl-name{font-weight:600}
+.cl-no{font-weight:800;color:var(--brand-ink);font-size:16px}
+.cl-name{font-weight:700;font-size:15px}
 .cl-count{color:var(--muted);font-size:13px}
 .cl-lv{display:flex;gap:4px}
 .cl-lv i,.cl-legend i{font-style:normal;font-size:12px;padding:2px 7px;border-radius:8px;font-weight:700;white-space:nowrap}
@@ -245,7 +245,7 @@ main{flex:1;min-width:0;padding:18px 24px calc(48px + env(safe-area-inset-bottom
 .four{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
 .fcell{background:#F6FAF8;border:1px solid #EDF4F0;border-radius:14px;padding:12px 14px}
 .fcell .k{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.3px}
-.fcell .v{font-size:22px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.1}
+.fcell .v{font-size:24px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.1}
 .fcell .v small{font-size:12px;font-weight:600;color:var(--muted);margin-left:2px}
 .fcell .v.small{font-size:14px;line-height:1.55;font-weight:600}
 .weekout{width:100%;min-height:132px;border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:#FBFDFC;resize:vertical;font-size:14px;line-height:1.65;font-family:inherit}
@@ -307,8 +307,7 @@ textarea.sent{width:100%;border:1px solid var(--line);border-radius:13px;padding
   <div class="sb-brand">
     <a href="/" class="back-link" title="返回博客主页"><span>← 返回</span></a>
     <div class="brand">
-      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-      <h1><em>学</em>习打卡</h1>
+      <h1>学习打卡</h1>
     </div>
   </div>
   <span class="date" id="topDate"></span>

@@ -144,7 +144,7 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 .ov{background:var(--card);border:1px solid #CBD5E1;border-radius:8px;padding:14px 10px;text-align:center;display:flex;flex-direction:column;gap:4px}
 .ov-v{font-size:24px;font-weight:600;color:var(--brand-ink)}
 .ov-k{font-size:11px;color:var(--muted)}
-.rhythm{margin-top:14px}
+.rhythm{margin-top:8px}
 .rh-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:18px;font-weight:600}
 .rh-head span{color:var(--muted);font-size:12px}
 .rh-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
@@ -822,7 +822,7 @@ function renderToday(){
       (ro ? '<span class="rv-overdue"> · 已逾期 ' + ro + ' 题</span>' : '') +
       '<div class="rv-sub">Obsidian 复盘中心到期清单 · 做完去 Obsidian 打勾</div></div></div>';
   }
-  h += '<div style="display:flex;gap:12px;align-items:stretch;margin-bottom:14px">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1;margin-top:0">') + '<div style="display:flex;flex-direction:column;gap:8px;width:160px;justify-content:flex-start;padding-top:4px"><button class="btn ghost" data-act="add-goal" style="padding:10px 12px;font-size:13px;margin-top:0;color:var(--ink2)">添加打卡类型</button><button class="btn ghost" data-act="add-goal" style="padding:10px 12px;font-size:13px;margin-top:0;color:var(--ink2)">删除打卡类型</button></div></div>';
+  h += '<div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:0">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1;margin-top:0;margin-bottom:0">') + '<div style="display:flex;flex-direction:column;gap:8px;width:160px;padding-bottom:0"><button class="btn ghost" data-act="add-goal" style="padding:10px 12px;font-size:13px;margin-top:0;color:var(--ink2)">添加打卡类型</button><button class="btn ghost" data-act="add-goal" style="padding:10px 12px;font-size:13px;margin-top:0;color:var(--ink2)">删除打卡类型</button></div></div>';
   state.goals.forEach(function(g){
     var mi = missInfo(g);
     if (mi) h += missCard(g, mi);

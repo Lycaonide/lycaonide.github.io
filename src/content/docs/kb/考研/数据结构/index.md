@@ -1,6 +1,7 @@
 ---
 title: 数据结构
 description: Data Structures - 数组/链表/栈/队列/树/图/排序/查找，配合王道考研
+order: 1
 sidebar:
   hidden: true
 ---

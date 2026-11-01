@@ -1,6 +1,7 @@
 ---
 title: 计算机组成原理
 description: Computer Organization - 数据表示/存储系统/指令系统/CPU/总线/IO，配合王道考研
+order: 2
 sidebar:
   hidden: true
 ---

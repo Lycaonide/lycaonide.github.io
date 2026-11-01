@@ -57,11 +57,18 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		],
 	});
 
-	// 竞赛文档（Starlight）
+	// 知识库（Starlight）
 	links.push({
 		name: "知识库",
 		url: "/kb/",
 		icon: "material-symbols:menu-book",
+	});
+
+	// 学习打卡台（iframe 嵌入资料库在线页面）
+	links.push({
+		name: "学习打卡",
+		url: "/study/",
+		icon: "material-symbols:checklist-rtl",
 	});
 
 	// 自定义导航栏链接

@@ -1,6 +1,7 @@
 ---
 title: 操作系统
 description: Operating System - 进程/内存/文件/设备管理，配合王道考研
+order: 3
 sidebar:
   hidden: true
 ---

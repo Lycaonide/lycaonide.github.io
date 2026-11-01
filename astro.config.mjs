@@ -38,19 +38,31 @@ import {
 	siteConfig,
 } from "./src/config";
 // ---- 知识库侧边栏自动生成：构建时扫描 src/content/docs/kb ----
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import matter from "gray-matter";
 import { fileURLToPath } from "node:url";
 const __kbDir = fileURLToPath(new URL("./src/content/docs/kb", import.meta.url));
 function kbSlugify(name) {
 	return name.replace(/\.mdx?$/, "").toLowerCase().replace(/[^\p{L}\p{N}\- ]/gu, "").replace(/ +/g, "-");
 }
+function kbOrderOf(dir, name) {
+	try {
+		const idx = join(dir, name, "index.md");
+		if (existsSync(idx)) {
+			const fm = matter(readFileSync(idx, "utf-8")).data;
+			if (typeof fm.order === "number") return fm.order;
+		}
+	} catch (e) {}
+	return 9999;
+}
 function kbScan(dir, prefix) {
 	const items = readdirSync(dir, { withFileTypes: true })
 		.filter((d) => d.isDirectory() || /\.mdx?$/.test(d.name))
-		.sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+		.map((d) => ({ d, ord: d.isDirectory() ? kbOrderOf(dir, d.name) : 9999 }))
+		.sort((a, b) => a.ord - b.ord || a.d.name.localeCompare(b.d.name, "zh-CN"));
 	const out = [];
-	for (const e of items) {
+	for (const { d: e } of items) {
 		if (e.isDirectory()) {
 			const children = kbScan(join(dir, e.name), prefix + "/" + e.name);
 			if (children.length) out.push({ label: e.name, items: children });

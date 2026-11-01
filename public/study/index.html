@@ -825,7 +825,6 @@ function renderToday(){
   var h = "";
   h += todayOverview();
   var ed = examDays();
-  if (ed !== null && ed >= 0) h += '<div class="examline">距考研初试 <b>' + esc(state.obsidianInfo.examDate) + '</b> 还有 <b>' + ed + '</b> 天</div>';
   var rt = (state.obsidianInfo && state.obsidianInfo.reviewToday) || 0;
   var ro = (state.obsidianInfo && state.obsidianInfo.reviewOverdue) || 0;
   if (state.obsidianInfo && state.obsidianInfo.dir && (rt || ro)){

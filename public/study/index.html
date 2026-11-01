@@ -385,7 +385,7 @@ function defaultState(){
     obsidianCounts: {},
     obsidianInfo: { dir: "", ts: 0, supported: false },
     settings: {
-      restWeekday: 7,
+      restWeekday: 7, leaveDays: [],
       sentenceBank: [
         "道阻且长，行则将至；行而不辍，未来可期。",
         "种一棵树最好的时间是十年前，其次是现在。",
@@ -728,11 +728,13 @@ function missInfo(g){
   var y = addDays(fromKey(todayKey()), -1), yk = toKey(y);
   if (amountOn(g.id, yk) > 0) return null;
   if (weekdayCN(y) === state.settings.restWeekday) return { type: "rest", days: 0 };
+  var leaveDays = (state.settings.leaveDays || []).map(function(l){ return l.date; });
+  if (leaveDays.indexOf(yk) >= 0) return { type: "leave", days: 0 };
   var miss = 0, d = y;
   for (var i = 0; i < 60; i++){
     var k = toKey(d);
     if (amountOn(g.id, k) > 0) break;
-    if (weekdayCN(d) !== state.settings.restWeekday) miss++;
+    if (weekdayCN(d) !== state.settings.restWeekday && leaveDays.indexOf(k) < 0) miss++;
     d = addDays(d, -1);
   }
   if (miss <= 1) return { type: "grace", days: 1 };
@@ -1304,7 +1306,11 @@ function renderMine(){
   });
   var h =
     '<div class="card"><h3>Obsidian 自动同步</h3>' + obsCardHTML() + '</div>' +
-    '<div class="card"><h3>请假条</h3><div class="setrow"><div><div class="sk">没有固定休息日</div><div class="sd">哪天没打，就去那天的目标卡片点「补记最近6天」，选日期+写原因，系统自动算补卡还是真漏</div></div></div></div>' +
+    '<div class="card"><h3>请假条</h3>' +
+    '<div class="mrow"><div class="mfield"><label>请假日期</label><input type="date" id="leaveDate"></div>' +
+    '<div class="mfield" style="flex:1"><label>原因</label><input type="text" id="leaveNote" placeholder="如：生病/有事"></div></div>' +
+    '<button class="btn sm" data-act="add-leave" style="margin-top:10px">记请假</button>' +
+    '<div class="leavelist" style="margin-top:12px">' + ((state.settings.leaveDays||[]).map(function(l){ return '<div class="leave-item"><span>' + l.date + '</span><span>' + esc(l.note||'') + '</span></div>'; }).join("") || '<div style="font-size:13px;color:var(--muted)">暂无请假记录</div>') + '</div></div>' +
     '<div class="card"><h3>目标管理</h3><div class="glist">' + goals + '</div>' +
     '<div class="gadd"><button class="btn ghost block" data-act="add-goal">＋ 添加目标</button></div></div>' +
     '<div class="card"><h3>数据</h3>' +
@@ -1575,6 +1581,13 @@ function boot(){
     if (act === "obs-connect"){ obsConnect(); return; }
     if (act === "obs-refresh"){ obsRefresh(false); return; }
     if (act === "obs-disconnect"){ obsDisconnect(); return; }
+    if (act === "add-leave"){
+      var d = $("leaveDate").value, n = $("leaveNote").value.trim();
+      if (!d){ toast("选日期"); return; }
+      state.settings.leaveDays = state.settings.leaveDays || [];
+      state.settings.leaveDays.push({ date: d, note: n });
+      save(); render(); toast("已记请假"); return;
+    }
   });
   document.addEventListener("change", function(e){
     if (e.target && e.target.id === "restDay"){ state.settings.restWeekday = +e.target.value; save(); render(); toast("休息日已更新"); }

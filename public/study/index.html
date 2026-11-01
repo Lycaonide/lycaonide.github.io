@@ -52,7 +52,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
 /* ===== 主区 ===== */
 main{flex:1;min-width:0;padding:24px 32px calc(48px + env(safe-area-inset-bottom))}
-main > *{max-width:860px;margin-left:auto;margin-right:auto}
+main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 
 /* 手机端：侧边栏收成顶部横排 */
 @media(max-width:767px){
@@ -1297,8 +1297,7 @@ function renderMine(){
   });
   var h =
     '<div class="card"><h3>Obsidian 自动同步</h3>' + obsCardHTML() + '</div>' +
-    '<div class="card"><h3>休息日</h3><div class="setrow"><div><div class="sk">每周休息日</div><div class="sd">休息日漏打不计断更</div></div>' +
-    '<select id="restDay">' + opts + '</select></div></div>' +
+    '<div class="card"><h3>请假条</h3><div class="setrow"><div><div class="sk">没有固定休息日</div><div class="sd">哪天没打，就去那天的目标卡片点「补记最近6天」，选日期+写原因，系统自动算补卡还是真漏</div></div></div></div>' +
     '<div class="card"><h3>目标管理</h3><div class="glist">' + goals + '</div>' +
     '<div class="gadd"><button class="btn ghost block" data-act="add-goal">＋ 添加目标</button></div></div>' +
     '<div class="card"><h3>数据</h3>' +
@@ -1342,14 +1341,15 @@ function openBackfill(gid){
     opts += '<option value="' + k + '">' + fmtDate(k) + (i === 0 ? "（今天）" : "") + (has ? "（已记录）" : "") + '</option>';
   }
   openModal(
-    '<div class="modal"><h3>补记 · ' + esc(g.name) + '</h3>' +
+    '<div class="modal"><h3>补打卡 · ' + esc(g.name) + '</h3>' +
     '<div class="mfield"><label>日期（最近 6 天）</label><select id="bfDate">' + opts + '</select></div>' +
     '<div class="mfield"><label>类型</label><select id="bfType">' + REC_TYPES.map(function(t){ return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join("") + '</select></div>' +
     '<div class="mrow">' +
     '<div class="mfield"><label>数量（' + esc(g.unit) + '）</label><input id="bfAmt" type="number" inputmode="numeric" min="1" value="' + sug.v + '"></div>' +
     '<div class="mfield"><label>分钟（选填）</label><input id="bfMin" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
     '</div>' +
-    '<div class="macts"><button class="btn" data-act="save-backfill">保存补记</button><button class="btn ghost" data-act="close-modal">取消</button></div></div>'
+    '<div class="mfield"><label>原因（选填，如：生病/有事）</label><input id="bfNote" type="text" placeholder="写请假原因"></div>' +
+    '<div class="macts"><button class="btn" data-act="save-backfill">保存补打卡</button><button class="btn ghost" data-act="close-modal">取消</button></div></div>'
   );
   window._bfGoal = gid;
 }

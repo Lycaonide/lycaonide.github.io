@@ -153,7 +153,7 @@ main > *{max-width:1000px;margin-left:auto;margin-right:auto}
 .rh-cell .rh-c{font-size:16px;font-weight:700;color:var(--muted)}
 .rh-cell.on{background:#EFF6FF}
 .rh-cell.on .rh-c{color:var(--brand-ink)}
-.rh-cell.today{border:1.5px dashed rgba(37,99,235,.6);outline:none}
+.rh-cell.today{border:1.5px solid var(--brand);outline:none}
 .heat{display:flex;gap:4px;justify-content:center}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 @media(max-width:800px){.two-col{grid-template-columns:1fr}}
@@ -828,8 +828,7 @@ function renderToday(){
   });
   state.goals.forEach(function(g){ h += goalCard(g); });
   if (!state.goals.length) h += '<div class="card"><p class="note">还没有目标，添加一个开始打卡吧。</p></div>';
-  h += weekRhythm();
-  h += '<button class="addcard" data-act="add-goal">＋ 添加打卡类型</button>';
+  h += '<div style="display:flex;gap:12px;align-items:stretch">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1;margin-top:14px">') + '<button class="addcard" data-act="add-goal" style="width:200px;margin-top:14px">＋ 添加打卡类型</button></div>';
   $("tab-today").innerHTML = h;
 }
 function todayOverview(){

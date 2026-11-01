@@ -972,7 +972,7 @@ function renderBoard(){
       '</div>';
   });
   h += '</div>';
-  h += '<div class="card chart-card"><h3>近 14 天打卡量（分钟优先，无分钟记数量）</h3>' + chart14() + legendHTML() + '</div>';
+  h += '<div class="card chart-card"><h3>近 14 天打卡量<span style="font-size:14px;font-weight:400;color:var(--muted)">（分钟优先，无分钟记数量）</span></h3>' + chart14() + legendHTML() + '</div>';
   h += chapterLoopCard();
   h += '<div class="two-col"><div class="card">' + heat35() + '</div><div class="card">' + recentFeed() + '</div></div>';
   $("tab-board").innerHTML = h;

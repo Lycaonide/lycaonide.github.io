@@ -1792,7 +1792,7 @@ function renderBoard(){
   });
   h += '</div></div>';
   h += subjectLoopCard();
-  h += '<div class="card chart-card"><h3>近 14 天打卡量<span class="hsub">单位：分钟 · 每天学了多少，按科目堆叠</span></h3>' + chart14() + legendHTML() + '</div>';
+  h += '<div class="card chart-card"><h3>近 14 天打卡量<span class="hsub">（单位：分钟 ）每天学了多少，按科目堆叠</span></h3>' + chart14() + legendHTML() + '</div>';
   h += typeMixCard();
   h += '<div class="two-col"><div class="card heat-card">' + heat35() + '</div><div class="card">' + recentFeed() + '</div></div>';
   $("tab-board").innerHTML = h;

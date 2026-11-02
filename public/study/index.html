@@ -328,7 +328,7 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
 @media(max-width:640px){
   .tm-grid{gap:10px 16px}
   .tm-track{display:none}
-  .tm-row{display:grid;grid-template-columns:8px 1fr auto auto;gap:8px;padding:7px 0}
+  .tm-row{display:grid;grid-template-columns:8px 1fr auto;gap:8px;padding:7px 0}
   .tm-name{width:auto}
   .tm-n,.tm-p{min-width:0}
 }
@@ -660,10 +660,17 @@ textarea.sent{width:100%;border:1px solid var(--line);border-radius:8px;padding:
   .wk-tbl .wk-sub,.wk-tbl em{font-size:14px}
 }
 
-/* 四类投入：堆叠条 + 明细 */
-.tm-grid{grid-template-columns:1fr;gap:11px}
+/* 四类投入：左扇形图（百分比）+ 右五行具体分钟 */
+.tm-split{display:flex;align-items:center;gap:22px;margin-top:6px}
+.tm-pie{flex:none;width:132px}
+.tm-pie svg{display:block;width:132px;height:132px}
+.tm-grid{flex:1;min-width:0;grid-template-columns:1fr;gap:12px}
+.tm-row.zero{opacity:.5}
 @media(max-width:640px){
-  .tm-grid{grid-template-columns:1fr 1fr;gap:10px 14px}
+  .tm-split{gap:12px;align-items:flex-start}
+  .tm-pie{width:104px}
+  .tm-pie svg{width:104px;height:104px}
+  .tm-grid{gap:8px}
 }
 
 
@@ -1798,26 +1805,47 @@ function renderBoard(){
   $("tab-board").innerHTML = h;
 }
 var TYPE_COLOR = { study: "#2B6CE6", review: "#7C6BD6", practice: "#D99A3E", recite: "#3F9C6B", unknown: "#94A3B8" };
-function typeMixHTML(rows, totalMin, tooFew){
+/* 左侧实心扇形图：每块按占比画，够大的扇区直接在上面标百分比 */
+function pieSVG(rows, denom, byMin){
+  var R = 52, cx = 60, cy = 60, a = -Math.PI / 2, segs = "", labels = "";
+  var vals = rows.map(function(r){ return { r: r, v: byMin ? r.mins : r.n }; })
+                 .filter(function(x){ return x.v > 0; });
+  var ink = function(k){ return k === "unknown" ? "#1E293B" : "#FFFFFF"; };
+  if (vals.length === 1){
+    segs = '<circle cx="60" cy="60" r="52" fill="' + TYPE_COLOR[vals[0].r.key] + '"></circle>';
+    labels = '<text x="60" y="66" text-anchor="middle" font-size="17" font-weight="700" fill="' + ink(vals[0].r.key) + '">100%</text>';
+  } else {
+    vals.forEach(function(x){
+      var ang = x.v / denom * 2 * Math.PI, mid = a + ang / 2;
+      var x1 = (cx + R * Math.cos(a)).toFixed(2), y1 = (cy + R * Math.sin(a)).toFixed(2);
+      a += ang;
+      var x2 = (cx + R * Math.cos(a)).toFixed(2), y2 = (cy + R * Math.sin(a)).toFixed(2);
+      segs += '<path d="M 60 60 L ' + x1 + ' ' + y1 + ' A 52 52 0 ' + (ang > Math.PI ? 1 : 0) +
+        ' 1 ' + x2 + ' ' + y2 + ' Z" fill="' + TYPE_COLOR[x.r.key] + '" stroke="#fff" stroke-width="1.5"></path>';
+      var pct = Math.round(x.v / denom * 100);
+      if (pct >= 8){
+        var lx = (cx + R * 0.62 * Math.cos(mid)).toFixed(1);
+        var ly = (cy + R * 0.62 * Math.sin(mid) + 4).toFixed(1);
+        labels += '<text x="' + lx + '" y="' + ly + '" text-anchor="middle" font-size="11" font-weight="700" fill="' + ink(x.r.key) + '">' + pct + '%</text>';
+      }
+    });
+  }
+  return '<svg viewBox="0 0 120 120" width="132" height="132" role="img" aria-label="四类投入占比">' + segs + labels + '</svg>';
+}
+function typeMixHTML(rows, totalMin){
   var byMin = totalMin > 0;
   var denom = byMin ? totalMin : rows.reduce(function(a, r){ return a + r.n; }, 0);
   if (!denom) denom = 1;
-  var bar = rows.map(function(r){
-    var v = byMin ? r.mins : r.n;
-    if (!v || tooFew) return "";
-    return '<i style="width:' + (v / denom * 100).toFixed(2) + '%;background:' + TYPE_COLOR[r.key] + '"></i>';
-  }).join("");
   var list = rows.map(function(r){
     var v = byMin ? r.mins : r.n;
-    var p = tooFew ? "—" : Math.round(v / denom * 100) + "%";
-    var w = tooFew ? 0 : (v / denom * 100).toFixed(1);
-    return '<div class="tm-row"><i class="tm-dot" style="background:' + TYPE_COLOR[r.key] + '"></i>' +
+    var w = (v / denom * 100).toFixed(1);
+    return '<div class="tm-row' + (v ? "" : " zero") + '"><i class="tm-dot" style="background:' + TYPE_COLOR[r.key] + '"></i>' +
       '<span class="tm-name">' + r.label + '</span>' +
       '<span class="tm-track"><i style="width:' + w + '%;background:' + TYPE_COLOR[r.key] + '"></i></span>' +
-      '<span class="tm-n">' + (byMin ? r.mins + ' 分钟' : r.n + ' 次') + '</span>' +
-      '<span class="tm-p">' + p + '</span></div>';
+      '<span class="tm-n">' + (byMin ? r.mins + ' 分钟' : r.n + ' 次') + '</span></div>';
   }).join("");
-  return '<div class="tm-bar">' + bar + '</div><div class="tm-grid">' + list + '</div>';
+  return '<div class="tm-split"><div class="tm-pie">' + pieSVG(rows, denom, byMin) + '</div>' +
+    '<div class="tm-grid">' + list + '</div></div>';
 }
 function typeMixCard(){
   var rows = REC_TYPES.map(function(t){ return { key: t[0], label: t[1], n: 0, mins: 0 }; });
@@ -1835,14 +1863,9 @@ function typeMixCard(){
   if (!total){
     return '<div class="card">' + head + '<p class="note">还没有分类记录。打卡时选一下「学习 / 复习 / 练习 / 背诵」，这里就会画出构成。</p></div>';
   }
-  // 只有一条记录、或全挤在一类时，百分比必然是 100%，没有意义，先不显示
-  var kinds = rows.filter(function(r){ return r.n > 0; }).length;
-  var tooFew = total < 2 || kinds <= 1;
   var sum = '<div class="tm-sum">累计 ' + total + ' 次 · 覆盖 ' + Object.keys(days).length + ' 天' +
     (totalMin ? ' · 共 ' + totalMin + ' 分钟 · 占比按分钟' : ' · 未填分钟，占比暂按次数') + '</div>';
-  return '<div class="card">' + head +
-    (tooFew ? '<p class="note">数据还少，暂不计算构成（至少 2 次打卡、且分布在两类以上）。</p>' : "") +
-    typeMixHTML(rows, totalMin, tooFew) + sum + '</div>';
+  return '<div class="card">' + head + typeMixHTML(rows, totalMin) + sum + '</div>';
 }
 function subjectLoopCard(){
   var subs = subjectLoop().filter(function(x){ return !x.missing && x.total; });

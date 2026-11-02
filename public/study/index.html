@@ -96,10 +96,10 @@ main > *{max-width:1320px;margin-left:auto;margin-right:auto}
 /* 标题行：科目名在左，后面这组（博客笔记 / 完成率 / 连续 / 预计 / 状态）统一间距、整体靠右 */
 .ghead{display:flex;align-items:center;gap:10px 24px;flex-wrap:wrap;justify-content:flex-end}
 .gdot{width:11px;height:11px;border-radius:4px;background:var(--gc);flex:none}
-.gname{font-size:22px;font-weight:700;flex:0 1 auto;min-width:0;max-width:42%;margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
+.gname{font-size:21px;font-weight:700;flex:0 1 auto;min-width:0;max-width:42%;margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
 .gname .gtxt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chip{font-size:15px;font-weight:700;padding:4px 11px;border-radius:999px;flex:none;letter-spacing:.2px}
-.blink{font-size:16px;font-weight:600;color:var(--muted);text-decoration:none;flex:none;padding:2px 0;white-space:nowrap}
+.blink{font-size:15px;font-weight:600;color:var(--muted);text-decoration:none;flex:none;padding:2px 0;white-space:nowrap}
 .blink:hover{color:var(--brand)}
 .chip.ok{background:#DCFCE7;color:#15803D}
 .chip.info{background:#DBEAFE;color:#1D4ED8}
@@ -110,11 +110,11 @@ main > *{max-width:1320px;margin-left:auto;margin-right:auto}
 .gfill{height:100%;border-radius:99px;background:var(--gc);transition:width .35s cubic-bezier(.22,.61,.36,1);position:relative}
 .gfill::after{content:none}
 /* 标题行的四段摘要：博客笔记 / 完成率 / 连续 / 预计，统一间距、整体靠右 */
-.gs{font-size:16px;color:#5B6B80;font-weight:600;white-space:nowrap;letter-spacing:.1px}
-.gs b{font-size:18px;color:var(--ink);font-weight:700;margin-left:5px;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
-.gs b small{font-size:16px;font-weight:600;color:#5B6B80;margin-left:2px}
-/* 「暂无推算」是文字不是数字，比数字位收 2px，免得抢眼 */
-.gs b.et-none{font-size:16px;font-weight:600}
+.gs{font-size:15px;color:#5B6B80;font-weight:600;white-space:nowrap;letter-spacing:.1px}
+.gs b{font-size:17px;color:var(--ink);font-weight:700;margin-left:5px;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.gs b small{font-size:15px;font-weight:600;color:#5B6B80;margin-left:2px}
+/* 预计为「无」时是文字不是数字，比数字位收 2px，免得抢眼 */
+.gs b.et-none{font-size:15px;font-weight:600}
 @media(max-width:1400px){.ghead{gap:10px 20px}}
 @media(max-width:1320px){.ghead{gap:10px 12px}}
 .gact{display:grid;grid-template-columns:128px 1fr 96px;gap:14px;align-items:end;margin-top:18px}
@@ -410,14 +410,14 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
   .heat-cell{border-radius:5px}
   .tdist{grid-template-columns:repeat(2,1fr)}
   .card h3,.chart-card h3{font-size:19px;margin-bottom:10px}
-  .gname{font-size:19px;max-width:38%}
+  .gname{font-size:18px;max-width:38%}
   .ghead{gap:8px}
   .ghead .gname{flex:1 1 100%;max-width:100%;margin-right:0}
   .ghead .chip{order:5}
-  .ghead .blink{order:3;font-size:14px}
-  .ghead .gs{order:4;font-size:14px}
-  .ghead .gs b{font-size:16px}
-  .ghead .gs b.et-none{font-size:15px}
+  .ghead .blink{order:3;font-size:13px}
+  .ghead .gs{order:4;font-size:13px}
+  .ghead .gs b{font-size:15px}
+  .ghead .gs b.et-none{font-size:14px}
   .reclist.lite{margin-top:15px}
   .gact{grid-template-columns:1fr 88px;gap:10px}
   .gact .f-amt{grid-column:1;grid-row:1}
@@ -465,8 +465,9 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
 
 /* ===== 看板 ===== */
 /* 各科目进度：环形图 */
-.bring-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 4px;margin-top:4px}
-.bring{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 6px 12px;min-width:0;flex:0 0 132px;box-sizing:border-box}
+/* 每行平均分布：等宽列均分整行，环在列内居中，两端对称，不会只剩一个孤零零靠左 */
+.bring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));justify-items:center;gap:8px 4px;margin-top:4px}
+.bring{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 6px 12px;min-width:0;width:132px;max-width:100%;box-sizing:border-box}
 .rng{position:relative;width:96px;height:96px;flex:none}
 .rng svg{width:96px;height:96px;display:block}
 .rng-v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.4px}
@@ -474,8 +475,8 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
 .bring .rmeta{font-size:14px;color:var(--muted);margin-top:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bring .robs{font-size:14px;color:#B45309;margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:640px){
-  .bring-grid{gap:2px}
-  .bring{padding:8px 4px 10px;flex:0 0 calc(50% - 1px)}
+  .bring-grid{grid-template-columns:repeat(2,1fr);gap:2px;justify-items:center}
+  .bring{padding:8px 4px 10px;width:100%;max-width:132px}
   .rng,.rng svg{width:84px;height:84px}
   .rng-v{font-size:17px}
   .bring .rname{font-size:14px;min-height:20px}
@@ -662,14 +663,14 @@ textarea.sent{width:100%;border:1px solid var(--line);border-radius:8px;padding:
 
 /* 四类投入：左扇形图（百分比）+ 右五行具体分钟 */
 .tm-split{display:flex;align-items:center;gap:22px;margin-top:6px}
-.tm-pie{flex:none;width:132px}
-.tm-pie svg{display:block;width:132px;height:132px}
+.tm-pie{flex:none;width:168px}
+.tm-pie svg{display:block;width:168px;height:168px}
 .tm-grid{flex:1;min-width:0;grid-template-columns:1fr;gap:12px}
 .tm-row.zero{opacity:.5}
 @media(max-width:640px){
   .tm-split{gap:12px;align-items:flex-start}
-  .tm-pie{width:104px}
-  .tm-pie svg{width:104px;height:104px}
+  .tm-pie{width:128px}
+  .tm-pie svg{width:128px;height:128px}
   .tm-grid{gap:8px}
 }
 
@@ -1254,6 +1255,14 @@ function deltaPct(cur, prev){
   var d = Math.round((cur - prev) / prev * 100);
   return (d > 0 ? "+" : "") + d + "%";
 }
+/* 「变化」列用箭头表意：上升 ↑、下降 ↓、持平 —；周报文字里仍用百分比 */
+function deltaArrow(cur, prev){
+  if (prev <= 0) return cur > 0 ? "↑" : "—";
+  var d = Math.round((cur - prev) / prev * 100);
+  if (d > 0) return "↑ " + d + "%";
+  if (d < 0) return "↓ " + (-d) + "%";
+  return "—";
+}
 function dayOfYear(){
   var t = new Date();
   return Math.floor((t - new Date(t.getFullYear(), 0, 0)) / 86400000);
@@ -1709,7 +1718,7 @@ function goalCard(g){
   var sug = auto ? null : suggest(g);
   var st = statusOf(g);
   var e = eta(g);
-  var et = e === null ? "暂无推算" : (remaining(g) <= 0 ? "已完成" : fmtDate(e));
+  var et = e === null ? "无" : (remaining(g) <= 0 ? "已完成" : fmtDate(e));
   var sugLabel = "今日建议量";
   var recHtml = "";
   if (!auto){
@@ -1830,7 +1839,7 @@ function pieSVG(rows, denom, byMin){
       }
     });
   }
-  return '<svg viewBox="0 0 120 120" width="132" height="132" role="img" aria-label="四类投入占比">' + segs + labels + '</svg>';
+  return '<svg viewBox="0 0 120 120" width="168" height="168" role="img" aria-label="四类投入占比">' + segs + labels + '</svg>';
 }
 function typeMixHTML(rows, totalMin){
   var byMin = totalMin > 0;
@@ -1864,7 +1873,7 @@ function typeMixCard(){
     return '<div class="card">' + head + '<p class="note">还没有分类记录。打卡时选一下「学习 / 复习 / 练习 / 背诵」，这里就会画出构成。</p></div>';
   }
   var sum = '<div class="tm-sum">累计 ' + total + ' 次 · 覆盖 ' + Object.keys(days).length + ' 天' +
-    (totalMin ? ' · 共 ' + totalMin + ' 分钟 · 占比按分钟' : ' · 未填分钟，占比暂按次数') + '</div>';
+    (totalMin ? ' · 共 ' + totalMin + ' 分钟' : ' · 未填分钟，占比暂按次数') + '</div>';
   return '<div class="card">' + head + typeMixHTML(rows, totalMin) + sum + '</div>';
 }
 function subjectLoopCard(){
@@ -2101,7 +2110,7 @@ function renderWeek(){
       '<td class="wk-n"><i class="gdot" style="background:' + g.color + '"></i><span>' + esc(g.name) + '</span></td>' +
       '<td><b>+' + c + '</b> <em>' + esc(g.unit) + '</em><span class="wk-sub">· ' + cDays + ' 天 · ' + cMin + ' 分钟</span></td>' +
       '<td class="wk-prev">+' + p + ' <em>' + esc(g.unit) + '</em><span class="wk-sub">· ' + pDays + ' 天 · ' + pMin + ' 分钟</span></td>' +
-      '<td class="delta ' + dcls + '">' + deltaPct(c, p) + '</td></tr>';
+      '<td class="delta ' + dcls + '">' + deltaArrow(c, p) + '</td></tr>';
     var mi = missInfo(g);
     if (mi && mi.type === "overdue") over++;
     var s = streak(g);
@@ -2118,7 +2127,7 @@ function renderWeek(){
   h += '<div class="week-compare">' +
     '<span>本周 <b>' + curN + '</b> 次打卡 · ' + active + ' 天 · ' + minSum(cur) + ' 分钟</span>' +
     '<span class="dim">上周 ' + prevN + ' 次 · ' + activeDaysAll(prev) + ' 天 · ' + minSum(prev) + ' 分钟</span>' +
-    '<span class="delta ' + (curN > prevN ? 'up' : (curN < prevN ? 'down' : 'flat')) + '">' + deltaPct(curN, prevN) + '</span>' +
+    '<span class="delta ' + (curN > prevN ? 'up' : (curN < prevN ? 'down' : 'flat')) + '">' + deltaArrow(curN, prevN) + '</span>' +
     '</div></div>';
   var rv = state.reviews[cur.mon] || { keep: "", problem: "", try: "", plan: "" };
   h += '<div class="card"><h3>本周复盘<span class="hsub">先写这四句，写完生成周报</span></h3>' +

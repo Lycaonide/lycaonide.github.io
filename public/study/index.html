@@ -13,313 +13,665 @@
 :root{
   --brand:#2563EB;--brand2:#1D4ED8;--brand-ink:#1E40AF;
   --ink:#0F172A;--ink2:#475569;--muted:#64748B;
-  --bg:#FFFFFF;--card:#FFFFFF;--line:#CBD5E1;
+  --bg:#FFFFFF;--card:#FFFFFF;--line:#CBD5E1;--line2:#B9C6D6;--line-soft:#E8EDF4;
   --amber:#E8A33D;--red:#E25B5B;--blue:#2563EB;--green:#16A34A;--rose:#E882B0;
   --grad:#2563EB;
   --grad-soft:#FFFFFF;
-  --shadow-sm:none;
-  --shadow-md:none;
-  --r-lg:12px;--r-md:8px;--r-sm:6px;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.05);
+  --shadow-md:0 10px 28px -14px rgba(15,23,42,.22);
+  --r-lg:10px;--r-md:8px;--r-sm:6px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
 button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,select,textarea{font:inherit;color:inherit;font-size:16px}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 [hidden]{display:none!important}
-::selection{background:rgba(37,99,235,.18)}
+::selection{background:rgba(43,108,230,.16)}
 
-/* ===== 顶栏 ===== */
+/* ===== 外壳 ===== */
 .layout{display:flex;min-height:100vh}
-.sidebar{width:240px;flex:none;background:#F8FAFC;border-right:1px solid #CBD5E1;padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sb-brand{display:flex;flex-direction:row;justify-content:space-between;align-items:center;padding:0 40px 20px 0}
+.sidebar{width:252px;flex:none;background:#F8FAFC;border-right:1px solid var(--line);padding:26px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-brand{display:flex;flex-direction:row;justify-content:space-between;align-items:center;padding:0 6px 22px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.back-link{position:fixed;bottom:16px;left:184px;display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0;background:transparent;color:var(--ink2);text-decoration:none;font-size:14px;font-weight:500;z-index:10}
+.back-link{position:fixed;bottom:18px;left:196px;display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0;background:transparent;color:var(--muted);text-decoration:none;font-size:16px;font-weight:500;z-index:10}
 .back-link:hover{color:var(--brand)}
-.brand-mark{width:28px;height:28px;border-radius:6px;background:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
-.brand-mark svg{width:16px;height:16px;stroke:#fff}
-.brand h1{font-size:22px;font-weight:700;letter-spacing:0;white-space:nowrap;color:var(--ink)}
+.brand-mark{width:28px;height:28px;border-radius:7px;background:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
+.brand-mark svg{width:17px;height:17px;stroke:#fff}
+.brand h1{font-size:24px;font-weight:700;letter-spacing:0;white-space:nowrap;color:var(--ink)}
 .brand h1 em{font-style:normal;color:var(--brand-ink)}
-.date{font-size:13px;color:var(--muted);padding:0 0 16px;white-space:nowrap;align-self:flex-start}
+.date{font-size:14px;color:var(--muted);padding:0 6px 18px;white-space:nowrap;align-self:flex-start}
 
-/* ===== Tab 栏：侧边竖排 ===== */
-.tabs{display:flex;flex-direction:column;gap:4px}
-.tab-btn{min-height:36px;border-radius:6px;font-size:14px;font-weight:500;color:var(--ink2);display:flex;align-items:center;gap:8px;padding:0 12px;transition:color .15s,background .15s;text-align:left}
+/* ===== Tab 栏 ===== */
+.tabs{display:flex;flex-direction:column;gap:2px}
+.tab-btn{min-height:44px;border-radius:9px;font-size:16px;font-weight:500;color:var(--ink2);display:flex;align-items:center;gap:11px;padding:0 13px;transition:color .15s,background .15s;text-align:left}
 .tab-btn:hover{background:#EEF2F7;color:var(--ink)}
-.tab-btn.active{background:var(--brand);color:#fff;box-shadow:none;border-radius:6px}
-.tab-btn svg{width:18px;height:18px;flex:none}
+.tab-btn.active{background:var(--brand);color:#fff;font-weight:700}
+.tab-btn svg{width:20px;height:20px;flex:none;opacity:.85}
+.tab-btn.active svg{opacity:1}
 
 /* ===== 主区 ===== */
-main{flex:1;min-width:0;padding:24px 32px calc(48px + env(safe-area-inset-bottom))}
-main > *{max-width:1000px;margin-left:auto;margin-right:auto}
+main{flex:1;min-width:0;padding:28px 36px calc(52px + env(safe-area-inset-bottom))}
+main > *{max-width:1320px;margin-left:auto;margin-right:auto}
+@media(min-width:1700px){main > *{max-width:1480px}}
 
-/* 手机端：侧边栏收成顶部横排 */
-@media(max-width:767px){
+@media(max-width:900px){
   .layout{flex-direction:column}
-  .sidebar{width:100%;height:auto;position:sticky;top:0;flex-direction:column;gap:8px;padding:10px 14px;border-right:none;border-bottom:1px solid rgba(225,237,231,.8);z-index:20}
-  .sb-brand{flex-direction:row;align-items:center;justify-content:space-between}
-  .tabs{flex-direction:row}
-  .tab-btn{flex:1;justify-content:center;padding:0;min-height:42px;font-size:13px}
-  main{padding:12px 14px calc(80px + env(safe-area-inset-bottom))}
+  .sidebar{width:100%;height:auto;position:sticky;top:0;flex-direction:column;gap:8px;padding:10px 14px;border-right:none;border-bottom:1px solid var(--line);z-index:20}
+  .sb-brand{flex-direction:row;align-items:center;justify-content:space-between;padding:0 0 8px;gap:10px}
+  .back-link{position:static;order:2;font-size:14px;color:var(--muted)}
+  .brand{order:1}
+  .brand h1{font-size:19px}
+  .date{display:none}
+  .tabs{flex-direction:row;gap:4px}
+  .tab-btn{flex:1;justify-content:center;padding:0;min-height:42px;font-size:14px;gap:6px}
+  .tab-btn svg{width:17px;height:17px}
+  main{padding:12px 12px calc(80px + env(safe-area-inset-bottom))}
 }
-.card{background:var(--card);border:1px solid #CBD5E1;border-radius:8px;padding:16px;margin-bottom:12px}
-.card h3{font-size:22px;font-weight:600;letter-spacing:.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.card h3::before{content:"";width:4px;height:14px;border-radius:3px;background:var(--grad);flex:none}
+
+/* ===== 卡片 ===== */
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin-bottom:14px;box-shadow:var(--shadow-sm)}
+.card h3{font-size:22px;font-weight:700;letter-spacing:-.3px;margin-bottom:14px;display:flex;align-items:center;gap:10px;color:var(--ink);line-height:1.35}
+.card h3::before{content:"";width:4px;height:18px;border-radius:3px;background:var(--brand);flex:none}
 
 /* 每日一句 */
-.quote{position:relative;background:transparent;border:none;border-bottom:1px solid #CBD5E1;padding:0 0 16px;overflow:hidden;margin-bottom:16px}
-.quote .qtext{font-size:20px;font-weight:700;color:var(--ink);line-height:1.4}
-.quote::before{content:"“";position:absolute;right:14px;top:-10px;font-size:92px;line-height:1;color:rgba(37,99,235,.14);font-family:Georgia,serif;pointer-events:none}
-.quote .q{font-size:16px;line-height:1.75;font-weight:600;color:var(--ink)}
-.quote .qtag{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;color:var(--brand-ink);background:rgba(37,99,235,.12);border-radius:999px;padding:3px 10px;letter-spacing:1px}
+.quote{position:relative;background:transparent;border:none;border-bottom:1px solid var(--line);padding:0 0 16px;overflow:hidden;margin-bottom:16px}
+.quote .qtext{font-size:22px;font-weight:700;color:var(--ink);line-height:1.45;letter-spacing:0}
+.quote::before{content:"\201C";position:absolute;right:12px;top:-14px;font-size:92px;line-height:1;color:rgba(37,99,235,.13);font-family:Georgia,serif;pointer-events:none}
+.quote .q{font-size:16px;line-height:1.8;font-weight:500;color:var(--ink2)}
+.quote .qtag{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:14px;font-weight:600;color:var(--brand);background:#EDF3FE;border-radius:6px;padding:3px 9px;letter-spacing:.6px}
 
 /* 漏卡提示 */
-.miss{--mcol:var(--amber);background:linear-gradient(180deg,#FFFBF2,#FFF7E6);border-color:rgba(232,163,61,.28)}
-.miss.red{--mcol:var(--red);background:linear-gradient(180deg,#FFF6F4,#FEEBE9);border-color:rgba(226,91,91,.28)}
+.miss{--mcol:var(--amber);background:#FFFBF1;border-color:#EFD3A4}
+.miss.red{--mcol:var(--red);background:#FFF5F4;border-color:#F2C9C6}
 .miss-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.miss-head b{font-size:14.5px}
-.miss-dot{width:10px;height:10px;border-radius:50%;background:var(--mcol);flex:none;box-shadow:0 0 0 4px rgba(232,163,61,.15)}
-.miss.red .miss-dot{box-shadow:0 0 0 4px rgba(226,91,91,.15)}
-.miss p{font-size:13px;color:var(--ink2)}
+.miss-head b{font-size:15px;font-weight:700}
+.miss-dot{width:9px;height:9px;border-radius:50%;background:var(--mcol);flex:none;box-shadow:0 0 0 4px rgba(232,163,61,.16)}
+.miss p{font-size:15px;color:var(--ink2)}
 .miss-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 
-/* 目标卡片 */
+/* ===== 目标卡 ===== */
 .gcard{--gc:var(--brand)}
-.ghead{display:flex;align-items:center;gap:9px}
+/* 标题行：科目名在左，后面这组（博客笔记 / 完成率 / 连续 / 预计 / 状态）统一间距、整体靠右 */
+.ghead{display:flex;align-items:center;gap:10px 24px;flex-wrap:wrap;justify-content:flex-end}
 .gdot{width:11px;height:11px;border-radius:4px;background:var(--gc);flex:none}
-.gname{font-size:22px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.2px}
-.chip{font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;flex:none}
-.blink{font-size:12px;font-weight:600;color:#2563EB;text-decoration:none;flex:none;padding:2px 0;white-space:nowrap}
-.blink:hover{text-decoration:underline}
-.chip.ok{background:rgba(37,99,235,.13);color:var(--brand-ink)}
-.chip.info{background:rgba(74,144,217,.12);color:#2F6FAD}
-.chip.warn{background:rgba(232,163,61,.15);color:#A86F12}
-.chip.bad{background:rgba(226,91,91,.12);color:#C04444}
-.gbar{height:8px;border-radius:5px;background:#EDF4F0;margin:14px 0 4px;overflow:hidden;position:relative}
-.gfill{height:100%;border-radius:5px;background:var(--gc);transition:width .35s cubic-bezier(.22,.61,.36,1);position:relative}
-.gfill::after{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:rgba(255,255,255,.22);border-radius:inherit}
-.gmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.gmeta .cell{background:#F8FAFC;border:1px solid #EEF2F7;border-radius:8px;padding:6px 8px;text-align:center}
-.gmeta .cell .k{font-size:12px;color:var(--muted);display:block;font-weight:600;letter-spacing:.3px}
-.gmeta .cell .v{font-size:17px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
-.gmeta .cell .v small{font-weight:600;color:var(--muted);font-size:11px}
-.gact{display:grid;grid-template-columns:90px 1fr 80px;gap:10px;align-items:end;margin-top:14px}
-.gact .field label{display:block;font-size:13px;color:var(--ink2);font-weight:600;margin-bottom:5px}
-.gact input{width:100%;border:1px solid #CBD5E1;border-radius:12px;padding:10px 11px;background:#FBFDFC;min-height:44px;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
-.gact input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(37,99,235,.14)}
-.gact .ttype{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr) auto;gap:8px}
-.gact .btn.primary{grid-column:auto}
+.gname{font-size:22px;font-weight:700;flex:0 1 auto;min-width:0;max-width:42%;margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
+.gname .gtxt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip{font-size:15px;font-weight:700;padding:4px 11px;border-radius:999px;flex:none;letter-spacing:.2px}
+.blink{font-size:16px;font-weight:600;color:var(--muted);text-decoration:none;flex:none;padding:2px 0;white-space:nowrap}
+.blink:hover{color:var(--brand)}
+.chip.ok{background:#DCFCE7;color:#15803D}
+.chip.info{background:#DBEAFE;color:#1D4ED8}
+.chip.warn{background:#FEF0C7;color:#B45309}
+.chip.bad{background:#FEE2E2;color:#B91C1C}
+.chip.arch{background:#F1F5F9;color:#64748B}
+.gbar{height:10px;border-radius:99px;background:#E7ECF3;margin:12px 0 14px;overflow:hidden;position:relative}
+.gfill{height:100%;border-radius:99px;background:var(--gc);transition:width .35s cubic-bezier(.22,.61,.36,1);position:relative}
+.gfill::after{content:none}
+/* 标题行的四段摘要：博客笔记 / 完成率 / 连续 / 预计，统一间距、整体靠右 */
+.gs{font-size:16px;color:#5B6B80;font-weight:600;white-space:nowrap;letter-spacing:.1px}
+.gs b{font-size:18px;color:var(--ink);font-weight:700;margin-left:5px;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.gs b small{font-size:16px;font-weight:600;color:#5B6B80;margin-left:2px}
+/* 「暂无推算」是文字不是数字，比数字位收 2px，免得抢眼 */
+.gs b.et-none{font-size:16px;font-weight:600}
+@media(max-width:1400px){.ghead{gap:10px 20px}}
+@media(max-width:1320px){.ghead{gap:10px 12px}}
+.gact{display:grid;grid-template-columns:128px 1fr 96px;gap:14px;align-items:end;margin-top:18px}
+.gact .field label{display:block;font-size:15px;color:var(--muted);font-weight:600;margin-bottom:7px;white-space:nowrap}
+.gact input{width:100%;border:1px solid var(--line);border-radius:8px;padding:0 11px;background:#fff;min-height:40px;font-size:15px;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
+.gact input::placeholder{color:#94A3B8}
+.gact input:hover{border-color:var(--line2)}
+.gact input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(37,99,235,.13)}
+.gact .ttype{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-start;gap:6px;background:none;padding:0}
+.gact .btn.primary{grid-column:auto;min-width:88px;padding:0 18px;white-space:nowrap}
 .unit-holder{position:relative}
-.unit-holder input{padding-right:36px}
-.unit-holder .u{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none;font-weight:600}
-.reclist{margin-top:14px;border-top:1px dashed #CBD5E1;padding-top:10px}
-.rl-title{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:4px;letter-spacing:.3px}
-.rec{display:flex;align-items:center;gap:8px;font-size:14px;padding:5px 0}
-.rec .amt{font-weight:600;color:var(--brand-ink);font-variant-numeric:tabular-nums}
-.rec .tag{font-size:10px;background:rgba(37,99,235,.12);color:var(--brand-ink);border-radius:6px;padding:2px 7px;font-weight:700}
-.rec .time{margin-left:auto;color:var(--muted);font-size:12px}
-.obstacle{margin-top:12px;font-size:13.5px;color:var(--ink2);background:#FBFDFC;border:1px dashed #CBD5E1;border-radius:12px;padding:9px 11px;line-height:1.6}
+.unit-holder input{padding-right:38px}
+.unit-holder .u{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);pointer-events:none;font-weight:600}
+.reclist{margin-top:12px;border-top:1px solid var(--line-soft);padding-top:10px}
+.reclist.lite{margin-top:19px;border-top:none;padding-top:0}
+.reclist.lite .rl-head{margin-bottom:0}
+.rl-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:2px}
+.rl-title{font-size:15px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+.rl-more{background:none;border:none;padding:0;font-family:inherit;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:color .15s}
+.rl-more:hover{color:var(--brand)}
+.rec{display:flex;align-items:center;gap:8px;font-size:15px;padding:5px 0}
+.rec .rc-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.rec .amt{font-weight:700;color:var(--brand-ink);font-variant-numeric:tabular-nums;flex:none}
+.rec .tag{font-size:14px;background:#E8EEF8;color:#1E40AF;border-radius:5px;padding:2px 7px;font-weight:700}
+.rec .time{margin-left:2px;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums;flex:none}
+.obstacle{margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--line);font-size:15px;color:var(--ink2);line-height:1.7}
 .obstacle b{color:var(--ink);font-weight:700}
-.auto-hint{margin-top:10px;font-size:14px;color:#1E40AF;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:6px 10px;font-weight:600}
-.auto-sub{margin-top:6px;font-size:13.5px;color:var(--ink2);font-weight:500}
-.examline{margin:0 0 14px;font-size:13px;font-weight:600;color:var(--brand-ink);background:linear-gradient(90deg,rgba(37,99,235,.12),rgba(37,99,235,.04));border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:10px 14px}
-.review-today{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin-bottom:12px;border-left:4px solid var(--amber);background:#FFFBF2}
-.rv-icon{font-size:20px;color:var(--amber);flex:none;line-height:1.2}
-.rv-body b{font-size:20px}
-.rv-overdue{color:var(--red);font-weight:700}
-.rv-sub{font-size:13px;color:var(--muted);margin-top:3px}
-.addcard{width:100%;margin-top:14px;padding:16px;border:1.5px dashed rgba(37,99,235,.4);border-radius:16px;background:rgba(37,99,235,.04);color:var(--brand-ink);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
-.addcard:hover{background:rgba(37,99,235,.1)}
+.auto-hint{margin-top:10px;font-size:15px;color:var(--brand-ink);background:#F1F6FF;border-radius:8px;padding:7px 11px;font-weight:600}
+.auto-hint.lite{font-size:15px;font-weight:500;color:var(--muted);background:#F7F9FC;padding:6px 10px;margin-top:8px}
+.auto-sub{margin-top:16px;font-size:15px;color:var(--muted);font-weight:500}
+.examline{margin:0 0 16px;font-size:14px;font-weight:600;color:var(--ink2);background:#fff;border:none;border-radius:12px;padding:13px 18px;box-shadow:var(--shadow-sm)}
+.review-today{display:flex;gap:14px;align-items:center;padding:21px 20px;margin-bottom:10px;border:1px solid #EDCB8E;border-radius:var(--r-lg);background:#FFF8E8}
+.review-today.clk{cursor:pointer;transition:background .14s}
+.review-today.clk:hover{background:#FEF1D5;border-color:#E4BC70}
+.rv-body{flex:1;min-width:0}
+.rv-title{font-size:22px;font-weight:700;color:#7C4A03;line-height:1.25}
+.rv-title b{font-size:24px;font-weight:700;margin:0 2px;color:#B45309;line-height:1}
+.rv-overdue{color:#B91C1C;font-weight:700;font-size:16px;margin-left:18px}
+.rv-sub{font-size:15px;color:#92671A;margin-top:8px}
+.rv-arrow{flex:none;font-size:14px;color:#A16207;font-weight:700;white-space:nowrap}
+.rv-list{margin:8px 0 14px;border:none;background:#fff;border-radius:0 0 12px 12px;padding:4px 18px 8px;box-shadow:var(--shadow-sm)}
+/* 今日页：左栏卡片、右列复盘。不再各自滚动——整页只有一条滚动条，从头通到底，
+   右列 sticky 跟着页面走，滚到下面也还能复盘 */
+.today-split{display:grid;grid-template-columns:minmax(0,1fr) 336px;gap:16px;align-items:start}
+.rv-col{min-width:0;display:flex;flex-direction:column;grid-column:2;grid-row:1;position:sticky;top:18px}
+.goal-col{min-width:0;display:flex;flex-direction:column;grid-column:1;grid-row:1}
+.goal-col > :last-child,.rv-col > :last-child{margin-bottom:0}
+/* 复盘内容比一屏还高时就不跟随了，否则底部永远看不到 */
+.today-split.rv-static .rv-col{position:static;top:auto}
+/* 页面主滚动条：细一点、圆角，和卡片里那条一个颜色 */
+html{scrollbar-width:thin;scrollbar-color:#CBD5E3 transparent}
+html::-webkit-scrollbar{width:10px}
+html::-webkit-scrollbar-track{background:transparent}
+html::-webkit-scrollbar-thumb{background:#CBD5E3;border-radius:8px;border:2px solid var(--bg)}
+html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
+/* 只有宽屏才用窄栏特化，窄屏走原来的通栏排版 */
+@media(min-width:1181px){
+  .rv-col .rv-item{flex-direction:column;align-items:stretch;gap:10px}
+  .rv-col .review-today{align-items:flex-start;padding:18px 16px}
+  .rv-col .rv-overdue{display:block;margin-left:0;margin-top:11px}
+  .rv-col .rv-arrow{margin-top:4px}
+  .rv-col .rv-sub{line-height:1.7}
+  .rv-col .rv-legend{display:none}
+  .rv-col .rv-note{font-size:14px;line-height:1.6}
+  .rv-col .rv-gh span{font-size:13px}
+  .rv-col .rv-q{justify-content:space-between}
+  .rv-col .rv-q button{flex:1;padding:0 4px;font-size:15px}
+  .rv-col .rv-list{padding:6px 16px 10px;margin-top:10px;border-radius:12px}
+  .rv-col .rv-item .rv-it-t em{font-size:13px}
+  .rv-col .rv-item .rv-it-m{font-size:14px;gap:9px}
+}
+.rv-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.rv-item:first-child{border-top:none}
+.rv-it-main{flex:1;min-width:0}
+.rv-it-t{font-size:15px;font-weight:600;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.rv-it-t em{font-style:normal;font-size:14px;font-weight:400;color:var(--muted)}
+.rv-it-m{font-size:15px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-top:3px}
+.rv-it-m b{color:var(--ink2);font-weight:600}
+.rv-it-m .late{color:#B44A4A;font-weight:600}
+.rv-q{display:flex;gap:6px;flex:none}
+.rv-q button{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:38px;padding:0 11px;border-radius:9px;border:1px solid var(--line2);background:#fff;font-size:14px;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .14s}
+.rv-q button:hover{border-color:var(--brand);color:var(--brand);background:#F5F9FF}
+.rv-q button.q1:hover{border-color:#D95757;color:#B44A4A;background:#FDF3F3}
+.rv-q button.q2:hover{border-color:#D99A3E;color:#9A6B1C;background:#FDF8EF}
+.rv-q button span{font-size:15px;font-weight:600;margin-left:4px}
+.rv-q button.wide{min-width:62px;padding:0 12px}
+.rv-q button.wide.q4:hover{border-color:#3F9C6B;color:#2E7D52;background:#F1F9F4}
+.rv-legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:15px;color:var(--muted);padding:12px 0 6px;line-height:1.7}
+.rv-lg{display:inline-flex;align-items:baseline;gap:3px}
+.rv-lg b{color:var(--ink2);font-weight:700}
+.rv-lg-k{color:var(--ink2);font-weight:600}
+.rv-note{font-size:15px;color:var(--muted);padding:8px 0 4px;line-height:1.65}
+.addcard{width:100%;margin-top:16px;padding:18px;border:1px dashed var(--line2);border-radius:14px;background:transparent;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.addcard:hover{background:#F7F9FC;border-color:#C9D4E4;color:var(--brand)}
 .tmpls{display:flex;flex-wrap:wrap;gap:8px}
-.tmpl{font-size:12px;font-weight:600;color:var(--brand-ink);background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.25);border-radius:999px;padding:5px 11px;cursor:pointer}
-.tmpl:hover{background:rgba(37,99,235,.16)}
-.ttype{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
-.tt{font-size:14px;font-weight:600;color:var(--muted);background:#F2F6F4;border:1.5px solid #E3ECE7;border-radius:10px;padding:10px 0;cursor:pointer;text-align:center;transition:all .15s}
-.tt.on{background:rgba(37,99,235,.12);border-color:var(--brand);color:var(--brand-ink)}
-.tt.on{color:var(--brand-ink);background:rgba(37,99,235,.12);border-color:rgba(37,99,235,.35)}
-.ttag{background:rgba(37,99,235,.1);color:var(--brand-ink)}
-.obs-path{margin-top:8px;width:100%;padding:9px 11px;border:1px solid #DCE7E1;border-radius:10px;font-size:14px;box-sizing:border-box}
-.ov-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
-.ov{background:var(--card);border:1px solid #CBD5E1;border-radius:8px;padding:14px 10px;text-align:center;display:flex;flex-direction:column;gap:4px}
-.ov-v{font-size:24px;font-weight:600;color:var(--brand-ink)}
-.ov-k{font-size:11px;color:var(--muted)}
+.tmpl{font-size:15px;font-weight:600;color:var(--ink2);background:#EEF2F7;border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;cursor:pointer;transition:all .15s}
+.tmpl:hover{background:#EDF3FE;color:var(--brand)}
+.ttype{display:flex;gap:8px;margin-top:10px}
+.gact .ttype{display:flex;flex-wrap:wrap}
+.tt{position:relative;font-size:15px;font-weight:600;color:var(--muted);background:#F1F5F9;border:none;border-radius:8px;height:40px;padding:0 18px;cursor:pointer;text-align:center;white-space:nowrap;transition:color .15s,background .15s}
+.tt:hover{color:var(--ink2);background:#E8EEF7}
+.tt.on{color:#fff;font-weight:700;background:var(--brand)}
+.gact .btn.primary{margin-left:auto}
+.ttag{background:#E8EEF8;color:#1E40AF}
+.obs-path{margin-top:8px;width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:15px;box-sizing:border-box}
+
+/* 概览数字 */
+.ov-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.ov{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 12px;text-align:center;display:flex;flex-direction:column;gap:3px;box-shadow:var(--shadow-sm)}
+.ov-v{font-size:27px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.6px;line-height:1.25}
+.ov-k{font-size:15px;color:var(--muted);font-weight:500}
+.ov.c-blue .ov-v{color:#2563EB}
+.ov.c-amber .ov-v{color:#D97706}
+.ov.c-red .ov-v{color:#DC2626}
+.ov.c-green .ov-v{color:#15803D}
+.ov.c-mute .ov-v{color:#94A3B8}
+.ov.c-violet .ov-v{color:#6D5BD0}
+.ov.alert{border-color:#F0C4C0;background:#FFF7F6}
+
+/* 最近 7 天节奏 */
 .rhythm{margin-top:0}
-.rh-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:18px;font-weight:600}
-.rh-head span{color:var(--muted);font-size:12px}
-.rh-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.rh-cell{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border-radius:10px;background:#EFF6FF;border:1px solid #BFDBFE}
-.rh-cell .rh-d{font-size:11px;color:var(--muted)}
-.rh-cell .rh-c{font-size:16px;font-weight:700;color:var(--muted)}
-.rh-cell.on{background:#EFF6FF}
-.rh-cell.on .rh-c{color:var(--brand-ink)}
-.rh-cell.today{border:1.5px solid var(--brand);outline:none}
-.heat{display:flex;gap:4px;justify-content:center}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-@media(max-width:800px){.two-col{grid-template-columns:1fr}}
-.heat-col{display:flex;flex-direction:column;gap:3px}
-.heat-cell{width:16px;height:16px;border-radius:3px;background:#EDF2F0}
-.heat-cell.l1{background:#DBEAFE}
-.heat-cell.l2{background:#93C5FD}
-.heat-cell.l3{background:#2563EB}
-.heat-cell.l4{background:#1D4ED8}
-.heat-cell.future{opacity:.25}
-.heat-legend{display:flex;align-items:center;gap:5px;justify-content:flex-end;margin-top:10px;font-size:12px;color:var(--muted)}
-.heat-legend .heat-cell{width:14px;height:14px}
+.rh-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;font-size:19px;font-weight:700;letter-spacing:-.2px}
+.rh-head span{color:var(--muted);font-size:14px;font-weight:500}
+.rh-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.rh-cell{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0;border-radius:8px;background:#F8FAFC;border:1px solid var(--line-soft)}
+.rh-cell .rh-d{font-size:14px;color:var(--muted)}
+.rh-cell .rh-c{font-size:19px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.rh-cell.on{background:#F2F7FF}
+.rh-cell.on .rh-c{color:var(--ink)}
+.rh-cell.today{border-color:var(--brand);background:#fff}
+.rh-cell.miss{background:#FDF4F4}
+.rh-cell.miss .rh-c,.rh-cell.miss .rh-d{color:#B44A4A}
+.rh-cell.leave{background:#FDF8EF}
+.rh-cell.leave .rh-c{color:#9A6B1C}
+.rh-cell.clk{cursor:pointer}
+.rh-cell.clk:hover{background:#F1F4F9}
+.rh-tip{margin-top:12px;font-size:15px;color:var(--muted)}
+.fdrow{display:flex;gap:8px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.fdrow:first-of-type{border-top:none}
+.fdname{flex:1;min-width:0;font-size:14px;font-weight:600;color:var(--ink);display:flex;flex-direction:column;gap:2px}
+.fdname span{font-size:14px;font-weight:400;color:var(--muted)}
+.fdrow input{width:76px;height:34px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px;text-align:center;flex:none}
+.fdrow select{width:76px;height:34px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px;background:#fff;flex:none}
+.fdleave{padding:10px 12px;background:#FDF8EF;border:none;border-radius:9px;font-size:14px;color:#8A6118;margin-bottom:10px}
+
+/* 热力图 */
+.heat{display:flex;flex-direction:column;gap:6px;margin:auto auto 0;width:100%;max-width:258px}
+.heat-card{display:flex;flex-direction:column}
+.heat-card .heat-legend{margin-top:14px}
+.heat-card .heat-sum{margin-top:auto;padding-top:14px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;align-items:stretch}
+.two-col > .card{margin-bottom:0;display:flex;flex-direction:column}
+@media(max-width:1100px){.two-col{grid-template-columns:0.92fr 1.08fr;gap:14px}}
+@media(max-width:820px){.two-col{grid-template-columns:1fr}}
+/* 窄屏：复盘回到通栏，卡片整宽 */
+@media(max-width:1180px){
+  .today-split{display:block}
+  .rv-col{position:static;top:auto}
+}
+.heat-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.heat-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:2px}
+.heat-dow span{text-align:center;font-size:15px;color:var(--muted);font-weight:500}
+.heat-cell{aspect-ratio:1;width:auto;height:auto;border-radius:6px;background:#E8EDF5}
+.heat-cell.l1{background:#BCD6FA}
+.heat-cell.l2{background:#7BA9F0}
+.heat-cell.l3{background:#2F6BE4}
+.heat-cell.l4{background:#1B4FD0}
+.heat-cell.future{opacity:.3}
+.heat-legend{display:flex;align-items:center;gap:6px;justify-content:center;margin-top:12px;font-size:14px;color:var(--muted)}
+.heat-sum{text-align:center;font-size:15px;color:var(--muted);margin-top:14px}
+.heat-sum b{color:var(--ink2);font-weight:700;margin:0 1px}
+.heat-legend .heat-cell{width:13px;height:13px;aspect-ratio:auto;border-radius:3px}
+
+/* 动态 */
 .feed{display:flex;flex-direction:column}
-.feed-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #EFF4F2;font-size:14px}
+.feed-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
 .feed-row:last-child{border-bottom:none}
-.feed-n{font-weight:600;min-width:90px}
-.feed-a{color:var(--muted);flex:1}
-.feed-d{color:var(--muted);font-size:13px;white-space:nowrap}
-.rlab{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:10px 0 4px}
+.feed-n{font-weight:600;min-width:0;max-width:46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feed-a{color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feed-d{color:var(--muted);font-size:14px;white-space:nowrap}
+.feed-act{flex:none;border:1px solid transparent;background:none;font-family:inherit;font-size:14px;font-weight:600;color:#9AA6B6;cursor:pointer;padding:3px 7px;border-radius:6px;line-height:1.2;transition:color .14s,background .14s}
+.feed-act:hover{color:var(--brand);background:#EDF3FE}
+.rec-fixed{display:flex;align-items:center;min-height:42px;padding:0 11px;border:1px solid var(--line-soft);border-radius:8px;background:#F8FAFC;font-size:15px;color:var(--ink2);font-weight:600}
+@media(max-width:640px){.feed-act{font-size:13px;padding:2px 4px}.feed-n{max-width:38%}}
+.rlab{display:block;font-size:15px;font-weight:600;color:var(--ink2);margin:14px 0 6px;letter-spacing:.1px}
 .tdist{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
-.td-cell{background:#EFF6FF;border-radius:12px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:2px}
-.td-name{font-size:12px;color:var(--muted);font-weight:600}
-.td-n{font-size:18px;font-weight:600;color:var(--brand-ink)}
-.td-m{font-size:12px;color:var(--muted)}
-.cl-legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:8px}
-.cl-legend span{display:flex;align-items:center;gap:4px}
+.td-cell{background:#F8FAFC;border:1px solid var(--line-soft);border-radius:8px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.td-name{font-size:15px;color:var(--muted);font-weight:600}
+.td-n{font-size:19px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.td-m{font-size:15px;color:var(--muted)}
+
+/* 看板 */
+.hsub{font-size:15px;font-weight:400;color:var(--muted);margin-left:10px}
+@media(max-width:640px){
+  .card h3{flex-wrap:wrap;align-items:flex-start}
+  .hsub{flex:0 0 100%;margin-left:0;margin-top:2px;font-size:14px}
+}
+.tm-bar{display:flex;height:14px;border-radius:99px;overflow:hidden;background:#E2E8F0;margin:4px 0 18px}
+.tm-bar i{display:block;height:100%}
+.tm-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.tm-row{display:flex;align-items:center;gap:10px;font-size:15px}
+.tm-dot{width:8px;height:8px;border-radius:2px;flex:none}
+.tm-name{font-weight:600;color:var(--ink);width:52px;flex:none;font-size:15px}
+.tm-track{flex:1;height:6px;border-radius:99px;background:#E2E8F0;overflow:hidden}
+.tm-track i{display:block;height:100%;border-radius:99px}
+.tm-n{font-variant-numeric:tabular-nums;color:var(--ink);flex:none;min-width:48px;text-align:right;font-size:15px;font-weight:600}
+.tm-p{color:var(--muted);font-size:14px;flex:none;min-width:40px;text-align:right}
+.tm-sum{font-size:15px;color:var(--muted);margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+
+/* 手机端四类投入：一行放下，不挤到边缘 */
+@media(max-width:640px){
+  .tm-grid{gap:10px 16px}
+  .tm-track{display:none}
+  .tm-row{display:grid;grid-template-columns:8px 1fr auto auto;gap:8px;padding:7px 0}
+  .tm-name{width:auto}
+  .tm-n,.tm-p{min-width:0}
+}
+
+/* 请假 */
+.leave-card{display:flex;flex-direction:column}
+.leave-card .leave-form{margin:auto 0;grid-template-columns:1fr;gap:13px}
+.leave-card .leave-form .btn{width:100%}
+.leave-form{display:grid;grid-template-columns:190px 1fr auto;gap:12px;align-items:end}
+.leave-form .mfield{margin-bottom:0}
+.leave-form .btn{min-width:104px}
+@media(max-width:640px){
+  .leave-form{grid-template-columns:1fr;gap:10px}
+  .leave-form .btn{width:100%}
+}
+.lh-list{display:flex;flex-direction:column;max-height:300px;overflow:auto;scrollbar-width:thin;-webkit-mask-image:linear-gradient(#000 calc(100% - 26px),transparent)}
+.lh-row{display:flex;align-items:center;gap:9px;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}
+.lh-row:last-child{border-bottom:none}
+.lh-dot{width:6px;height:6px;border-radius:50%;flex:none;background:#C0504D}
+.lh-row.leave .lh-dot{background:var(--amber)}
+.lh-row.leavedone .lh-dot{background:#C9D2DE}
+.lh-d{font-weight:600;color:var(--ink);flex:none;min-width:84px;font-variant-numeric:tabular-nums}
+.lh-tag{flex:none;font-size:14px;font-weight:600;padding:2px 7px;border-radius:5px;background:#FDF0F0;color:#B44A4A;white-space:nowrap}
+.lh-row.leave .lh-tag{background:#FBF3E4;color:#94661A}
+.lh-row.leavedone .lh-tag{background:#F2F4F8;color:#7A8497}
+.lh-note{flex:1;min-width:0;color:var(--muted);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lh-btn{flex:none;border:none;background:none;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;padding:2px 4px;white-space:nowrap}
+.lh-btn:hover{color:var(--brand)}
+.lh-btn.del:hover{color:#B44A4A}
+.lh-foot{font-size:15px;color:var(--muted);margin-top:auto;padding-top:10px;border-top:1px solid var(--line)}
+.lh-foot b{color:var(--ink2);font-weight:700;margin:0 1px}
+.lh-empty{font-size:14px;color:var(--muted);padding:8px 0}
+
+/* 知识点闭环 */
+.cl-legend{display:flex;gap:16px;font-size:14px;color:var(--muted);margin-bottom:10px}
+.cl-legend span{display:flex;align-items:center;gap:5px}
+.cl-legend em{font-style:normal;color:#A8B1BF;margin-left:2px}
 .cl-list{display:flex;flex-direction:column}
-.cl-row{display:block;border-bottom:1px solid #EFF4F1;padding:0}
-.cl-row summary{display:grid;grid-template-columns:34px 1fr auto auto auto;gap:10px;align-items:center;padding:10px 0;cursor:pointer;list-style:none;font-size:14px}
+.cl-row{display:block;border-bottom:1px solid var(--line);padding:0}
+.cl-row summary{display:grid;grid-template-columns:34px 1fr auto auto auto;gap:10px;align-items:center;padding:13px 0;cursor:pointer;list-style:none;font-size:15px}
 .cl-row summary::-webkit-details-marker{display:none}
-.cl-row[open] summary{border-bottom:1px solid #EFF4F1}
-.cl-items{padding:8px 0 8px 44px}
-.cl-item{padding:10px 0;border-bottom:1px dashed #F0F4F8}
+.cl-row[open] summary{border-bottom:1px solid var(--line)}
+.cl-items{padding:6px 0 8px 44px}
+.cl-item{padding:11px 0;border-bottom:1px solid var(--line-soft)}
 .cl-item:last-child{border-bottom:none}
 .ci-head{display:flex;justify-content:space-between;align-items:center;font-size:14px}
-.ci-head i{font-style:normal;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:600}
-.ci-point{font-size:12px;color:var(--muted);margin:3px 0}
-.ci-chain{display:flex;gap:12px;font-size:12px;color:var(--ink2);flex-wrap:wrap}
-.ci-next{color:var(--brand-ink);font-weight:600}
-.cl-no{font-weight:600;color:var(--brand-ink);font-size:16px}
-.cl-name{font-weight:700;font-size:15px}
-.cl-count{color:var(--muted);font-size:13px}
+.ci-head i{font-style:normal;font-size:14px;padding:2px 7px;border-radius:5px;font-weight:600}
+.ci-point{font-size:15px;color:var(--muted);margin:3px 0}
+.ci-chain{display:flex;gap:14px;font-size:15px;color:var(--ink2);flex-wrap:wrap}
+.ci-next{color:var(--brand);font-weight:600}
+.cl-no{font-weight:600;color:#A8B1BF;font-size:14px;font-variant-numeric:tabular-nums}
+.cl-name{font-weight:600;font-size:15px;letter-spacing:-.1px}
+.cl-count{color:var(--muted);font-size:15px}
 .cl-lv{display:flex;gap:4px}
-.cl-lv i,.cl-legend i{font-style:normal;font-size:12px;padding:2px 7px;border-radius:8px;font-weight:700;white-space:nowrap}
-.lv-a{background:#DBEAFE;color:#1E40AF}
-.lv-b{background:#FEF3C7;color:#92400E}
-.lv-c{background:#FEE2E2;color:#991B1B}
-.cl-due{color:var(--red);font-weight:700;font-size:13px}
-.cl-week{color:var(--amber);font-size:13px}
-.cl-ok{color:var(--muted);font-size:13px}
-.rlab ~ textarea, .card textarea.weekout{width:100%;box-sizing:border-box;border:1px solid #DCE7E1;border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;resize:vertical}
+.cl-lv i{font-style:normal;font-size:14px;padding:3px 9px;border-radius:6px;font-weight:700;white-space:nowrap;color:#fff}
+.cl-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;font-style:normal}
+.lv-a{background:#1E9E67;color:#fff}
+.lv-b{background:#D9932E;color:#fff}
+.lv-c{background:#D4554F;color:#fff}
+.cl-due{color:#C0504D;font-weight:600;font-size:15px}
+.cl-week{color:#9A6B1C;font-size:15px}
+.cl-ok{color:var(--muted);font-size:15px}
+.rlab ~ textarea, .card textarea.weekout{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;background:#fff;padding:12px 14px;font-size:15px;line-height:1.7;font-family:inherit;resize:vertical;background:#FBFCFE}
 .wn-wrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .wline{font-size:14px}
 .wline.dim{font-size:14px;color:var(--muted)}
 @media (max-width:640px){
+  .review-today{gap:10px;padding:19px 16px;align-items:flex-start}
+  .rv-title{font-size:19px}
+  .rv-title b{font-size:21px;margin:0 2px}
+  .rv-cap{display:none}
+  .rv-overdue{display:block;margin-left:0;margin-top:3px;font-size:14px}
+  .rv-arrow{flex:none}
   .ov-grid{grid-template-columns:repeat(2,1fr)}
+  .ov{padding:13px 10px}
+  .ov-v{font-size:23px}
   .feed-n{min-width:0}
-  .heat-cell{width:18px;height:18px}
+  .heat-row,.heat-dow{gap:6px}
+  .heat-cell{border-radius:5px}
   .tdist{grid-template-columns:repeat(2,1fr)}
+  .card h3,.chart-card h3{font-size:19px;margin-bottom:10px}
+  .gname{font-size:19px;max-width:38%}
+  .ghead{gap:8px}
+  .ghead .gname{flex:1 1 100%;max-width:100%;margin-right:0}
+  .ghead .chip{order:5}
+  .ghead .blink{order:3;font-size:14px}
+  .ghead .gs{order:4;font-size:14px}
+  .ghead .gs b{font-size:16px}
+  .ghead .gs b.et-none{font-size:15px}
+  .reclist.lite{margin-top:15px}
+  .gact{grid-template-columns:1fr 88px;gap:10px}
+  .gact .f-amt{grid-column:1;grid-row:1}
+  .gact .f-min{grid-column:2;grid-row:1}
+  .gact .f-content{grid-column:1/-1;grid-row:2}
+  .gact .ttype{grid-row:3;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .gact .ttype .btn.primary{grid-column:1/-1;margin-left:0;margin-top:8px}
+  .gact .tt{padding:0 6px;height:38px;font-size:14px}
+  .rh-grid{gap:4px}
+  .rh-cell{padding:8px 0;gap:4px;border-radius:9px}
+  .rh-cell .rh-c{font-size:14px;white-space:nowrap}
+  .rh-cell .rh-d{font-size:14px;white-space:nowrap}
+  .cl-legend em{display:none}
+  .rv-item{flex-direction:column;align-items:stretch;gap:10px;padding:13px 0}
+  .rv-q{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .rv-q button{width:100%;min-width:0;height:40px;justify-content:center;font-size:14px}
+  .rv-q button span{font-size:14px}
+  .rv-q button.wide{min-width:0;width:100%;grid-column:span 2}
   .cl-row{grid-template-columns:30px 1fr auto;grid-template-rows:auto auto;row-gap:6px;align-items:center}
   .cl-name{grid-row:1;grid-column:2}
   .cl-count{grid-row:1;grid-column:3;justify-self:end}
   .cl-lv{grid-row:2;grid-column:2}
   .cl-due,.cl-week,.cl-ok{grid-row:2;grid-column:3;justify-self:end}
+  .card{padding:14px 13px;border-radius:10px;margin-bottom:10px}
 }
-.gadd{margin-top:14px;text-align:center}
 
-/* 按钮 */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;background:var(--brand);color:#fff;transition:background .15s;box-shadow:none}
-.btn:hover{filter:brightness(1.04)}
-.btn:active{transform:translateY(1px) scale(.99)}
+.gadd{margin-top:16px}
+.gbtn{white-space:nowrap;background:#fff!important;border:1px solid var(--line2)!important;color:var(--ink2)!important;font-size:15px!important;font-weight:600!important;min-height:42px!important;padding:0 14px!important;border-radius:10px!important}
+.gbtn:hover{background:#F5F8FC!important;color:var(--brand)!important;border-color:#CFD8E5!important}
+
+/* ===== 按钮 ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 18px;border-radius:10px;font-size:15px;font-weight:600;background:var(--brand);color:#fff;transition:background .15s,box-shadow .15s;box-shadow:none;border:1px solid transparent;letter-spacing:.1px}
+.btn:hover{background:var(--brand2)}
+.btn:active{transform:translateY(.5px)}
 .btn.primary{background:var(--grad);color:#fff}
-.btn.ghost{background:#fff;color:var(--ink2);border:1px solid #CBD5E1;box-shadow:none}
-.btn.plain{background:transparent;color:#2F6FAD;min-height:36px;padding:4px 8px;font-weight:700;box-shadow:none}
-.btn.danger{background:#FCEFED;color:#C04444;box-shadow:none}
-.btn.sm{min-height:36px;height:36px;padding:0 14px;font-size:13px;border-radius:8px;box-shadow:none;box-sizing:border-box}
-.btn.block{width:100%}
-.btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;filter:none}
+.btn.ghost{background:#fff;color:var(--ink2);border:1px solid var(--line2)}
+.btn.ghost:hover{background:#F7F9FC;color:var(--ink);border-color:#CFD8E5}
+.btn.plain{background:transparent;color:var(--muted);border:none;min-height:30px;padding:3px 6px;font-weight:600;font-size:15px}
+.btn.plain:hover{background:#F4F6FA;color:var(--brand)}
+.btn.danger{background:#fff;color:#B44A4A;border:1px solid #F0DCDC}
+.btn.danger:hover{background:#FDF4F4;color:#9E3B3B}
+.btn.sm{min-height:34px;height:34px;padding:0 13px;font-size:15px;border-radius:8px;box-sizing:border-box}
+.btn.block{width:auto;min-width:170px;padding:0 28px}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
 
 /* ===== 看板 ===== */
-.board-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-@media(min-width:768px){.board-grid{grid-template-columns:repeat(4,1fr)}}
-.bcard{text-align:center;padding:20px 14px 16px}
-.bcard .ring{display:block;margin:0 auto}
-.bname{font-size:16px;font-weight:600;margin-top:10px;letter-spacing:.2px}
-.bstats{font-size:12px;color:var(--muted);margin-top:4px}
-.bchip{margin-top:10px;display:inline-block}
-.chart-card h3{font-size:22px;margin-bottom:12px}
+/* 各科目进度：环形图 */
+.bring-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(154px,1fr));gap:6px 4px;margin-top:4px}
+.bring{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 6px 12px;min-width:0}
+.rng{position:relative;width:96px;height:96px;flex:none}
+.rng svg{width:96px;height:96px;display:block}
+.rng-v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.4px}
+.bring .rname{font-size:15px;font-weight:700;line-height:1.35;color:var(--ink);margin-top:10px;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:22px;letter-spacing:-.1px}
+.bring .rmeta{font-size:14px;color:var(--muted);margin-top:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bring .robs{font-size:14px;color:#B45309;margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:640px){
+  .bring-grid{grid-template-columns:repeat(2,1fr);gap:2px}
+  .bring{padding:8px 4px 10px}
+  .rng,.rng svg{width:84px;height:84px}
+  .rng-v{font-size:17px}
+  .bring .rname{font-size:14px;min-height:20px}
+  .bring .rmeta,.bring .robs{font-size:13px}
+}
+.chart-card h3{font-size:22px;margin-bottom:14px}
 .chart{width:100%;height:auto;display:block;margin-top:4px}
-.legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:12px}
-.legend span{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:600}
-.legend i{width:10px;height:10px;border-radius:4px;flex:none}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:15px;color:var(--muted);font-weight:500}
+.legend i{width:9px;height:9px;border-radius:2px;flex:none}
+
+
+/* 14 天柱状图（HTML 绘制，字号不随宽度缩放） */
+.c14{display:grid;grid-template-columns:46px 1fr;column-gap:12px;margin-top:26px}
+.c14-y{position:relative;height:280px}
+.c14-y span{position:absolute;right:0;transform:translateY(50%);font-size:14px;color:#7A8699;font-variant-numeric:tabular-nums;line-height:1}
+.c14-plot{position:relative;height:280px;border-bottom:1px solid #D8E0EC}
+.c14-line{position:absolute;left:0;right:0;border-top:1px solid #EFF3F9}
+.c14-cols{position:absolute;inset:0;display:flex;align-items:flex-end}
+.c14-col{flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;position:relative;min-width:0}
+.c14-col::before{content:"";position:absolute;left:18%;right:18%;top:0;bottom:0;background:#F8FAFD;border-radius:5px}
+.c14-bar{position:relative;width:64%;height:100%;display:flex;flex-direction:column-reverse;z-index:1}
+.c14-bar i{display:block;width:100%;flex:0 0 auto;min-height:2px}
+.c14-bar i:first-child{border-radius:0 0 5px 5px}
+.c14-bar i:last-child{border-radius:5px 5px 0 0}
+.c14-bar i:only-child{border-radius:5px}
+.c14-x{grid-column:2;display:flex;margin-top:9px}
+.c14-x span{flex:1;min-width:0;text-align:center;font-size:14px;color:#7A8699;font-variant-numeric:tabular-nums;white-space:nowrap}
+.c14-x span.on{color:#1D4ED8;font-weight:700}
+@media(max-width:1200px){.c14-x span{font-size:13px}}
+.c14-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:#94A3B8;pointer-events:none}
+.c14-m .c14-y,.c14-m .c14-plot{height:240px}
+.c14-m .c14-y span{font-size:14px}
+.c14-m .c14-x span{font-size:12px}
+.c14-m{grid-template-columns:38px 1fr;column-gap:8px}
+.c14-m .c14-bar{width:58%}
 
 /* ===== 周报 ===== */
-.weekhead{font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:6px;letter-spacing:.3px}
-.wrow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px dashed #CBD5E1}
+.weekhead{font-size:15px;color:var(--muted);font-weight:600;margin-bottom:6px;letter-spacing:.4px}
+.wrow{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
 .wrow:last-child{border-bottom:none}
-.wrow .gdot{width:9px;height:9px;border-radius:3px;flex:none}
-.wrow .wn{flex:1;min-width:0;font-size:13.5px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wrow .wv{font-size:12.5px;color:var(--muted);white-space:nowrap}
-.wrow .wv b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
-.delta{font-size:12px;font-weight:600;white-space:nowrap;min-width:54px;text-align:right;font-variant-numeric:tabular-nums}
-.delta.up{color:var(--brand-ink)}
-.delta.down{color:#C04444}
+.wrow .gdot{width:8px;height:8px;border-radius:2px;flex:none}
+.wrow .wn{flex:1;min-width:0;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wrow .wv{font-size:15px;color:var(--muted);white-space:nowrap}
+.wrow .wv b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.delta{font-size:14px;font-weight:600;white-space:nowrap;min-width:54px;text-align:right;font-variant-numeric:tabular-nums}
+.delta.up{color:#2E7D52}
+.delta.down{color:#B44A4A}
 .delta.flat{color:var(--muted)}
 .four{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
-.week-compare{display:flex;gap:16px;align-items:center;padding:10px 14px;background:#F8FAFC;border-radius:8px;font-size:13px;color:var(--ink2);margin:12px 0}
-.week-compare b{color:var(--brand-ink);font-weight:600}
+.week-compare{display:flex;gap:16px;align-items:center;padding:12px 16px;background:#F8FAFC;border:1px solid var(--line-soft);border-radius:8px;font-size:15px;color:var(--ink2);margin:14px 0 0}
+.week-compare b{color:var(--ink);font-weight:700}
 .week-compare .dim{color:var(--muted)}
 .week-compare .delta{margin-left:auto}
-.fcell{background:#fff;border:1px solid #CBD5E1;border-radius:8px;padding:12px 14px}
-.fcell .k{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.3px}
-.fcell .v{font-size:24px;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums;line-height:1.1}
-.fcell .v small{font-size:12px;font-weight:600;color:var(--muted);margin-left:2px}
-.fcell .v.small{font-size:14px;line-height:1.55;font-weight:600}
-.weekout{width:100%;min-height:132px;border:1px solid #CBD5E1;border-radius:13px;padding:11px 13px;background:#FBFDFC;resize:vertical;font-size:14px;line-height:1.65;font-family:inherit}
+.fcell{background:#F8FAFC;border:1px solid var(--line-soft);border-radius:8px;padding:14px 16px}
+.fcell .k{font-size:15px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+.fcell .v{font-size:26px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums;line-height:1.2;letter-spacing:-.5px}
+.fcell .v small{font-size:14px;font-weight:600;color:var(--muted);margin-left:3px;letter-spacing:0}
+.fcell .v.small{font-size:14px;line-height:1.55;font-weight:600;letter-spacing:0}
+.weekout{width:100%;min-height:132px;border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#fff;resize:vertical;font-size:15px;line-height:1.75;font-family:inherit}
 
 /* ===== 我的 ===== */
-.setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px dashed #CBD5E1}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
 .setrow:last-of-type{border-bottom:none}
-.setrow .sk{font-size:14.5px;font-weight:700}
-.setrow .sd{font-size:13px;color:var(--muted);margin-top:2px}
-.setrow select{border:1px solid #CBD5E1;border-radius:11px;padding:9px 12px;background:#FBFDFC;min-height:42px;font-weight:600}
-.glist .gitem{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px dashed #CBD5E1}
-.gitem .gdot{width:11px;height:11px;border-radius:4px;flex:none}
+.setrow .sk{font-size:15px;font-weight:600}
+.setrow .sd{font-size:15px;color:var(--muted);margin-top:2px}
+.setrow select{border:1px solid var(--line);border-radius:8px;padding:0 12px;background:#fff;min-height:38px;font-weight:500;font-size:15px}
+.glist .gitem{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line-soft)}
+.glist .gitem:last-child{border-bottom:none}
+.glist .gitem .btn{flex:none;white-space:nowrap}
+.gitem .gdot{width:9px;height:9px;border-radius:3px;flex:none}
 .gitem .ginfo{flex:1;min-width:0}
-.gitem .ginfo .gn{font-size:14.5px;font-weight:700}
-.gitem .ginfo .gm{font-size:12.5px;color:var(--muted);margin-top:2px}
-.data-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.note{font-size:13.5px;color:var(--muted);line-height:1.7}
-.note b{color:var(--ink)}
-textarea.sent{width:100%;border:1px solid #CBD5E1;border-radius:13px;padding:11px 13px;background:#FBFDFC;resize:vertical;min-height:76px}
-/* Obsidian 同步 */
-.obs-body{display:flex;flex-direction:column;gap:10px}
-.obs-status{font-size:15px;line-height:1.6;border-radius:6px;padding:8px 12px;margin:8px 0}
-.obs-status.on{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
-.obs-status.on b{color:#15803D}
-.obs-status.off{background:#F8FAFC;border:1px dashed #CBD5E1;color:var(--muted)}
-.obs-ts{display:block;font-size:11.5px;color:var(--muted);margin-top:11px}
+.gitem .ginfo .gn{font-size:16px;font-weight:700;letter-spacing:-.1px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gitem.kb .ginfo .gn{font-size:17px;letter-spacing:-.1px;gap:9px}
+.gitem.kb .ginfo .gm{font-size:15px;margin-top:4px}
+.mode-tag{font-size:15px;font-weight:600;color:var(--ink2);background:#EEF2F7;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.gitem .ginfo .gm{font-size:15px;color:var(--ink2);margin-top:5px;line-height:1.6}
+.data-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.data-acts .btn{background:#fff;border:1px solid var(--line2);border-radius:9px;color:var(--ink2);font-size:15px;font-weight:600;min-height:36px;padding:0 14px}
+.data-acts .btn:hover{background:#F6F9FD;color:var(--brand);border-color:#CFD8E5}
+.data-acts .btn.danger{color:#B44A4A;border-color:#F0D6D6}
+.data-acts .btn.danger:hover{background:#FDF4F4;color:#9E3B3B;border-color:#E7C3C3}
+.data-note{font-size:15px;line-height:1.75;color:var(--muted);text-align:left;margin-top:12px}
+.data-note b{font-weight:400;color:var(--muted)}
+.note{font-size:15px;color:var(--muted);line-height:1.75}
+.note b{color:var(--ink2);font-weight:600}
+textarea.sent{width:100%;border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#fff;resize:vertical;min-height:76px}
+.obs-body{display:flex;flex-direction:column;gap:6px}
+.obs-status{font-size:15px;line-height:1.65;border-radius:9px;padding:10px 13px;margin:0}
+.obs-status.on{background:#DCFCE7;border:1px solid #BBF7D0;color:#15803D}
+.obs-status.on b{color:#166534}
+.obs-status.off{background:#F8FAFC;border:1px solid var(--line-soft);color:var(--ink2)}
+.obs-ts{display:block;font-size:15px;color:var(--muted);margin-top:11px}
 .obs-acts{display:flex;gap:8px;flex-wrap:wrap}
-.obs-counts{font-size:15px;color:var(--brand-ink);font-weight:700;margin-top:8px}
+.obs-perm{margin-top:2px;margin-bottom:2px}
+.obs-counts{font-size:14px;color:var(--ink);font-weight:700;margin-top:8px}
 
 /* ===== 弹窗 / 提示 ===== */
-.modal-wrap{position:fixed;inset:0;z-index:50;background:rgba(18,42,35,.45);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+.modal-wrap{position:fixed;inset:0;z-index:50;background:rgba(21,26,35,.42);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
 @media(min-width:768px){.modal-wrap{align-items:center}}
-.modal{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:520px;max-height:88vh;overflow:auto;padding:22px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:var(--shadow-md)}
-@media(min-width:768px){.modal{border-radius:24px}}
-.modal h3{font-size:16.5px;font-weight:600;margin-bottom:16px}
+.modal{background:#fff;border-radius:22px 22px 0 0;width:100%;max-width:520px;max-height:88vh;overflow:auto;padding:24px 22px calc(22px + env(safe-area-inset-bottom));box-shadow:0 24px 60px -16px rgba(15,23,42,.35)}
+@media(min-width:768px){.modal{border-radius:20px}}
+.modal h3{font-size:19px;font-weight:700;margin-bottom:18px;letter-spacing:-.2px}
 .mfield{margin-bottom:14px}
-.mfield label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:700;letter-spacing:.3px}
-.mfield input,.mfield select,.mfield textarea{width:100%;border:1px solid #CBD5E1;border-radius:8px;padding:6px 10px;background:#fff;min-height:36px;font-size:14px;transition:border-color .15s,box-shadow .15s}
-.mfield input:focus,.mfield select:focus,.mfield textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(37,99,235,.14)}
+.mfield label{display:block;font-size:15px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.mfield input,.mfield select,.mfield textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:0 11px;background:#fff;min-height:42px;font-size:15px;transition:background .15s,border-color .15s,box-shadow .15s}
+.mfield textarea{padding:10px 11px;line-height:1.6}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{outline:none;background:#fff;border-color:var(--brand);box-shadow:0 0 0 3px rgba(43,108,230,.10)}
 .mfield textarea{resize:vertical;min-height:66px}
-.swatches{display:flex;gap:9px;flex-wrap:wrap}
-.sw{width:34px;height:34px;border-radius:11px;border:2px solid transparent;cursor:pointer;transition:transform .1s}
-.sw:hover{transform:scale(1.08)}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.sw{width:32px;height:32px;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:transform .1s}
+.sw:hover{transform:scale(1.06)}
 .sw.sel{border-color:var(--ink);box-shadow:0 0 0 2px #fff inset}
 .mrow{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
-.macts{display:flex;gap:10px;margin-top:18px}
+.macts{display:flex;gap:10px;margin-top:20px}
 .macts .btn{flex:1}
-.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:60;background:rgba(18,42,35,.92);color:#fff;font-size:14px;font-weight:600;padding:11px 20px;border-radius:14px;max-width:82vw;text-align:center;box-shadow:0 10px 28px rgba(0,0,0,.22);animation:toastIn .18s ease}
+.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:60;background:rgba(21,26,35,.93);color:#fff;font-size:14px;font-weight:500;padding:12px 20px;border-radius:12px;max-width:82vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.2);animation:toastIn .18s ease}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}
 @media(min-width:768px){.toast{bottom:40px}}
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
+
+/* ===== 科目 / 分组 ===== */
+.rv-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.rv-chip{font-size:14px;font-weight:600;color:var(--ink2);background:#EEF2F7;border-radius:6px;padding:3px 9px}
+.rv-chip b{font-weight:700;margin-left:2px;color:var(--ink)}
+.rv-group{margin-bottom:16px}
+.rv-gh{display:flex;align-items:baseline;gap:9px;padding:2px 0 9px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.rv-gh b{font-size:15px;font-weight:700;color:var(--ink)}
+.rv-gh span{font-size:14px;color:var(--muted)}
+
+/* 科目分组里的章节 */
+.cl-subj{margin-top:24px}
+.cl-subj:first-of-type{margin-top:6px}
+.cl-subjh{display:flex;align-items:center;gap:10px;padding:2px 0 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.cl-subjh b{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.cl-subjh .tot{font-size:15px;color:var(--muted);font-weight:500}
+.cl-tally{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap}
+.cl-tally i{font-style:normal;font-size:14px;font-weight:700;padding:4px 11px;border-radius:7px;color:#fff;white-space:nowrap;letter-spacing:.2px}
+
+/* 周报复盘统计 */
+.rw-chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.rw-chip{font-size:14px;font-weight:600;color:var(--ink2);background:#EEF2F7;border-radius:99px;padding:4px 10px}
+.rw-chip b{font-weight:700;margin-left:3px;color:var(--ink)}
+.rw-list{margin-top:10px;border-top:1px solid var(--line)}
+.rw-row{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:14px}
+.rw-row b{color:var(--ink);font-weight:600;flex:none}
+.rw-row span{color:var(--muted);font-size:14px}
+
+/* 科目小圆点 */
+.kdot{width:8px;height:8px;border-radius:2px;background:var(--brand);flex:none}
+
+/* 标题右侧操作 */
+.hact{margin-left:auto;font-size:15px;font-weight:600;color:var(--brand);background:#EDF3FE;border:none;border-radius:8px;padding:7px 13px;white-space:nowrap;transition:background .15s}
+.hact:hover{background:#E1ECFD}
+@media(max-width:640px){.hact{padding:6px 10px;font-size:15px}}
+
+/* 周报概览表格 */
+.wk-tbl{width:100%;border-collapse:collapse;font-size:17px}
+.wk-tbl th:nth-child(4),.wk-tbl td:nth-child(4){text-align:right}
+.wk-tbl .wk-n span{white-space:nowrap}
+.wk-tbl td:nth-child(2),.wk-tbl td:nth-child(3){white-space:nowrap}
+.wk-tbl th{font-size:16px;font-weight:700;color:var(--ink2);text-align:left;padding:0 10px 12px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+.wk-tbl th.ta-r{text-align:right;padding-right:0}
+.wk-tbl td{padding:13px 10px 13px 0;border-bottom:1px solid #F2F5F9;vertical-align:middle}
+.wk-tbl tr:last-child td{border-bottom:none}
+.wk-tbl td:last-child{padding-right:0}
+.wk-tbl .wk-n{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--ink)}
+.wk-tbl .wk-n .gdot{width:8px;height:8px;border-radius:2px;flex:none}
+.wk-tbl b{color:var(--ink);font-weight:700;font-size:18px;font-variant-numeric:tabular-nums}
+.wk-tbl em{font-style:normal;color:var(--ink2);font-size:15px;margin-left:1px}
+.wk-tbl .wk-sub{display:block;font-size:15px;color:var(--muted);margin-top:3px;white-space:nowrap}
+.wk-tbl .wk-prev{color:var(--muted)}
+.wk-tbl .wk-prev em{color:var(--muted)}
+@media(max-width:760px){
+  .wk-tbl{font-size:14px}
+  .wk-tbl th:nth-child(3),.wk-tbl td:nth-child(3){display:none}
+}
+@media(max-width:420px){
+  .wk-tbl th,.wk-tbl td{padding-right:6px}
+  .wk-tbl .wk-sub,.wk-tbl em{font-size:14px}
+}
+
+/* 四类投入：堆叠条 + 明细 */
+.tm-grid{grid-template-columns:1fr;gap:11px}
+@media(max-width:640px){
+  .tm-grid{grid-template-columns:1fr 1fr;gap:10px 14px}
+}
+
+
+/* 周报复盘四栏 */
+.rv-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 18px}
+.rv-cell .rlab{margin-top:8px}
+.wk-tbl .wk-sub{display:inline;margin-left:6px}
+@media(max-width:760px){.rv-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -365,6 +717,13 @@ textarea.sent{width:100%;border:1px solid #CBD5E1;border-radius:13px;padding:11p
 /* ================= 数据 ================= */
 var LS = "study-tracker-v1";
 var REC_TYPES = [["study", "学习"], ["review", "复习"], ["practice", "练习"], ["recite", "背诵"]];
+/* 台账目录：每个科目一个根目录，扫描里面所有含「#### 台账数据」的 md */
+var DEFAULT_ROOTS = [
+  { key: "math", name: "数学", path: "考研/数学/零基础通关讲义", mode: "four" },
+  { key: "cs",   name: "408",  path: "考研/408", mode: "two" },
+  { key: "pol",  name: "政治", path: "考研/政治", mode: "two" }
+];
+var MODE_LABEL = { four: "①②③④", two: "记得 / 没记住" };
 function typeName(t){
   for (var i = 0; i < REC_TYPES.length; i++) if (REC_TYPES[i][0] === t) return REC_TYPES[i][1];
   return "学习";
@@ -384,10 +743,26 @@ function defaultState(){
       {id:"g7", name:"408 · 计算机网络", unit:"轮", total:3, deadline:"2027-09-30", color:"#C77D5A", base:0, obsidian:"", obstacle:"", countermeasure:""}
     ],
     records: [],
+    kbRoots: JSON.parse(JSON.stringify(DEFAULT_ROOTS)),
+    rvLog: [],
+    /**
+     * 错题统计（待接入，先占位不改数据结构）
+     * ------------------------------------------------------------
+     * 计划挂在这里：state.mistakes = [{
+     *   id, goalId,           // 归属科目
+     *   subj, title, file,    // 学科 / 知识点 / 来源 md
+     *   q,                    // 本次复盘评级 0~3（四档）或 0~1（两档）
+     *   lv,                   // 折算后的掌握度 A/B/C，与复盘三档一致
+     *   date, ts,             // 出错日期
+     *   note                  // 错因（可选，手动补）
+     * }]
+     * 接入点：rvRate() 写 rvLog 的同一处 —— 一次评级同时喂给 SM-2 和错题本，不重复录入。
+     * 届时 normalize() 需补 mistakes 的字段过滤，并保持「字段只增不减」以兼容旧数据。
+     */
     obsidianCounts: {},
     obsidianInfo: { dir: "", ts: 0, supported: false },
     settings: {
-      restWeekday: 7, leaveDays: [],
+      leaveDays: [],
       sentenceBank: [
         "道阻且长，行则将至；行而不辍，未来可期。",
         "种一棵树最好的时间是十年前，其次是现在。",
@@ -407,12 +782,15 @@ function defaultState(){
 function normalize(s){
   var d = defaultState();
   s.settings = Object.assign({}, d.settings, s.settings || {});
+  s.settings.leaveDays = (Array.isArray(s.settings.leaveDays) ? s.settings.leaveDays : [])
+    .map(function(l){ return { date: normDate(l && l.date), note: String((l && l.note) || "") }; })
+    .filter(function(l){ return l.date; });
   s.dismissed = s.dismissed && typeof s.dismissed === "object" ? s.dismissed : {};
   s.goals = (Array.isArray(s.goals) ? s.goals : []).filter(function(g){ return g && g.id && g.name && g.total != null && g.deadline; })
     .map(function(g){
       return { id: String(g.id), name: String(g.name), unit: String(g.unit || "次"), total: +g.total || 0,
         deadline: String(g.deadline), color: g.color || d.goals[0].color,
-        base: +g.base || 0,
+        base: +g.base || 0, archived: !!g.archived,
         obsidian: (g.obsidian === "math-notes" || g.obsidian === "sentence" || /^dir:/.test(g.obsidian) || /^tbl:/.test(g.obsidian)) ? g.obsidian : "",
         obstacle: String(g.obstacle || ""), countermeasure: String(g.countermeasure || "") };
     });
@@ -422,8 +800,16 @@ function normalize(s){
     var t = String(r.type || "study");
     var okT = REC_TYPES.some(function(x){ return x[0] === t; });
     return { id: String(r.id || uid()), goalId: String(r.goalId), date: String(r.date), amount: +r.amount,
-      minutes: +r.minutes || 0, backfill: !!r.backfill, type: okT ? t : "study", ts: r.ts || 0 };
+      minutes: +r.minutes || 0, backfill: !!r.backfill, type: okT ? t : "study",
+      content: String(r.content || "").slice(0, 60), ts: r.ts || 0 };
   });
+  s.kbRoots = (Array.isArray(s.kbRoots) && s.kbRoots.length ? s.kbRoots : JSON.parse(JSON.stringify(DEFAULT_ROOTS)))
+    .filter(function(r){ return r && r.path; })
+    .map(function(r){
+      return { key: String(r.key || uid()), name: String(r.name || "科目"),
+        path: String(r.path).replace(/^\/+|\/+$/g, ""), mode: r.mode === "two" ? "two" : "four" };
+    });
+  s.rvLog = (Array.isArray(s.rvLog) ? s.rvLog : []).filter(function(x){ return x && x.date; }).slice(-800);
   s.obsidianCounts = s.obsidianCounts && typeof s.obsidianCounts === "object" ? s.obsidianCounts : {};
   s.obsidianInfo = s.obsidianInfo && typeof s.obsidianInfo === "object"
     ? Object.assign({ dir: "", ts: 0, supported: false, examDate: "", mathChapters: [], sentenceLast: "", reviewToday: 0, reviewOverdue: 0 }, s.obsidianInfo)
@@ -487,6 +873,94 @@ function descend(root, parts){
   }
   return root.getDirectoryHandle(head).then(function(h){ return descend(h, rest); });
 }
+var SKIP_DIRS = /^(images?|img|图片|assets|代码|code|\.obsidian|\.trash|附件)$/i;
+var CHAP_NAMES = { "01": "基本逻辑", "02": "解析式", "03": "方程与不等式", "04": "函数", "05": "数列", "06": "坐标系" };
+function walkMd(dirHandle, base, out, depth){
+  if (depth > 3) return Promise.resolve();
+  return Promise.resolve().then(async function(){
+    for await (const e of dirHandle.values()){
+      if (e.kind === "directory"){
+        if (SKIP_DIRS.test(e.name)) continue;
+        await walkMd(e, base + "/" + e.name, out, depth + 1);
+      } else if (/\.md$/.test(e.name)){
+        out.push({ dir: base, file: e.name, handle: e });
+      }
+    }
+  });
+}
+function parseLedger(txt){
+  var items = [];
+  if (txt.indexOf("#### 台账数据") < 0) return items;
+  // 先剥掉代码块，避免把 dataviewjs 脚本里的 title:: 当成条目
+  var zone = txt.split("#### 台账数据").pop().replace(/```[\s\S]*?```/g, "");
+  var blocks = zone.split(/\n\s*\n/);
+  blocks.forEach(function(b){
+    // 一条记录的第一行必须是 title::，别的字段打头的一律不算
+    if (!/^[ \t]*title::/m.test(b.replace(/^\s*\n/, ""))) return;
+    function field(name){
+      var m = new RegExp(name + "::\\s*(.+)").exec(b);
+      return m ? m[1].trim() : "";
+    }
+    var iv = parseFloat(field("interval"));
+    if (!(iv >= 1)) iv = ({ C: 2, B: 4, A: 15 })[String(field("level")).toUpperCase()] || 2;
+    var last = field("last_review") || field("study_date");
+    items.push({
+      title: field("title"), point: field("point"), study: field("study_date"),
+      times: parseInt(field("times")) || 0, last: last,
+      next: last ? toKey(addDays(fromKey(last), iv)) : "",
+      lv: iv >= 15 ? "A" : (iv >= 4 ? "B" : "C"),
+      iv: iv, ef: parseFloat(field("ef")) || 2.5
+    });
+  });
+  return items;
+}
+function scanRoot(dirHandle, cfg){
+  return Promise.resolve().then(async function(){
+    var files = [];
+    await walkMd(dirHandle, cfg.path, files, 0);
+    var tk = todayKey(), weekEnd = toKey(addDays(fromKey(tk), 7));
+    var groups = {};
+    for (var i = 0; i < files.length; i++){
+      var f = files[i];
+      var txt = await f.handle.getFile().then(function(x){ return x.text(); });
+      var items = parseLedger(txt);
+      if (!items.length) continue;
+      var gno, gname;
+      if (cfg.mode === "four" && /^\d{2}-/.test(f.file)){
+        gno = f.file.slice(0, 2);
+        gname = CHAP_NAMES[gno] || f.file.replace(/^\d{2}-/, "").replace(/-\d{4}-\d{1,2}-\d{1,2}\.md$/, "");
+      } else {
+        var sub = f.dir.slice(cfg.path.length).replace(/^\//, "");
+        gno = sub || cfg.name;
+        gname = f.file.replace(/\.md$/, "").replace(/-\d{4}-\d{1,2}-\d{1,2}$/, "");
+      }
+      var gk = gno + "|" + gname;
+      if (!groups[gk] || cfg.mode === "four"){
+        groups[gk] = groups[gk] || { no: gno, name: gname, total: 0, A: 0, B: 0, C: 0, dueToday: 0, dueWeek: 0, items: [] };
+      }
+      var g = groups[gk];
+      items.forEach(function(it){
+        it.file = f.file; it.dir = f.dir; it.group = g.name;
+        g.total++; g[it.lv]++;
+        if (it.next && it.next <= tk) g.dueToday++;
+        else if (it.next && it.next <= weekEnd) g.dueWeek++;
+        g.items.push(it);
+      });
+    }
+    var sub2 = { key: cfg.key, name: cfg.name, mode: cfg.mode, dir: cfg.path,
+      groups: Object.keys(groups).map(function(k){ return groups[k]; }),
+      total: 0, A: 0, B: 0, C: 0, dueToday: 0, dueWeek: 0 };
+    sub2.groups.sort(function(a, b){
+      return String(a.no).localeCompare(String(b.no), "zh", { numeric: true }) || String(a.name).localeCompare(String(b.name), "zh", { numeric: true });
+    });
+    sub2.groups.forEach(function(g){
+      sub2.total += g.total; sub2.A += g.A; sub2.B += g.B; sub2.C += g.C;
+      sub2.dueToday += g.dueToday; sub2.dueWeek += g.dueWeek;
+      g.items.sort(function(a, b){ return String(a.title).localeCompare(String(b.title), "zh", { numeric: true }); });
+    });
+    return sub2;
+  });
+}
 function countMathNotes(dir){
   return Promise.resolve().then(async function(){
     return ["00"];
@@ -511,8 +985,26 @@ function readExamDate(dir){
     .catch(function(){ return ""; });
 }
 function hasObsidian(k){ return !!k; }
+var vaultPerm = "", vaultPermW = "";
+function obsGrant(){
+  return idbGet("vault").then(function(handle){
+    if (!handle) throw new Error("还没连接文件夹");
+    return handle.requestPermission({ mode: "readwrite" });
+  }).then(function(p){
+    vaultPermW = p;
+    if (p !== "granted") throw new Error("你选了「不允许」，写回会失败");
+    return readObsidianThen();
+  }).then(function(){ toast("已授权，现在可以写回台账了"); })
+  .catch(function(e){ toast(e && e.message ? e.message : "授权失败"); });
+}
+function readObsidianThen(){
+  return idbGet("vault").then(function(handle){
+    if (!handle) return;
+    return readObsidian(handle).then(function(res){ applyObsidian(res.counts, res.info, handle.name); });
+  });
+}
 function readObsidian(root){
-  var counts = {}, info = { examDate: "", mathChapters: [], sentenceLast: "", reviewToday: 0, reviewDue: 0 };
+  var counts = {}, info = { examDate: "", mathChapters: [], sentenceLast: "", reviewToday: 0, reviewDue: 0, subjectLoop: [] };
   var jobs = [];
   state.goals.forEach(function(g){
     if (!g.obsidian) return;
@@ -553,49 +1045,28 @@ function readObsidian(root){
       });
       info.reviewToday = todayDue; info.reviewOverdue = overdue;
     }).catch(function(){ info.reviewToday = 0; info.reviewOverdue = 0; }));
-  // 遍历所有 0X-*.md 章节，读台账数据，聚合成章节闭环视图
-  jobs.push(descend(root, ["考研", "数学", "零基础通关讲义"])
-    .then(function(dir){
-      var CHAP_NAMES = { "01":"基本逻辑", "02":"解析式", "03":"方程与不等式", "04":"函数", "05":"数列", "06":"坐标系" };
-      var chapMap = {};
-      return Promise.resolve().then(async function(){
-        var entries = [];
-        for await (const e of dir.values()) entries.push(e);
-        var fileEntries = entries.filter(function(e){ return e.kind === "file" && /^\d{2}-.*\.md$/.test(e.name); });
-        for (var fi = 0; fi < fileEntries.length; fi++){
-          var e = fileEntries[fi];
-          var txt = await e.getFile().then(function(f){ return f.text(); });
-          var no = e.name.slice(0, 2);
-          if (!chapMap[no]) chapMap[no] = { no: no, name: CHAP_NAMES[no] || "", total: 0, A: 0, B: 0, C: 0, dueToday: 0, dueWeek: 0, items: [] };
-            var today = todayKey();
-            var weekEnd = toKey(addDays(fromKey(today), 7));
-            var blocks = txt.split("#### 台账数据").pop().split(/\n\s*\n/);
-            blocks.forEach(function(b){
-              if (!/title::/.test(b)) return;
-              function field(name){
-                var m = new RegExp(name + "::\\s*(.+)").exec(b);
-                return m ? m[1].trim() : "";
-              }
-              var iv = parseFloat(field("interval"));
-              if (!(iv >= 1)) iv = ({ C: 2, B: 4, A: 15 })[field("level").toUpperCase()] || 2;
-              var lv = iv >= 15 ? "A" : (iv >= 4 ? "B" : "C");
-              var last = field("last_review") || field("study_date");
-              var next = last ? toKey(addDays(fromKey(last), iv)) : "";
-              chapMap[no].total++;
-              chapMap[no][lv]++;
-              if (next <= today) chapMap[no].dueToday++;
-              else if (next <= weekEnd) chapMap[no].dueWeek++;
-              chapMap[no].items.push({
-                title: field("title"), point: field("point"),
-                study: field("study_date"), times: parseInt(field("times")) || 0,
-                last: last, next: next, lv: lv
-              });
-            });
-        }
-      }).then(function(){
-        info.chapterLoop = Object.keys(chapMap).sort().map(function(k){ return chapMap[k]; });
+  // 按科目扫台账：每个根目录递归找含「#### 台账数据」的 md
+  jobs.push(Promise.all(state.kbRoots.map(function(cfg){
+    return descend(root, cfg.path.split("/")).then(function(dir){ return scanRoot(dir, cfg); })
+      .catch(function(e){
+        console.warn("root:", cfg.path, e);
+        return { key: cfg.key, name: cfg.name, mode: cfg.mode, dir: cfg.path, groups: [],
+          total: 0, A: 0, B: 0, C: 0, dueToday: 0, dueWeek: 0, missing: true };
       });
-    }).catch(function(){ info.chapterLoop = []; }));
+  })).then(function(list){
+    info.subjectLoop = list;
+    var due = 0, over = 0, tk = todayKey();
+    list.forEach(function(sub){
+      (sub.groups || []).forEach(function(g){
+        (g.items || []).forEach(function(it){
+          if (!it.next || it.next > tk) return;
+          due++;
+          if (it.next < tk) over++;
+        });
+      });
+    });
+    if (due || over){ info.reviewToday = due; info.reviewOverdue = over; }
+  }));
   return Promise.all(jobs).then(function(){ return { counts: counts, info: info }; });
 }
 function applyObsidian(counts, info, dirName){
@@ -608,7 +1079,7 @@ function applyObsidian(counts, info, dirName){
     sentenceLast: (info && info.sentenceLast) || oi.sentenceLast || "",
     reviewToday: (info && info.reviewToday != null) ? info.reviewToday : (oi.reviewToday || 0),
     reviewOverdue: (info && info.reviewOverdue != null) ? info.reviewOverdue : (oi.reviewOverdue || 0),
-    chapterLoop: (info && info.chapterLoop) ? info.chapterLoop : (oi.chapterLoop || [])
+    subjectLoop: (info && info.subjectLoop && info.subjectLoop.length) ? info.subjectLoop : (oi.subjectLoop || [])
   };
   save(); render();
 }
@@ -623,7 +1094,10 @@ function obsConnect(){
           return readObsidian(handle);
         });
       });
-    }).then(function(res){ applyObsidian(res.counts, res.info, handle.name); toast("Obsidian 已连接并同步"); });
+    }).then(function(res){ applyObsidian(res.counts, res.info, handle.name); toast("Obsidian 已连接并同步"); })
+      .then(function(){
+        return handle.queryPermission({ mode: "readwrite" }).then(function(w){ vaultPermW = w; renderMine(); }).catch(function(){});
+      });
   }).catch(function(e){
     if (e && e.name === "AbortError") return;
     console.error("obsConnect error:", e);
@@ -656,8 +1130,13 @@ function obsInit(){
   idbGet("vault").then(function(handle){
     if (!handle) return;
     return handle.queryPermission({ mode: "read" }).then(function(st){
-      if (st !== "granted") return;
-      return readObsidian(handle).then(function(counts){ applyObsidian(counts, handle.name); });
+      vaultPerm = st;
+      return handle.queryPermission({ mode: "readwrite" });
+    }).then(function(w){
+      vaultPermW = w;
+      renderMine();
+      if (vaultPerm !== "granted") return;
+      return readObsidian(handle).then(function(res){ applyObsidian(res.counts, res.info, handle.name); });
     });
   }).catch(function(){});
 }
@@ -680,7 +1159,7 @@ function recsOn(gid, k){ return state.records.filter(function(r){ return r.goalI
 function amountOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + r.amount; }, 0); }
 function minutesOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + (r.minutes || 0); }, 0); }
 function autoCount(g){ if (!g.obsidian) return 0; return (state.obsidianCounts && state.obsidianCounts[g.obsidian]) || 0; }
-function doneTotal(g){ return (+g.base || 0) + state.records.reduce(function(s, r){ return r.goalId === g.id && r.tt === "学" ? s + r.amount : s; }, 0) + autoCount(g); }
+function doneTotal(g){ return (+g.base || 0) + state.records.reduce(function(s, r){ return r.goalId === g.id && r.type === "study" ? s + r.amount : s; }, 0) + autoCount(g); }
 function remaining(g){ return Math.max(0, (+g.total || 0) - doneTotal(g)); }
 function daysLeft(g){ var t = fromKey(todayKey()), dl = fromKey(g.deadline); return Math.round((dl - t) / 86400000) + 1; }
 function suggest(g){
@@ -704,12 +1183,13 @@ function eta(g){
   return toKey(addDays(fromKey(todayKey()), Math.ceil(rem / p)));
 }
 function streak(g){
-  var rest = state.settings.restWeekday;
+  var lv = leaveDates();
   var d = fromKey(todayKey()), n = 0, miss = 0;
   for (var i = 0; i < 400; i++){
     var k = toKey(d);
     if (amountOn(g.id, k) > 0) { n++; miss = 0; }
-    else if (weekdayCN(d) !== rest) { miss++; if (miss >= 2) break; }
+    else if (lv.indexOf(k) >= 0) { miss = 0; }
+    else { miss++; if (miss >= 2) break; }
     d = addDays(d, -1);
   }
   return n;
@@ -721,14 +1201,13 @@ function missInfo(g){
   if (state.dismissed && state.dismissed[g.id] === todayKey()) return null;
   var y = addDays(fromKey(todayKey()), -1), yk = toKey(y);
   if (amountOn(g.id, yk) > 0) return null;
-  if (weekdayCN(y) === state.settings.restWeekday) return { type: "rest", days: 0 };
-  var leaveDays = (state.settings.leaveDays || []).map(function(l){ return l.date; });
+  var leaveDays = leaveDates();
   if (leaveDays.indexOf(yk) >= 0) return { type: "leave", days: 0 };
   var miss = 0, d = y;
   for (var i = 0; i < 60; i++){
     var k = toKey(d);
     if (amountOn(g.id, k) > 0) break;
-    if (weekdayCN(d) !== state.settings.restWeekday && leaveDays.indexOf(k) < 0) miss++;
+    if (leaveDays.indexOf(k) < 0) miss++;
     d = addDays(d, -1);
   }
   if (miss <= 1) return { type: "grace", days: 1 };
@@ -802,81 +1281,409 @@ function confirmBox(msg, cb){
 }
 function weekdayName(d){ return "周" + "一二三四五六日".charAt(weekdayCN(d) - 1); }
 
+/* ================= 今日复盘：评级并写回台账 ================= */
+var rvOpen = true;
+var rvBusy = false;
+var RV_RATINGS = [
+  { q: 2, n: "①", s: "不会", t: "完全不会", d: "间隔归 1 天，难度大降" },
+  { q: 3, n: "②", s: "提示", t: "提示才会", d: "难度小降" },
+  { q: 4, n: "③", s: "吃力", t: "做对但吃力", d: "难度不变" },
+  { q: 5, n: "④", s: "流畅", t: "流畅做对", d: "难度上升" }
+];
+var RV_TWO = [
+  { q: 4, n: "记得", t: "记得", d: "间隔按 1 → 3 → 7 天往后推" },
+  { q: 1, n: "没记住", t: "没记住", d: "归 1 天，明天再来" }
+];
+function subjectLoop(){ return (state.obsidianInfo && state.obsidianInfo.subjectLoop) || []; }
+function reviewItems(){
+  var tk = todayKey(), out = [];
+  subjectLoop().forEach(function(sub){
+    (sub.groups || []).forEach(function(g){
+      (g.items || []).forEach(function(it){
+        if (!it.next || it.next > tk) return;
+        out.push({
+          title: it.title, point: it.point, file: it.file || "", chap: g.no,
+          dir: it.dir || sub.dir, subj: sub.key, subjName: sub.name, mode: sub.mode || "four", group: g.name,
+          iv: it.iv || 2, ef: it.ef || 2.5, times: it.times || 0, next: it.next,
+          late: Math.max(0, Math.round((fromKey(tk) - fromKey(it.next)) / 86400000))
+        });
+      });
+    });
+  });
+  out.sort(function(a, b){ return b.late - a.late || String(a.title).localeCompare(String(b.title), "zh", { numeric: true }); });
+  return out;
+}
+function rvList(q){
+  var limit = 20;
+  var shown = q.slice(0, limit);
+  var order = [], bySubj = {};
+  shown.forEach(function(it){
+    if (!bySubj[it.subjName]){ bySubj[it.subjName] = []; order.push(it.subjName); }
+    bySubj[it.subjName].push(it);
+  });
+  var body = order.map(function(name){
+    var list = bySubj[name], two = list[0].mode === "two";
+    var chapNames = [], chapCount = {};
+    list.forEach(function(it){
+      var c = it.group || ("第 " + it.chap + " 章");
+      if (!chapCount[c]){ chapCount[c] = 0; chapNames.push(c); }
+      chapCount[c]++;
+    });
+    var chapTxt = chapNames.map(function(c){ return esc(c) + ' ' + chapCount[c] + ' 条'; }).join(' · ');
+    var rows = list.map(function(it){
+      var defs = two ? RV_TWO : RV_RATINGS;
+      var btns = defs.map(function(r){
+        return '<button class="q' + r.q + (two ? " wide" : "") + '" data-act="rv-rate" data-file="' + esc(it.file) +
+          '" data-title="' + esc(it.title) + '" data-q="' + r.q + '" data-mode="' + (two ? "two" : "four") +
+          '" title="' + r.t + "：" + r.d + '">' + r.n + (two ? "" : '<span>' + r.s + '</span>') + '</button>';
+      }).join("");
+      return '<div class="rv-item"><div class="rv-it-main">' +
+        '<div class="rv-it-t">' + esc(it.title) + (it.point ? '<em>' + esc(it.point) + '</em>' : "") + '</div>' +
+        '<div class="rv-it-m">' +
+        '<span>已复习 <b>' + it.times + '</b> 次</span>' +
+        '<span>上次间隔 ' + it.iv + ' 天</span>' +
+        (it.late ? '<span class="late">逾期 ' + it.late + ' 天</span>' : '<span>今天到期</span>') +
+        '</div></div><div class="rv-q">' + btns + '</div></div>';
+    }).join("");
+    return '<div class="rv-group"><div class="rv-gh"><b>' + esc(name) + '</b>' +
+      '<span>· ' + chapTxt + (two ? " · 记得 / 没记住" : "") + '</span></div>' + rows + '</div>';
+  }).join("");
+  var legend = '<div class="rv-legend"><span class="rv-lg-k">按掌握程度点一个：</span>' +
+    RV_RATINGS.map(function(r){ return '<span class="rv-lg"><b>' + r.n + '</b>' + r.t + '</span>'; }).join("") + '</div>';
+  var foot = q.length > limit
+    ? '<div class="rv-note">今天共 ' + q.length + ' 条，先列前 ' + limit + ' 条。做完点「刷新」会接着往下排。</div>'
+    : '<div class="rv-note">点完只更新这条的复盘日期、下次间隔和复习次数，笔记正文一个字不动。</div>';
+  return '<div class="rv-list">' + (body ? legend : "") + (body || '<div class="rv-note">今天没有到期的条目。</div>') + foot + '</div>';
+}
+function escapeRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function findBlockRange(text, title){
+  // 用最后一次出现的位置，避免文档里别的代码块也写了这个标题
+  var zone = text.lastIndexOf("#### 台账数据");
+  if (zone < 0) return null;
+  var seg = text.slice(zone), parts = [], pos = 0;
+  while (true){
+    var m = seg.slice(pos).match(/\n[ \t]*\n/);
+    if (!m){ parts.push([pos, seg.length]); break; }
+    parts.push([pos, pos + m.index]);
+    pos = pos + m.index + m[0].length;
+  }
+  var re = new RegExp("^[ \\t]*title::[ \\t]*" + escapeRe(title) + "[ \\t]*$", "m");
+  for (var i = 0; i < parts.length; i++){
+    var chunk = seg.slice(parts[i][0], parts[i][1]);
+    if (re.test(chunk)) return { start: zone + parts[i][0], end: zone + parts[i][1], chunk: chunk };
+  }
+  return null;
+}
+function patchFields(chunk, fields){
+  var out = chunk;
+  Object.keys(fields).forEach(function(k){
+    var re = new RegExp("(^[ \\t]*" + k + "::[ \\t]*).*$", "m");
+    if (re.test(out)) out = out.replace(re, "$1" + fields[k]);
+    else out = out.replace(/\s+$/, "") + "\n" + k + ":: " + fields[k];
+  });
+  return out;
+}
+/* 积压压力：不依赖考试日期，用「到期占比」和「逾期占比」判断最近是不是拖了 */
+function backlogPressure(){
+  var worst = 0, dueAll = 0, totalAll = 0;
+  subjectLoop().forEach(function(s){
+    var t = +s.total || 0, due = (+s.dueToday || 0) + (+s.dueWeek || 0);
+    totalAll += t; dueAll += due;
+    if (t >= 4) worst = Math.max(worst, due / t);
+  });
+  if (totalAll >= 4) worst = Math.max(worst, dueAll / totalAll);
+  var q = reviewItems();
+  if (q.length >= 4){
+    var od = 0;
+    q.forEach(function(x){ if (+x.late > 0) od++; });
+    worst = Math.max(worst, od / q.length);
+  }
+  return Math.min(1, worst);
+}
+function capDays(){
+  var n = examDays();
+  var base = (n == null) ? 30 : Math.max(1, Math.min(30, Math.round(0.15 * n)));
+  var p = backlogPressure();
+  if (p >= 0.6) return Math.max(5, Math.round(base * 0.4));
+  if (p >= 0.3) return Math.max(7, Math.round(base * 0.6));
+  return base;
+}
+function nextSchedule(iv, ef, times, q, late, mode){
+  ef = +ef || 2.5;
+  ef = ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
+  ef = Math.max(1.3, Math.min(2.8, Math.round(ef * 100) / 100));
+  var ni;
+  if (q <= 2) ni = 1;
+  else if (mode === "two"){
+    // 政治 / 408：前三次固定 1 / 3 / 7 天，之后才乘 EF，避免一次「记得」把间隔拉太狠
+    if (!times) ni = 1;
+    else if (times === 1) ni = 3;
+    else if (times === 2) ni = 7;
+    else ni = Math.round((+iv || 7) * ef * (late > 0 ? 1 + Math.min(0.3, late * 0.02) : 1));
+  }
+  else if (!times) ni = 1;
+  else if (times === 1) ni = 6;
+  else {
+    var bonus = 1;
+    if (late > 0 && q >= 4) bonus = 1 + Math.min(0.3, late * 0.02);
+    ni = Math.round((+iv || 1) * ef * bonus);
+  }
+  ni = Math.max(1, Math.min(capDays(), ni));
+  return { iv: ni, ef: ef, times: times + 1 };
+}
+function vaultDir(dirStr){
+  return idbGet("vault").then(function(handle){
+    if (!handle) throw new Error("台账没连接，先在我的页连上 Obsidian 文件夹");
+    return handle.queryPermission({ mode: "readwrite" }).then(function(p){
+      if (p === "granted") return handle;
+      return handle.requestPermission({ mode: "readwrite" }).then(function(p2){
+        if (p2 !== "granted") throw new Error("没有写入权限，浏览器弹窗里要选「允许编辑」");
+        return handle;
+      });
+    });
+  }).then(function(handle){ return descend(handle, String(dirStr || "考研/数学/零基础通关讲义").split("/")); });
+}
+function rvRate(file, title, q, mode){
+  if (!file) return Promise.reject(new Error("这条没有来源文件，先点一下刷新"));
+  if (rvBusy) return Promise.reject(new Error("上一条还在写，等一下"));
+  rvBusy = true;
+  var it = reviewItems().filter(function(x){ return x.title === title && x.file === file; })[0] ||
+    { iv: 1, ef: 2.5, times: 0, late: 0, dir: "考研/数学/零基础通关讲义", subjName: "", mode: mode || "four" };
+  var useMode = mode || it.mode || "four";
+  return vaultDir(it.dir).then(function(dir){
+    return dir.getFileHandle(file);
+  }).then(function(fh){
+    return fh.getFile().then(function(f){ return f.text(); }).then(function(text){
+      var r = findBlockRange(text, title);
+      if (!r) throw new Error("台账里找不到「" + title + "」这一块");
+      var s = nextSchedule(it.iv, it.ef, it.times, +q, it.late || 0, useMode);
+      var snapKey = "snap:" + file + ":" + title;
+      return idbSet(snapKey, { chunk: r.chunk, ts: Date.now(), dir: it.dir }).then(function(){
+        var chunk = patchFields(r.chunk, { last_review: todayKey(), interval: s.iv, ef: s.ef.toFixed(2), times: s.times });
+        return fh.createWritable().then(function(w){
+          return w.write(text.slice(0, r.start) + chunk + text.slice(r.end)).then(function(){ return w.close(); });
+        });
+      }).then(function(){
+        state.lastSnap = { file: file, title: title, dir: it.dir, ts: Date.now() };
+        state.rvLog.push({ date: todayKey(), title: title, subj: it.subjName || "", q: +q, iv: s.iv, mode: useMode, ts: Date.now() });
+        /* 错题统计（待接入）：在此处追加 state.mistakes.push({...})，
+           q 为本次评级，lv 折算为 A/B/C，src 记 file，title/subj 现成可复用。 */
+        if (state.rvLog.length > 800) state.rvLog = state.rvLog.slice(-800);
+        save();
+        toast(title + " 已记录 · 下次 " + s.iv + " 天后（EF " + s.ef.toFixed(2) + "）");
+        obsRefresh(true);
+      });
+    });
+  }).then(function(r){ rvBusy = false; return r; }, function(e){ rvBusy = false; throw e; });
+}
+function rvUndo(){
+  var s = state.lastSnap;
+  if (!s) return toast("没有可撤销的写回");
+  var snapKey = "snap:" + s.file + ":" + s.title;
+  return idbGet(snapKey).then(function(snap){
+    if (!snap || !snap.chunk) throw new Error("找不到快照，可能已清理");
+    return vaultDir(s.dir || snap.dir).then(function(dir){ return dir.getFileHandle(s.file); }).then(function(fh){
+      return fh.getFile().then(function(f){ return f.text(); }).then(function(text){
+        var r = findBlockRange(text, s.title);
+        if (!r) throw new Error("台账里找不到「" + s.title + "」，可能改过标题");
+        return fh.createWritable().then(function(w){
+          return w.write(text.slice(0, r.start) + snap.chunk + text.slice(r.end)).then(function(){ return w.close(); });
+        });
+      });
+    });
+  }).then(function(){
+    toast("已撤销「" + s.title + "」的上次写回");
+    state.lastSnap = null; save();
+    obsRefresh(true);
+  }).catch(function(err){ toast(err && err.message ? err.message : "撤销失败"); });
+}
+function openKbModal(key){
+  var r = key ? state.kbRoots.filter(function(x){ return x.key === key; })[0] : null;
+  openModal('<div class="modal"><h3>' + (r ? "编辑科目" : "添加科目") + '</h3>' +
+    '<div class="mfield"><label>科目名</label><input type="text" id="kbName" value="' + esc(r ? r.name : "") + '" placeholder="如：408"></div>' +
+    '<div class="mfield"><label>Vault 里的相对路径</label><input type="text" id="kbPath" value="' + esc(r ? r.path : "") + '" placeholder="如：考研/408"></div>' +
+    '<div class="mfield"><label>评级方式</label><select id="kbMode">' +
+    '<option value="four"' + (r && r.mode === "four" ? " selected" : "") + '>四档 · ①②③④，按章节分开记</option>' +
+    '<option value="two"' + (r && r.mode === "two" ? " selected" : "") + '>两档 · 只记记住 / 没记住</option>' +
+    '</select></div>' +
+    '<div class="macts"><button class="btn" data-act="kb-save">保存</button>' +
+    '<button class="btn ghost" data-act="close-modal">取消</button></div></div>');
+  window._kbKey = key || "";
+}
+function saveKb(){
+  var name = ($("kbName").value || "").trim();
+  var path = ($("kbPath").value || "").trim().replace(/^\/+|\/+$/g, "");
+  var mode = $("kbMode").value === "two" ? "two" : "four";
+  if (!name || !path){ toast("科目名和路径都要填"); return; }
+  var key = window._kbKey;
+  if (key){
+    state.kbRoots.forEach(function(r){ if (r.key === key){ r.name = name; r.path = path; r.mode = mode; } });
+  } else {
+    state.kbRoots.push({ key: uid(), name: name, path: path, mode: mode });
+  }
+  save(); closeModal(); render(); obsRefresh(true);
+  toast("已保存，正在重新扫描台账");
+}
+function delKb(key){
+  var r = state.kbRoots.filter(function(x){ return x.key === key; })[0];
+  if (!r) return;
+  confirmBox("删掉科目「" + r.name + "」？只影响打卡页读哪个目录，笔记一个字不动。", function(){
+    state.kbRoots = state.kbRoots.filter(function(x){ return x.key !== key; });
+    save(); render(); obsRefresh(true); toast("已删除");
+  });
+}
+function openPickGoal(mode){
+  var done = mode === "done";
+  var list = done ? state.goals.filter(function(g){ return !g.archived; }) : state.goals.slice();
+  var rows = list.map(function(g){
+    var d = doneTotal(g);
+    return '<div class="leave-item"><span style="width:auto">' + esc(g.name) + '</span>' +
+      '<span style="flex:1;color:var(--muted);font-weight:400">' + d + " / " + g.total + " " + esc(g.unit) + '</span>' +
+      '<button class="x" style="color:' + (done ? "#2563EB" : "#C04444") + '" data-act="' + (done ? "do-done" : "do-del") +
+      '" data-goal="' + g.id + '">' + (done ? "标记完成" : "删除") + '</button></div>';
+  }).join("");
+  var arch = done ? state.goals.filter(function(g){ return g.archived; }) : [];
+  var archHtml = arch.length ? '<div style="margin-top:14px;border-top:1px solid #EEF2F7;padding-top:10px"><div style="font-size:14px;color:var(--muted);margin-bottom:4px">已完成</div>' +
+    arch.map(function(g){
+      return '<div class="leave-item"><span style="width:auto">' + esc(g.name) + '</span>' +
+        '<button class="x" style="color:#2563EB" data-act="do-restore" data-goal="' + g.id + '">恢复</button></div>';
+    }).join("") + '</div>' : "";
+  openModal('<div class="modal"><h3>' + (done ? "完成打卡类型" : "删除打卡类型") + '</h3>' +
+    '<p class="note" style="margin-bottom:12px">' + (done
+      ? "完成的会从今日版面收起来，历史记录和统计都还在，随时能恢复。"
+      : "删除会把这个目标连同它的打卡记录一起删掉，不能恢复。只想让它从今日消失，请用「完成」。") + '</p>' +
+    (rows || '<p class="note">没有可操作的目标。</p>') + archHtml +
+    '<div style="margin-top:16px"><button class="btn ghost block" data-act="close-modal">关闭</button></div></div>');
+}
+
 function render(){
   renderToday(); renderBoard(); renderWeek(); renderMine();
   var t = new Date();
   $("topDate").textContent = t.getFullYear() + "年" + fmtDate(todayKey()) + " " + weekdayName(t);
+  fitRv();
+}
+/* 一条到底：整页只有一条滚动条，右列 sticky 跟随；复盘内容高过一屏时取消跟随，
+   否则它底部那几条永远滚不到 */
+function fitRv(){
+  var sp = document.querySelector(".today-split");
+  if (!sp) return;
+  if (window.innerWidth <= 1180){ sp.classList.remove("rv-static"); return; }
+  var rc = sp.querySelector(".rv-col");
+  if (!rc){ sp.classList.remove("rv-static"); return; }
+  sp.classList.toggle("rv-static", rc.offsetHeight > window.innerHeight - 36);
 }
 
-/* ---- 今日 ---- */
+/* ---- 今日：只回答「今天做什么」 ---- */
 function renderToday(){
   var h = "";
   h += todayOverview();
-  var ed = examDays();
-  var rt = (state.obsidianInfo && state.obsidianInfo.reviewToday) || 0;
-  var ro = (state.obsidianInfo && state.obsidianInfo.reviewOverdue) || 0;
-  if (state.obsidianInfo && state.obsidianInfo.dir && (rt || ro)){
-    h += '<div class="card review-today">' +
-      '<div class="rv-icon">↻</div>' +
-      '<div class="rv-body"><b>今日复盘 ' + rt + ' 题</b>' +
-      (ro ? '<span class="rv-overdue"> · 已逾期 ' + ro + ' 题</span>' : '') +
-      '<div class="rv-sub">Obsidian 复盘中心到期清单 · 做完去 Obsidian 打勾</div></div></div>';
+  var q = reviewItems();
+  var ro = q.filter(function(x){ return x.late > 0; }).length;
+  var connected = !!(state.obsidianInfo && state.obsidianInfo.dir);
+  if (connected){
+    var bySubj = {}, order = [];
+    q.forEach(function(it){
+      if (!bySubj[it.subjName]){ bySubj[it.subjName] = 0; order.push(it.subjName); }
+      bySubj[it.subjName]++;
+    });
+    var preview = q.slice(0, 3).map(function(it){ return esc(it.title); }).join('、');
+    var subTxt = q.length > 3
+      ? preview + ' 等 ' + q.length + ' 条到期，点这行展开逐个评级'
+      : preview + ' 到期，点这行' + (q.length > 1 ? '展开逐个' : '') + '评级';
+    var odTxt = ro ? (ro === q.length ? '全部逾期' : '其中逾期 ' + ro + ' 条') : '';
+    var capTxt = (q.length && backlogPressure() >= 0.3) ? ' <span class="rv-cap">· 积压偏多，间隔上限收到 ' + capDays() + ' 天</span>' : '';
+    var side = '<div class="card review-today' + (q.length ? ' clk' : '') + '"' + (q.length ? ' data-act="rv-toggle"' : '') + '>' +
+      '<div class="rv-body">' +
+      '<div class="rv-title">' + (q.length ? '今日待复盘 <b>' + q.length + '</b> 条' : '今天没有到期的复盘') +
+      (odTxt && q.length > 1 ? '<span class="rv-overdue">' + odTxt + '</span>' : '') + '</div>' +
+      '<div class="rv-sub">' + (q.length ? subTxt + capTxt : '到期会自动出现在这里，不用自己记日子') + '</div>' +
+      '</div>' +
+      (q.length ? '<span class="rv-arrow">' + (rvOpen ? '收起' : '展开') + '</span>' : '') +
+      '</div>';
+    if (rvOpen && q.length) side += rvList(q);
   }
-  h += '<div style="display:flex;gap:12px;align-items:stretch;margin:18px 0">' + weekRhythm().replace('<div class="card rhythm">','<div class="card rhythm" style="flex:1;margin:0">') + '<div style="display:flex;flex-direction:column;gap:6px;width:140px"><button class="btn ghost" data-act="add-goal" style="flex:1;padding:6px 12px;font-size:13px;margin-top:0;color:var(--ink2)">添加打卡类型</button><button class="btn ghost" data-act="add-goal" style="flex:1;padding:6px 12px;font-size:13px;margin-top:0;color:var(--ink2)">删除打卡类型</button><button class="btn ghost" data-act="add-goal" style="flex:1;padding:6px 12px;font-size:13px;margin-top:0;color:var(--ink2)">完成打卡类型</button></div></div>';
-  state.goals.forEach(function(g){
+  var cards = "";  state.goals.forEach(function(g){
+    if (g.archived) return;
     var mi = missInfo(g);
-    if (mi) h += missCard(g, mi);
+    if (mi) cards += missCard(g, mi);
   });
-  state.goals.forEach(function(g){ h += goalCard(g); });
-  if (!state.goals.length) h += '<div class="card"><p class="note">还没有目标，添加一个开始打卡吧。</p></div>';
+  state.goals.forEach(function(g){ if (!g.archived) cards += goalCard(g); });
+  if (!state.goals.filter(function(g){ return !g.archived; }).length) cards += '<div class="card"><p class="note">还没有进行中的打卡类型，去「我的 → 打卡目标」里添加一个。</p></div>';
+  h += side
+    ? '<div class="today-split"><div class="rv-col">' + side + '</div><div class="goal-col">' + cards + '</div></div>'
+    : cards;
   $("tab-today").innerHTML = h;
 }
 function todayOverview(){
   var today = todayKey();
   var connected = !!(state.obsidianInfo && state.obsidianInfo.dir);
-  var manual = state.goals.filter(function(g){ return !(g.obsidian && connected); });
+  var manual = state.goals.filter(function(g){ return !g.archived && !(g.obsidian && connected); });
   var doneN = manual.filter(function(g){ return amountOn(g.id, today) > 0; }).length;
   var todayMin = state.records.reduce(function(s, r){ return r.date === today ? s + (+r.minutes || 0) : s; }, 0);
-  var activeN = state.goals.filter(function(g){ return remaining(g) > 0; }).length;
+  var wr = weekRange(0);
+  var wk = state.records.filter(function(r){ return r.date >= wr.mon && r.date <= wr.sun; }).length;
   var best = 0;
   state.goals.forEach(function(g){ var st = streak(g); if (st > best) best = st; });
   return '<div class="ov-grid">' +
-    '<div class="ov"><span class="ov-v">' + doneN + '/' + manual.length + '</span><span class="ov-k">今日已打卡</span></div>' +
-    '<div class="ov"><span class="ov-v">' + todayMin + '</span><span class="ov-k">今日投入（分钟）</span></div>' +
-    '<div class="ov"><span class="ov-v">' + activeN + '</span><span class="ov-k">进行中目标</span></div>' +
-    '<div class="ov"><span class="ov-v">' + best + '</span><span class="ov-k">最长连续（天）</span></div>' +
+    '<div class="ov c-blue"><span class="ov-v">' + doneN + '/' + manual.length + '</span><span class="ov-k">今日已打卡</span></div>' +
+    '<div class="ov c-amber"><span class="ov-v">' + todayMin + '</span><span class="ov-k">今日投入（分钟）</span></div>' +
+    '<div class="ov c-violet"><span class="ov-v">' + wk + '</span><span class="ov-k">本周打卡（次）</span></div>' +
+    '<div class="ov c-green"><span class="ov-v">' + best + '</span><span class="ov-k">最长连续（天）</span></div>' +
     '</div>';
 }
+function normDate(v){
+  var m = String(v == null ? "" : v).trim().match(/^(\d{4})[-/.年](\d{1,2})[-/.月](\d{1,2})/);
+  return m ? m[1] + "-" + pad(+m[2]) + "-" + pad(+m[3]) : "";
+}
+function leaveDates(){
+  return (state.settings.leaveDays || []).map(function(l){ return normDate(l.date); }).filter(function(d){ return d; });
+}
 function weekRhythm(){
-  var cur = weekRange(0);
   var names = ["一", "二", "三", "四", "五", "六", "日"];
-  var cells = [], totalMin = 0;
-  for (var i = 0; i < 7; i++){
-    var k = toKey(addDays(fromKey(cur.mon), i));
+  var lv = leaveDates(), tk = todayKey(), t = fromKey(tk);
+  var cells = [], totalMin = 0, missDays = 0;
+  var firstDay = state.records.reduce(function(m, r){ return (!m || r.date < m) ? r.date : m; }, "");
+  for (var i = 6; i >= 0; i--){
+    var d = addDays(t, -i), k = toKey(d), wd = weekdayCN(d);
     var recs = state.records.filter(function(r){ return r.date === k; });
     var mins = recs.reduce(function(s, r){ return s + (+r.minutes || 0); }, 0);
     totalMin += mins;
     var has = recs.length > 0;
-    var isFuture = k > todayKey();
-    cells.push('<div class="rh-cell' + (has ? " on" : "") + (k === todayKey() ? " today" : "") + '">' +
-      '<span class="rh-d">' + names[i] + '</span>' +
-      '<span class="rh-c">' + (has ? (mins ? mins + "分" : "✓") : (isFuture ? "" : "0")) + '</span></div>');
+    var cls = "", txt = "", tip = k + " 周" + names[wd - 1];
+    var clickable = false;
+    if (has){ cls = " on"; txt = mins ? mins + "分" : "✓"; tip += " · 已打卡" + (mins ? " " + mins + " 分钟" : ""); }
+    else if (lv.indexOf(k) >= 0){ cls = " leave"; txt = "假"; clickable = true; tip += " · 请假中，点一下补打卡"; }
+    else if (!firstDay || k < firstDay){ txt = ""; tip += " · 还没开始记录"; }
+    else if (k === tk){ txt = "0"; tip += " · 今天还没打卡"; }
+    else { cls = " miss"; txt = "缺"; clickable = true; missDays++; tip += " · 没打卡，点一下补上"; }
+    cells.push('<div class="rh-cell' + cls + (k === tk ? " today" : "") + (clickable ? " clk" : "") + '"' +
+      ' title="' + tip + '"' + (clickable ? ' data-act="fill-day" data-day="' + k + '"' : "") + '>' +
+      '<span class="rh-d">' + (k === tk ? "今天" : names[wd - 1]) + '</span>' +
+      '<span class="rh-c">' + txt + '</span></div>');
   }
-  return '<div class="card rhythm"><div class="rh-head"><b>本周打卡节奏</b><span>本周已投入 ' + totalMin + ' 分钟</span></div>' +
-    '<div class="rh-grid">' + cells.join("") + '</div></div>';
+  var head = '<h3>最近 7 天节奏<span class="hsub">' +
+    (missDays ? '<i style="font-style:normal;color:#C04444;font-weight:700">缺 ' + missDays + ' 天</i> · ' : "") +
+    '共投入 ' + totalMin + ' 分钟</span></h3>';
+  return '<div class="card rhythm">' + head + '<div class="rh-grid">' + cells.join("") + '</div>' +
+    (missDays ? '<div class="rh-tip">红色是缺卡，黄色是请假，点一下就能补</div>' : "") + '</div>';
 }
 function missCard(g, mi){
   var isRed = mi.type === "overdue";
-  var title = isRed ? "已断更 " + mi.days + " 天" : (mi.type === "rest" ? "昨天是休息日" : "昨天漏打卡了");
-  var sub = isRed
-    ? esc(g.name) + " 连续记录已中断 " + mi.days + " 天。补记昨天的量可挽回进度，或调整目标让计划更现实。"
-    : (mi.type === "rest" ? "昨天是休息日，不计断更，今天正常打卡即可。" : "首次漏打不断更，今天补上，连续天数不受影响。");
+  var isLeave = mi.type === "leave";
+  var title = isLeave ? "昨天请假" : (isRed ? "已断更 " + mi.days + " 天" : "昨天漏打卡了");
+  var sub = isLeave
+    ? "昨天记了请假，这天不算断更。今天正常打卡就行，也可以点下面补上。"
+    : (isRed
+      ? esc(g.name) + " 连续记录已中断 " + mi.days + " 天。补记昨天的量可挽回进度，或调整目标让计划更现实。"
+      : "首次漏打不断更，今天补上，连续天数不受影响。");
   var btns = "";
-  if (mi.type !== "rest"){
+  if (!isLeave){
     btns = '<button class="btn sm" data-goal="' + g.id + '" data-act="backfill">补记昨天</button>';
     btns += isRed
       ? '<button class="btn sm ghost" data-goal="' + g.id + '" data-act="adjust">调整目标</button>'
       : '<button class="btn sm ghost" data-goal="' + g.id + '" data-act="dismiss">今天开始</button>';
+  } else {
+    btns = '<button class="btn sm" data-goal="' + g.id + '" data-act="backfill">补上昨天</button>';
   }
   return '<div class="card miss ' + (isRed ? "red" : "yellow") + '">' +
     '<div class="miss-head"><span class="miss-dot"></span><b>' + esc(title) + '</b></div>' +
@@ -896,19 +1703,23 @@ function goalCard(g){
   var st = statusOf(g);
   var e = eta(g);
   var et = e === null ? "暂无推算" : (remaining(g) <= 0 ? "已完成" : fmtDate(e));
-  var sugLabel = sug && sug.note ? "今日建议量（" + sug.note + "）" : "今日建议量";
+  var sugLabel = "今日建议量";
   var recHtml = "";
   if (!auto){
     var recs = recsOn(g.id, todayKey());
-    if (recs.length){
-      recHtml = '<div class="reclist"><div class="rl-title">今日已记录 ' + recs.length + ' 次</div>' + recs.map(function(r){
-        return '<div class="rec"><span class="amt">' + r.amount + ' ' + esc(g.unit) + '</span>' +
+    recHtml = '<div class="reclist' + (recs.length ? '' : ' lite') + '">' +
+      '<div class="rl-head"><span class="rl-title">' +
+      (recs.length ? '今日已记录 ' + recs.length + ' 次' : '今日还没有记录') +
+      '</span><button class="rl-more" data-goal="' + g.id + '" data-act="backfill">补记最近 7 天</button></div>' +
+      recs.map(function(r){
+        return '<div class="rec">' +
+          (r.content ? '<span class="rc-t" title="' + esc(r.content) + '">' + esc(r.content) + '</span>' : "") +
+          '<span class="amt">' + r.amount + ' ' + esc(g.unit) + '</span>' +
           '<span class="tag ttag">' + typeName(r.type) + '</span>' +
           (r.minutes ? '<span class="tag">' + r.minutes + ' 分钟</span>' : "") +
           (r.backfill ? '<span class="tag">补</span>' : "") +
           '<span class="time">' + fmtTime(r.ts) + '</span></div>';
       }).join("") + '</div>';
-    }
   }
   var obs = "";
   if (g.obstacle || g.countermeasure){
@@ -928,7 +1739,7 @@ function goalCard(g){
   }
   var autoHint = auto ? '<div class="auto-hint">' +
     'Obsidian 统计 · 已完成 ' + autoCount(g) + '/' + g.total + ' ' + esc(g.unit) + '</div>' + sub
-    : (g.obsidian ? '<div class="auto-hint">Obsidian 未连接 · 暂用手动打卡，连接后自动同步</div>' : "");
+    : (g.obsidian ? '<div class="auto-hint lite">Obsidian 未连接 · 暂用手动打卡，连接后自动同步</div>' : "");
   var gact = "";
   if (!auto){
     var disabled = sug.v <= 0;
@@ -939,90 +1750,122 @@ function goalCard(g){
       '<div class="ttype" data-goal="' + g.id + '">' + REC_TYPES.map(function(t, i){
         return '<button type="button" class="tt' + (i === 0 ? " on" : "") + '" data-goal="' + g.id + '" data-tt="' + t[0] + '">' + t[1] + '</button>';
       }).join("") + '<button class="btn primary" data-goal="' + g.id + '" data-act="checkin"' + (disabled ? ' disabled' : '') + '>打卡</button></div>' +
-      '</div>' +
-      '<div class="gadd"><button class="btn plain" data-goal="' + g.id + '" data-act="backfill">补记最近 6 天</button></div>';
+      '</div>';
   }
-  var streakTxt = auto ? '<span style="font-size:16px;color:var(--ink2);font-weight:600">自动</span>' : streak(g) + " 天";
+  var streakTxt = auto ? "自动" : streak(g) + "<small>天</small>";
+  var sumParts = ['完成率<b>' + pct(g) + '<small>%</small></b>'];
+  if (!auto) sumParts.push('连续<b>' + streakTxt + '</b>');
+  sumParts.push('预计<b' + (e === null ? ' class="et-none"' : '') + '>' + et + '</b>');
   return '<div class="card gcard" style="--gc:' + g.color + '">' +
-    '<div class="ghead"><span class="gdot"></span><span class="gname">' + esc(g.name) + '</span>' +
+    '<div class="ghead"><span class="gname"><span class="gdot"></span><span class="gtxt">' + esc(g.name) + '</span></span>' +
     blogLink(g) +
+    sumParts.map(function(x){ return '<span class="gs">' + x + '</span>'; }).join('') +
     '<span class="chip ' + st.cls + '">' + st.t + '</span></div>' +
     '<div class="gbar"><div class="gfill" style="width:' + pct(g) + '%;background:' + g.color + '"></div></div>' +
     autoHint +
-    '<div class="gmeta">' +
-      '<div class="cell"><span class="k">完成率</span><span class="v">' + pct(g) + '% <small>' + doneTotal(g) + '/' + g.total + '</small></span></div>' +
-      '<div class="cell"><span class="k">连续天数</span><span class="v">' + streakTxt + '</span></div>' +
-      '<div class="cell"><span class="k">预计完成</span><span class="v" style="font-size:16px">' + et + '</span></div>' +
-    '</div>' +
     gact + recHtml + obs + '</div>';
 }
 
+/* 环形进度：96×96，中心写百分比 */
+function ringChart(p, color){
+  var R = 38, C = 2 * Math.PI * R;
+  p = Math.max(0, Math.min(100, p));
+  return '<div class="rng"><svg viewBox="0 0 96 96" aria-hidden="true">' +
+    '<circle cx="48" cy="48" r="' + R + '" fill="none" stroke="#E7ECF3" stroke-width="9"/>' +
+    (p > 0 ? '<circle cx="48" cy="48" r="' + R + '" fill="none" stroke="' + color + '" stroke-width="9" stroke-linecap="round" ' +
+      'stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - p / 100)).toFixed(1) + '" transform="rotate(-90 48 48)"/>' : "") +
+    '</svg><span class="rng-v">' + p + '%</span></div>';
+}
 /* ---- 看板 ---- */
 function renderBoard(){
-  var h = '<div class="board-grid">';
+  var h = "";
+  h += '<div class="card"><h3>各科目进度<span class="hsub">今日页只管今天，这里看整体推进</span></h3>';
+  h += '<div class="bring-grid">';
   state.goals.forEach(function(g){
-    var st = statusOf(g);
-    var e = eta(g);
-    var et = e === null ? "暂无推算" : (remaining(g) <= 0 ? "已完成" : fmtDate(e));
-    h += '<div class="card bcard">' + ring(g) +
-      '<div class="bname">' + esc(g.name) + '</div>' +
-      '<div class="bstats">' + ((g.obsidian && state.obsidianInfo && state.obsidianInfo.dir) ? "Obsidian 自动 · 预计 " + et : "连续 " + streak(g) + " 天 · 预计 " + et) + '</div>' +
-      '<span class="chip bchip ' + st.cls + '">' + st.t + '</span>' +
-      (g.obstacle ? '<div class="obstacle" style="text-align:left"><b>障碍：</b>' + esc(g.obstacle) + '</div>' : "") +
+    var p = pct(g);
+    h += '<div class="bring" title="' + esc(g.name) + ' · 已完成 ' + doneTotal(g) + ' / ' + g.total + ' ' + esc(g.unit) + '">' +
+      ringChart(p, g.color) +
+      '<div class="rname">' + esc(g.name) + '</div>' +
+      '<div class="rmeta">' + (g.archived ? "已归档" : doneTotal(g) + ' / ' + g.total + ' ' + esc(g.unit)) + '</div>' +
+      (g.obstacle ? '<div class="robs" title="' + esc(g.obstacle) + '">卡住：' + esc(g.obstacle) + '</div>' : "") +
       '</div>';
   });
-  h += '</div>';
-  h += '<div class="card chart-card"><h3>近 14 天打卡量<span style="font-size:14px;font-weight:400;color:var(--muted)">（分钟优先，无分钟记数量）</span></h3>' + chart14() + legendHTML() + '</div>';
-  h += chapterLoopCard();
-  h += '<div class="two-col"><div class="card">' + heat35() + '</div><div class="card">' + recentFeed() + '</div></div>';
+  h += '</div></div>';
+  h += subjectLoopCard();
+  h += '<div class="card chart-card"><h3>近 14 天打卡量<span class="hsub">每天学了多少，按科目堆叠</span></h3>' + chart14() + legendHTML() + '</div>';
+  h += typeMixCard();
+  h += '<div class="two-col"><div class="card heat-card">' + heat35() + '</div><div class="card">' + recentFeed() + '</div></div>';
   $("tab-board").innerHTML = h;
 }
-function typeDistCard(){
-  var today = todayKey();
-  var todayD = fromKey(today);
-  var weekStart = toKey(addDays(todayD, -(weekdayCN(todayD) - 1)));
-  var tTypes = REC_TYPES.map(function(t){ return { key: t[0], label: t[1], today: 0, week: 0, mins: 0 }; });
-  state.records.forEach(function(r){
-    var t = tTypes.find(function(x){ return x.key === r.ttype; });
-    if (!t) return;
-    if (r.date === today){ t.today++; t.mins += (r.mins||0); }
-    if (r.date >= weekStart){ t.week++; }
-  });
-  var cells = tTypes.map(function(t){
-    return '<div class="td-cell"><span class="td-name">' + t.label + '</span><span class="td-n">' + t.today + '</span><span class="td-m">今日 · 本周' + t.week + '次</span></div>';
+var TYPE_COLOR = { study: "#2B6CE6", review: "#7C6BD6", practice: "#D99A3E", recite: "#3F9C6B" };
+function typeMixHTML(rows, total){
+  var bar = rows.map(function(r){
+    if (!r.n) return "";
+    return '<i style="width:' + (r.n / total * 100).toFixed(2) + '%;background:' + TYPE_COLOR[r.key] + '"></i>';
   }).join("");
-  return '<div class="card"><h3>今日四类打卡分布</h3><div class="tdist">' + cells + '</div></div>';
+  var list = rows.map(function(r){
+    var p = total ? Math.round(r.n / total * 100) : 0;
+    var w = total ? (r.n / total * 100).toFixed(1) : 0;
+    return '<div class="tm-row"><i class="tm-dot" style="background:' + TYPE_COLOR[r.key] + '"></i>' +
+      '<span class="tm-name">' + r.label + '</span>' +
+      '<span class="tm-track"><i style="width:' + w + '%;background:' + TYPE_COLOR[r.key] + '"></i></span>' +
+      '<span class="tm-n">' + r.n + ' 次</span><span class="tm-p">' + p + '%</span></div>';
+  }).join("");
+  return '<div class="tm-bar">' + bar + '</div><div class="tm-grid">' + list + '</div>';
 }
-function chapterLoopCard(){
-  var loop = (state.obsidianInfo && state.obsidianInfo.chapterLoop) || [];
-  if (!loop.length) return "";
-  var rows = loop.map(function(c, ci){
-    var due = c.dueToday ? '<span class="cl-due">今日到期 ' + c.dueToday + '</span>' : (c.dueWeek ? '<span class="cl-week">7日内 ' + c.dueWeek + '</span>' : '<span class="cl-ok">已排期</span>');
-    var items = (c.items || []).map(function(it){
-      var lvCls = it.lv === "A" ? "lv-a" : (it.lv === "B" ? "lv-b" : "lv-c");
-      var lvTxt = it.lv === "A" ? "已掌握" : (it.lv === "B" ? "待巩固" : "需重学");
-      return '<div class="cl-item">' +
-        '<div class="ci-head"><b>' + esc(it.title) + '</b><i class="' + lvCls + '">' + lvTxt + '</i></div>' +
-        '<div class="ci-point">' + esc(it.point) + '</div>' +
-        '<div class="ci-chain">' +
-          '<span>学习' + (it.study ? '✅' : '—') + '</span>' +
-          '<span>练习✅</span>' +
-          '<span>复盘' + it.times + '次</span>' +
-          '<span>记背—</span>' +
-          (it.next ? '<span class="ci-next">下次 ' + it.next.slice(5) + '</span>' : '') +
-        '</div></div>';
+function typeMixCard(){
+  var rows = REC_TYPES.map(function(t){ return { key: t[0], label: t[1], n: 0, mins: 0 }; });
+  var total = 0, totalMin = 0, days = {};
+  state.records.forEach(function(r){
+    var row = null;
+    for (var i = 0; i < rows.length; i++) if (rows[i].key === (r.type || "study")) row = rows[i];
+    if (!row) return;
+    row.n++; row.mins += (+r.minutes || 0);
+    total++; totalMin += (+r.minutes || 0); days[r.date] = 1;
+  });
+  var head = '<h3>四类投入构成<span class="hsub">累计 · 学习 / 复习 / 练习 / 背诵各占多少</span></h3>';
+  if (!total){
+    return '<div class="card">' + head + '<p class="note">还没有分类记录。打卡时选一下「学习 / 复习 / 练习 / 背诵」，这里就会画出构成。</p></div>';
+  }
+  return '<div class="card">' + head + typeMixHTML(rows, total) +
+    '<div class="tm-sum">累计 ' + total + ' 次 · 覆盖 ' + Object.keys(days).length + ' 天' + (totalMin ? ' · ' + totalMin + ' 分钟' : "") + '</div></div>';
+}
+function subjectLoopCard(){
+  var subs = subjectLoop().filter(function(x){ return !x.missing && x.total; });
+  if (!subs.length) return "";
+  var body = subs.map(function(sub){
+    var rows = sub.groups.map(function(c){
+      var due = c.dueToday ? '<span class="cl-due">今日到期 ' + c.dueToday + '</span>'
+        : (c.dueWeek ? '<span class="cl-week">7 日内 ' + c.dueWeek + '</span>' : '<span class="cl-ok">已排期</span>');
+      var items = (c.items || []).map(function(it){
+        var lvCls = it.lv === "A" ? "lv-a" : (it.lv === "B" ? "lv-b" : "lv-c");
+        var lvTxt = it.lv === "A" ? "已掌握" : (it.lv === "B" ? "巩固中" : "需重学");
+        return '<div class="cl-item">' +
+          '<div class="ci-head"><b>' + esc(it.title) + '</b><i class="' + lvCls + '">' + lvTxt + '</i></div>' +
+          (it.point ? '<div class="ci-point">' + esc(it.point) + '</div>' : "") +
+          '<div class="ci-chain">' +
+          '<span>学过 ' + (it.study ? it.study.slice(5) : "—") + '</span>' +
+          '<span>复盘 ' + it.times + ' 次</span>' +
+          '<span>间隔 ' + it.iv + ' 天</span>' +
+          (it.next ? '<span class="ci-next">下次 ' + it.next.slice(5) + '</span>' : "") +
+          '</div></div>';
+      }).join("");
+      return '<details class="cl-row">' +
+        '<summary><span class="cl-no">' + esc(c.no) + '</span>' +
+        '<span class="cl-name">' + esc(c.name) + '</span>' +
+        '<span class="cl-count">' + c.total + ' 条</span>' +
+        '<span class="cl-lv"><i class="lv-a">' + c.A + '</i><i class="lv-b">' + c.B + '</i><i class="lv-c">' + c.C + '</i></span>' +
+        due + '</summary><div class="cl-items">' + items + '</div></details>';
     }).join("");
-    return '<details class="cl-row">' +
-      '<summary><span class="cl-no">' + c.no + '</span>' +
-      '<span class="cl-name">' + esc(c.name) + '</span>' +
-      '<span class="cl-count">' + c.total + ' 题</span>' +
-      '<span class="cl-lv"><i class="lv-a">' + c.A + '</i><i class="lv-b">' + c.B + '</i><i class="lv-c">' + c.C + '</i></span>' +
-      due + '</summary>' +
-      '<div class="cl-items">' + items + '</div></details>';
+    return '<div class="cl-subj"><div class="cl-subjh"><b>' + esc(sub.name) + '</b>' +
+      '<span class="tot">共 ' + sub.total + ' 条</span>' +
+      '<span class="cl-tally">' +
+        '<i class="lv-a">已掌握 ' + sub.A + '</i>' +
+        '<i class="lv-b">巩固中 ' + sub.B + '</i>' +
+        '<i class="lv-c">需重学 ' + sub.C + '</i>' +
+      '</span></div><div class="cl-list">' + rows + '</div></div>';
   }).join("");
-  return '<div class="card"><h3>数学章节闭环 · 学习→练习→复盘→记背</h3>' +
-    '<div class="cl-legend"><span><i class="lv-a"></i>已掌握</span><span><i class="lv-b"></i>待巩固</span><span><i class="lv-c"></i>需重学</span><span style="margin-left:auto">点章节展开看每道题</span></div>' +
-    '<div class="cl-list">' + rows + '</div></div>';
+  return '<div class="card"><h3>知识点闭环复盘<span class="hsub">学习 → 练习 → 复盘 → 记背</span></h3>' + body + '</div>';
 }
 function heat35(){
   var t = fromKey(todayKey());
@@ -1033,95 +1876,169 @@ function heat35(){
     var row = [];
     for (var d = 0; d < 7; d++){
       var k = toKey(addDays(start, w * 7 + d));
-      var mins = state.records.reduce(function(s, r){ return r.date === k ? s + (+r.minutes || 0) : s; }, 0);
-      row.push({ k: k, mins: mins });
+      var dayRecs = state.records.filter(function(r){ return r.date === k; });
+      var mins = dayRecs.reduce(function(x, r){ return x + (+r.minutes || 0); }, 0);
+      row.push({ k: k, mins: mins, n: dayRecs.length });
       if (mins > maxMin) maxMin = mins;
     }
     weeks.push(row);
   }
-  function lvl(m){
-    if (m <= 0) return 0;
-    if (m < 60) return 1;
-    if (m < 120) return 2;
-    if (m < 180) return 3;
-    return 4;
+  function lvl(c){
+    if (!c.n) return 0;
+    if (!maxMin) return 2;
+    var v = Math.ceil(c.mins / maxMin * 4);
+    return Math.max(1, Math.min(4, v || 1));
   }
-  var html = '<h3>近 35 天打卡热力</h3><div class="heat">';
+  var dowNames = ["一", "二", "三", "四", "五", "六", "日"];
+  var html = '<h3>近 35 天打卡热力</h3><div class="heat">' +
+    '<div class="heat-dow">' + dowNames.map(function(n){ return '<span>' + n + '</span>'; }).join("") + '</div>';
   for (var w = 0; w < 5; w++){
-    html += '<div class="heat-col">';
+    html += '<div class="heat-row">';
     for (var d = 0; d < 7; d++){
       var cell = weeks[w][d];
       var future = cell.k > todayKey();
-      html += '<div class="heat-cell l' + lvl(cell.mins) + (future ? " future" : "") + '"></div>';
+      html += '<div class="heat-cell l' + lvl(cell) + (future ? " future" : "") + '"' +
+        ' title="' + fmtDate(cell.k) + " 周" + dowNames[d] +
+        (cell.n ? " · " + cell.n + " 次打卡" + (cell.mins ? " · " + cell.mins + " 分钟" : "") : " · 没打卡") + '"></div>';
     }
     html += '</div>';
   }
   html += '</div><div class="heat-legend"><span>少</span>' + [1,2,3,4].map(function(i){ return '<i class="heat-cell l' + i + '"></i>'; }).join("") + '<span>多</span></div>';
+  var dayCnt = 0, minCnt = 0;
+  weeks.forEach(function(row){
+    row.forEach(function(c){
+      if (c.k <= todayKey() && c.n){ dayCnt++; minCnt += c.mins; }
+    });
+  });
+  if (!dayCnt){
+    html += '<div class="heat-sum">近 35 天还没有打卡记录</div>';
+  } else {
+    html += '<div class="heat-sum">近 35 天打卡 <b>' + dayCnt + '</b> 天' + (minCnt ? ' · 共 <b>' + minCnt + '</b> 分钟' : '') + '</div>';
+  }
   return html;
 }
 function recentFeed(){
-  var recs = state.records.slice().sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); }).slice(0, 15);
+  var recs = state.records.slice().sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); }).slice(0, 9);
   if (!recs.length) return '<h3>最近动态</h3><p class="note">还没有记录，今天开始打卡吧。</p>';
   var h = '<h3>最近动态</h3><div class="feed">';
   recs.forEach(function(r){
     var g = getGoal(r.goalId);
     if (!g) return;
+    var ri = state.records.indexOf(r);
     h += '<div class="feed-row"><span class="gdot" style="background:' + g.color + '"></span>' +
       '<span class="feed-n">' + esc(g.name) + '</span>' +
       '<span class="feed-a">+' + r.amount + ' ' + esc(g.unit) + (r.minutes ? ' · ' + r.minutes + ' 分钟' : '') + '</span>' +
       (r.backfill ? '<span class="tag">补</span>' : "") +
-      '<span class="feed-d">' + relDate(r.date) + '</span></div>';
+      '<span class="feed-d">' + relDate(r.date) + '</span>' +
+      '<button class="feed-act" data-act="edit-rec" data-ri="' + ri + '">改</button></div>';
   });
   return h + '</div>';
 }
-function ring(g){
-  var p = pct(g), C = 2 * Math.PI * 34;
-  var dash = (p / 100 * C).toFixed(1) + " " + C.toFixed(1);
-  return '<svg class="ring" viewBox="0 0 88 88" width="92" height="92" role="img" aria-label="' + esc(g.name) + ' 完成率 ' + p + '%">' +
-    '<circle cx="44" cy="44" r="34" fill="none" stroke="#EDF4F1" stroke-width="9"/>' +
-    '<circle cx="44" cy="44" r="34" fill="none" stroke="' + g.color + '" stroke-width="9" stroke-linecap="round" stroke-dasharray="' + dash + '" transform="rotate(-90 44 44)"/>' +
-    '<text x="44" y="43" text-anchor="middle" font-size="15" font-weight="700" fill="' + g.color + '">' + p + '%</text>' +
-    '<text x="44" y="57" text-anchor="middle" font-size="9" fill="#6B7F7A">' + doneTotal(g) + '/' + g.total + '</text></svg>';
+
+/* 记录的修改与删除 */
+function recAt(ri){
+  var i = +ri;
+  return (i >= 0 && i < state.records.length) ? state.records[i] : null;
 }
+function openRecordModal(ri){
+  var r = recAt(ri); if (!r){ toast("这条记录已经不在了"); return; }
+  var g = getGoal(r.goalId); if (!g){ toast("记在已删除的目标上"); return; }
+  window._recIdx = +ri;
+  var typeOpts = REC_TYPES.map(function(t){
+    return '<option value="' + t[0] + '"' + (r.type === t[0] ? " selected" : "") + '>' + t[1] + '</option>';
+  }).join("");
+  openModal(
+    '<div class="modal"><h3>修改这条记录</h3>' +
+    '<div class="mfield"><label>记在哪</label><div class="rec-fixed">' + esc(g.name) + ' · ' + fmtDate(r.date) + (r.backfill ? " · 补记" : "") + '</div></div>' +
+    '<div class="mrow">' +
+    '<div class="mfield"><label>数量（' + esc(g.unit) + '）</label><input id="reAmt" type="number" inputmode="numeric" min="1" value="' + r.amount + '"></div>' +
+    '<div class="mfield"><label>分钟（选填）</label><input id="reMin" type="number" inputmode="numeric" min="0" placeholder="0" value="' + (r.minutes || "") + '"></div>' +
+    '</div>' +
+    '<div class="mfield"><label>类型</label><select id="reType">' + typeOpts + '</select></div>' +
+    '<div class="mfield"><label>学习内容（选填）</label><input id="reContent" type="text" maxlength="80" placeholder="如 第 3 章 极限 20 题" value="' + esc(r.content || "") + '"></div>' +
+    '<div class="macts"><button class="btn primary" data-act="save-rec">保存</button>' +
+    '<button class="btn ghost" data-act="del-rec" style="color:var(--red)">删除这条</button>' +
+    '<button class="btn ghost" data-act="close-modal">取消</button></div></div>'
+  );
+}
+function saveRecord(){
+  var ri = window._recIdx, r = recAt(ri); if (!r) return;
+  var a = Math.max(1, Math.round(+($("reAmt").value) || 0));
+  var m = Math.max(0, Math.round(+($("reMin").value) || 0));
+  r.amount = a;
+  r.minutes = m;
+  r.type = $("reType").value;
+  r.content = ($("reContent").value || "").trim();
+  save(); closeModal(); render();
+  toast("已改好 · " + fmtDate(r.date) + " " + a + " " + (getGoal(r.goalId) || {}).unit);
+}
+function delRecord(){
+  var ri = window._recIdx, r = recAt(ri); if (!r) return;
+  var g = getGoal(r.goalId);
+  confirmBox("删掉「" + (g ? g.name : "这条") + "」" + fmtDate(r.date) + " 的这次记录？",
+    function(){
+      state.records.splice(ri, 1);
+      save(); closeModal(); render(); toast("已删除");
+    });
+}
+
 function chart14(){
+  var mobile = window.innerWidth < 640;
+  var N = mobile ? 7 : 14;
   var t = fromKey(todayKey()), days = [];
-  for (var i = 13; i >= 0; i--) days.push(toKey(addDays(t, -i)));
+  for (var i = N - 1; i >= 0; i--) days.push(toKey(addDays(t, -i)));
   var rows = state.goals.map(function(g){
     return { g: g, vals: days.map(function(k){ var m = minutesOn(g.id, k), a = amountOn(g.id, k); return m || a || 0; }) };
   });
   var dayTot = [], max = 0;
-  for (var di = 0; di < 14; di++){
-    var t = 0;
-    rows.forEach(function(r){ t += r.vals[di]; });
-    dayTot.push(t);
-    if (t > max) max = t;
+  for (var di = 0; di < N; di++){
+    var sum = 0;
+    rows.forEach(function(r){ sum += r.vals[di]; });
+    dayTot.push(sum);
+    if (sum > max) max = sum;
   }
-  if (max < 1) max = 1;
-  var W = 700, H = 220, ml = 28, mr = 28, mt = 16, mb = 26;
-  var pw = W - ml - mr, ph = H - mt - mb;
-  var bw = pw / 14;
-  var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="近14天打卡量堆叠柱状图">';
-  for (var gv = 0; gv <= 4; gv++){
-    var y = mt + ph - gv / 4 * ph;
-    var val = gv / 4 * max;
-    var lab = val >= 10 ? Math.round(val).toString() : val.toFixed(1);
-    svg += '<line x1="' + ml + '" y1="' + y.toFixed(1) + '" x2="' + (W - mr) + '" y2="' + y.toFixed(1) + '" stroke="#EDF4F1" stroke-width="1"/>';
-    svg += '<text x="' + (ml - 6) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="#9AAFA9">' + lab + '</text>';
+  var step, yMax;
+  if (max <= 0){ step = 10; yMax = 60; }
+  else {
+    // 按实际最大分钟数定刻度：先取约 6 段，段数太少再对半折一次
+    var raw = max / 6, mag = Math.pow(10, Math.floor(Math.log10(raw))), norm = raw / mag;
+    step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+    if (step < 1) step = 1;
+    yMax = Math.ceil(max / step) * step;
+    var half = step / 2;
+    if (yMax / step < 5 && half >= 1 && Math.round(half) === half){
+      step = half; yMax = Math.ceil(max / step) * step;
+    }
   }
-  for (var di = 0; di < 14; di++){
-    var x = ml + di * bw + 2, w = bw - 4, yB = mt + ph, stack = 0;
-    rows.forEach(function(r){
-      var v = r.vals[di];
-      if (!v) return;
-      var hh = Math.max(2, v / max * ph);
-      var yy = yB - stack - hh;
-      svg += '<rect x="' + x.toFixed(1) + '" y="' + yy.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + hh.toFixed(1) + '" rx="2" fill="' + r.g.color + '"><title>' + esc(r.g.name) + ' ' + v + '</title></rect>';
-      stack += hh;
-    });
-    svg += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="#9AAFA9">' + fmtShort(days[di]) + '</text>';
-  }
-  svg += '</svg>';
-  return svg;
+  var ticks = [];
+  for (var gv = 0; gv * step <= yMax + 0.001; gv++) ticks.push(Math.round(gv * step));
+  var yHtml = ticks.map(function(v){
+    return '<span style="bottom:' + (v / yMax * 100).toFixed(2) + '%">' + v + '</span>';
+  }).join("");
+  var lineHtml = ticks.map(function(v){
+    if (v === 0) return "";
+    return '<i class="c14-line" style="bottom:' + (v / yMax * 100).toFixed(2) + '%"></i>';
+  }).join("");
+  var cols = days.map(function(k, idx){
+    var segs = rows.map(function(r){
+      var v = r.vals[idx];
+      if (!v) return "";
+      return '<i style="height:' + (v / yMax * 100).toFixed(2) + '%;background:' + r.g.color + '" title="' + esc(r.g.name) + ' ' + v + '"></i>';
+    }).join("");
+    return '<div class="c14-col" title="' + fmtDate(k) + ' · ' + (dayTot[idx] || 0) + '"><div class="c14-bar">' + segs + '</div></div>';
+  }).join("");
+  var xHtml = days.map(function(k){
+    var on = k === todayKey();
+    return '<span' + (on ? ' class="on"' : "") + '>' + fmtShort(k) + '</span>';
+  }).join("");
+  return '<div class="c14' + (mobile ? ' c14-m' : '') + '">' +
+    '<div class="c14-y">' + yHtml + '</div>' +
+    '<div class="c14-plot">' + lineHtml +
+      '<div class="c14-cols">' + cols + '</div>' +
+
+    '</div>' +
+    '<div class="c14-x">' + xHtml + '</div>' +
+  '</div>';
 }
 function legendHTML(){
   return '<div class="legend">' + state.goals.map(function(g){
@@ -1130,60 +2047,82 @@ function legendHTML(){
 }
 
 /* ---- 周报 ---- */
-function minSum(range){ var s=0; state.records.forEach(function(r){ if(r.date>=range.mon && r.date<=range.sun && r.mins) s+=r.mins; }); return s; }
+function minSum(range){ var s=0; state.records.forEach(function(r){ if(r.date>=range.mon && r.date<=range.sun) s+= (+r.minutes||0); }); return s; }
 function activeDaysAll(range){ var days={}; state.records.forEach(function(r){ if(r.date>=range.mon && r.date<=range.sun) days[r.date]=1; }); return Object.keys(days).length; }
 function renderWeek(){
   var cur = weekRange(0), prev = weekRange(-1);
-  var h = '<div class="card"><div class="weekhead">本周 ' + fmtDate(cur.mon) + ' – ' + fmtDate(cur.sun) + '（周一开始）</div>';
+  var h = '<div class="card"><h3>本周概览<span class="hsub">' + fmtDate(cur.mon) + ' – ' + fmtDate(cur.sun) + '，周一开始</span></h3>';
   var curAll = 0, prevAll = 0, over = 0, best = 0;
+  var rowsH = "";
   state.goals.forEach(function(g){
     var c = weekSum(g, cur), p = weekSum(g, prev);
     curAll += c; prevAll += p;
     var dcls = c > p ? "up" : (c < p ? "down" : "flat");
     var cDays = activeDays(g, cur), pDays = activeDays(g, prev);
     var cMin = minutesSum(g, cur), pMin = minutesSum(g, prev);
-    h += '<div class="wrow"><span class="gdot" style="background:' + g.color + '"></span>' +
-      '<div class="wn-wrap"><span class="wn">' + esc(g.name) + '</span>' +
-      '<div class="wline">本周 <b>+' + c + '</b> ' + esc(g.unit) + ' · 打卡 ' + cDays + ' 天 · ' + cMin + ' 分钟</div>' +
-      '<div class="wline dim">上周 +' + p + ' ' + esc(g.unit) + ' · 打卡 ' + pDays + ' 天 · ' + pMin + ' 分钟</div></div>' +
-      '<span class="delta ' + dcls + '">' + deltaPct(c, p) + '</span></div>';
+    rowsH += '<tr>' +
+      '<td class="wk-n"><i class="gdot" style="background:' + g.color + '"></i><span>' + esc(g.name) + '</span></td>' +
+      '<td><b>+' + c + '</b> <em>' + esc(g.unit) + '</em><span class="wk-sub">· ' + cDays + ' 天 · ' + cMin + ' 分钟</span></td>' +
+      '<td class="wk-prev">+' + p + ' <em>' + esc(g.unit) + '</em><span class="wk-sub">· ' + pDays + ' 天 · ' + pMin + ' 分钟</span></td>' +
+      '<td class="delta ' + dcls + '">' + deltaPct(c, p) + '</td></tr>';
     var mi = missInfo(g);
     if (mi && mi.type === "overdue") over++;
     var s = streak(g);
     if (s > best) best = s;
   });
+  h += '<table class="wk-tbl"><thead><tr><th>科目</th><th>本周</th><th>上周</th><th class="ta-r">变化</th></tr></thead><tbody>' + rowsH + '</tbody></table>';
   var active = 0;
   for (var dd = 0; dd < 7; dd++){
     var k = toKey(addDays(fromKey(cur.mon), dd));
     if (state.records.some(function(r){ return r.date === k; })) active++;
   }
-  h += '</div>';
+  var curN = state.records.filter(function(r){ return r.date >= cur.mon && r.date <= cur.sun; }).length;
+  var prevN = state.records.filter(function(r){ return r.date >= prev.mon && r.date <= prev.sun; }).length;
   h += '<div class="week-compare">' +
-    '<span>本周 <b>' + curAll + '</b> 次 · ' + active + ' 天 · ' + minSum(cur) + ' 分钟</span>' +
-    '<span class="dim">上周 ' + prevAll + ' 次 · ' + activeDaysAll(prev) + ' 天 · ' + minSum(prev) + ' 分钟</span>' +
-    '<span class="delta ' + (curAll > prevAll ? 'up' : (curAll < prevAll ? 'down' : 'flat')) + '">' + deltaPct(curAll, prevAll) + '</span>' +
-    '</div>';
-  var tDist = REC_TYPES.map(function(t){
-    var n = 0, m = 0;
-    state.records.forEach(function(r){
-      if (r.date >= cur.mon && r.date <= cur.sun && r.type === t[0]){ n++; m += (+r.minutes || 0); }
-    });
-    return { key: t[0], name: t[1], n: n, m: m };
-  });
-  h += '<div class="card"><h3>本周类型分布</h3><div class="tdist">' + tDist.map(function(t){
-    return '<div class="td-cell"><span class="td-name">' + t.name + '</span><span class="td-n">' + t.n + ' 次</span><span class="td-m">' + t.m + ' 分钟</span></div>';
-  }).join("") + '</div></div>';
-  h += '<div class="card"><h3>周报文本</h3><textarea id="weekOut" class="weekout" readonly></textarea>' +
-    '<div style="margin-top:10px"><button class="btn block" data-act="gen-week">生成并复制周报文本</button></div></div>';
+    '<span>本周 <b>' + curN + '</b> 次打卡 · ' + active + ' 天 · ' + minSum(cur) + ' 分钟</span>' +
+    '<span class="dim">上周 ' + prevN + ' 次 · ' + activeDaysAll(prev) + ' 天 · ' + minSum(prev) + ' 分钟</span>' +
+    '<span class="delta ' + (curN > prevN ? 'up' : (curN < prevN ? 'down' : 'flat')) + '">' + deltaPct(curN, prevN) + '</span>' +
+    '</div></div>';
   var rv = state.reviews[cur.mon] || { keep: "", problem: "", try: "", plan: "" };
-  h += '<div class="card"><h3>本周复盘 · Keep / Problem / Try / 预案</h3>' +
-    '<label class="rlab">保持 Keep · 做得好的，下周继续</label><textarea id="rvKeep" rows="2" placeholder="例：单词连续 6 天没断">' + esc(rv.keep) + '</textarea>' +
-    '<label class="rlab">问题 Problem · 卡在哪了</label><textarea id="rvProblem" rows="2" placeholder="例：阅读总拖到睡前，一躺下就刷手机">' + esc(rv.problem) + '</textarea>' +
-    '<label class="rlab">尝试 Try · 下周试试这样改</label><textarea id="rvTry" rows="2" placeholder="例：阅读改到午饭后 20 分钟">' + esc(rv.try) + '</textarea>' +
-    '<label class="rlab">下周预案 · 如果…我就…</label><textarea id="rvPlan" rows="2" placeholder="例：如果睡前想刷手机，我就先读 2 页">' + esc(rv.plan) + '</textarea>' +
-    '<div style="margin-top:10px"><button class="btn block" data-act="save-review">保存复盘</button></div></div>';
+  h += '<div class="card"><h3>本周复盘<span class="hsub">先写这四句，写完生成周报</span></h3>' +
+    '<div class="rv-grid">' +
+    '<div class="rv-cell"><label class="rlab">保持 Keep · 做得好的，下周继续</label><textarea id="rvKeep" rows="2" placeholder="例：单词连续 6 天没断">' + esc(rv.keep) + '</textarea></div>' +
+    '<div class="rv-cell"><label class="rlab">问题 Problem · 卡在哪了</label><textarea id="rvProblem" rows="2" placeholder="例：阅读总拖到睡前，一躺下就刷手机">' + esc(rv.problem) + '</textarea></div>' +
+    '<div class="rv-cell"><label class="rlab">尝试 Try · 下周试试这样改</label><textarea id="rvTry" rows="2" placeholder="例：阅读改到午饭后 20 分钟">' + esc(rv.try) + '</textarea></div>' +
+    '<div class="rv-cell"><label class="rlab">下周预案 · 如果…我就…</label><textarea id="rvPlan" rows="2" placeholder="例：如果睡前想刷手机，我就先读 2 页">' + esc(rv.plan) + '</textarea></div>' +
+    '</div><div style="margin-top:14px"><button class="btn block" data-act="save-review">保存复盘</button></div></div>' +
+    '<div class="card"><h3>周报文本<span class="hsub">把本周复盘一起带进去</span></h3>' +
+    '<textarea id="weekOut" class="weekout" readonly></textarea>' +
+    '<div style="margin-top:10px"><button class="btn block" data-act="gen-week">生成并复制周报文本</button></div></div>' +
+    reviewWeekCard(cur);
   $("tab-week").innerHTML = h;
-  $("weekOut").value = buildWeekText(cur, prev, curAll, prevAll, over, best);
+  var wo = $("weekOut");
+  wo.value = buildWeekText(cur, prev, curAll, prevAll, over, best);
+  var wlines = (wo.value.match(/\n/g) || []).length + 1;
+  wo.style.height = Math.min(420, Math.max(150, wlines * 25 + 18)) + "px";
+}
+function reviewWeekCard(cur){
+  var log = (state.rvLog || []).filter(function(x){ return x.date >= cur.mon && x.date <= cur.sun; });
+  var bySubj = {}, order = [];
+  log.forEach(function(x){
+    var k = x.subj || "其他";
+    if (!bySubj[k]){ bySubj[k] = 0; order.push(k); }
+    bySubj[k]++;
+  });
+  var days = {};
+  log.forEach(function(x){ days[x.date] = 1; });
+  var rows = order.map(function(k){ return '<span class="rw-chip">' + esc(k) + ' <b>' + bySubj[k] + '</b> 条</span>'; }).join("");
+  var soon = (state.rvLog || []).slice().sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); }).slice(0, 4);
+  var recent = soon.length ? '<div class="rw-list">' + soon.map(function(x){
+    var defs = x.mode === "two" ? RV_TWO : RV_RATINGS;
+    var r = defs.filter(function(y){ return y.q === x.q; })[0];
+    var lv = r ? (r.s ? r.n + " " + r.s : r.n) : (x.q >= 3 ? "做对" : "没记住");
+    var nx = (+x.iv > 0) ? ' · 下次 ' + x.iv + ' 天后' : "";
+    return '<div class="rw-row"><b>' + esc(x.title) + '</b><span>' + esc(x.subj || "") + ' · ' +
+      lv + nx + ' · ' + relDate(x.date) + '</span></div>';
+  }).join("") + '</div>' : '<p class="note" style="margin:6px 0 0">还没有复盘记录。今日页点开评级，这里就会开始累计。</p>';
+  return '<div class="card"><h3>复盘记录<span class="hsub">今日页评级后自动记在这里，共 ' + log.length + ' 条 · ' + Object.keys(days).length + ' 天有动作</span></h3>' +
+    (rows ? '<div class="rw-chips">' + rows + '</div>' : "") + recent + '</div>';
 }
 function saveReview(){
   var cur = weekRange(0);
@@ -1212,12 +2151,20 @@ function buildWeekText(cur, prev, curAll, prevAll, over, best){
   });
   if (autos.length) L.push("· Obsidian 自动统计：" + autos.map(function(g){ return g.name; }).join("、") + "（进度随 Obsidian 更新，无需打卡）");
   L.push("");
-  L.push("二、比上周：" + deltaPct(curAll, prevAll) + "（本周总计 " + curAll + "）");
+  var curN2 = state.records.filter(function(r){ return r.date >= cur.mon && r.date <= cur.sun; }).length;
+  var prevN2 = state.records.filter(function(r){ return r.date >= prev.mon && r.date <= prev.sun; }).length;
+  L.push("二、比上周：" + deltaPct(curN2, prevN2) + "（本周 " + curN2 + " 次打卡，累计 " + curAll + "）");
   var tcount = { study: 0, review: 0, practice: 0, recite: 0 };
   state.records.forEach(function(r){ if (r.date >= cur.mon && r.date <= cur.sun && tcount[r.type] != null) tcount[r.type]++; });
   L.push("· 本周类型：学习 " + tcount.study + " 次 · 复习 " + tcount.review + " 次 · 练习 " + tcount.practice + " 次 · 背诵 " + tcount.recite + " 次");
   L.push("");
   L.push("三、复盘");
+  var wkLog = (state.rvLog || []).filter(function(x){ return x.date >= cur.mon && x.date <= cur.sun; });
+  if (wkLog.length){
+    var wkBy = {};
+    wkLog.forEach(function(x){ var k = x.subj || "其他"; wkBy[k] = (wkBy[k] || 0) + 1; });
+    L.push("· 本周复盘 " + wkLog.length + " 条（" + Object.keys(wkBy).map(function(k){ return k + " " + wkBy[k]; }).join(" · ") + "）");
+  }
   var bg = null, bc = -1;
   state.goals.forEach(function(g){ if (g.obsidian && connected) return; var c = weekSum(g, cur); if (c > bc) { bc = c; bg = g; } });
   if (bg) L.push("· 完成最好：" + bg.name + "（" + bc + "）");
@@ -1267,8 +2214,12 @@ function obsCardHTML(){
     var tsTxt = ts ? (ts.getMonth() + 1) + "月" + ts.getDate() + "日 " + pad(ts.getHours()) + ":" + pad(ts.getMinutes()) : "";
     var ed = examDays();
     var examTxt = "";
-    status = '<div class="obs-status on"><b>已连接：</b>' + esc(info.dir) + examTxt + '<span class="obs-ts">上次同步 ' + tsTxt + '，打开页面会自动更新</span></div>';
-    btnHtml = '<button class="btn sm ghost" data-act="obs-refresh">立即刷新</button><button class="btn sm danger" data-act="obs-disconnect">断开</button>';
+    status = '<div class="obs-status on"><b>已连接：</b>' + esc(info.dir) + examTxt + '<span class="obs-ts">上次同步 ' + tsTxt + '，打开页面会自动更新</span></div>' +
+      (vaultPermW === "granted" ? "" : '<div class="obs-status off obs-perm">只读权限 · 复盘写回会被浏览器拦住，点「授权写回」允许编辑。</div>');
+    btnHtml = '<button class="btn sm ghost" data-act="obs-refresh">立即刷新</button>' +
+      (vaultPermW === "granted" ? "" : '<button class="btn sm" data-act="obs-grant">授权写回</button>') +
+      (state.lastSnap ? '<button class="btn sm ghost" data-act="rv-undo">撤销上次写回</button>' : "") +
+      '<button class="btn sm danger" data-act="obs-disconnect">断开</button>';
   } else {
     status = '<div class="obs-status off">未连接。可先手动打卡；连接后「数学讲义」「每日一句」自动统计。</div>';
     btnHtml = '<button class="btn sm" data-act="obs-connect">连接 Obsidian 文件夹</button>';
@@ -1281,28 +2232,86 @@ function obsCardHTML(){
   }
   return '<div class="obs-body">' + status + (btnHtml ? '<div class="obs-acts">' + btnHtml + '</div>' : "") + counts + '</div>';
 }
+function leaveHistory(){
+  var lv = leaveDates();
+  var leaves = state.settings.leaveDays || [];
+  var tk = todayKey(), t = fromKey(tk);
+  var firstDay = state.records.reduce(function(m, r){ return (!m || r.date < m) ? r.date : m; }, "");
+  var rows = [];
+  for (var i = 0; i < 30; i++){
+    var k = toKey(addDays(t, -i));
+    var has = state.records.some(function(r){ return r.date === k; });
+    var isLeave = lv.indexOf(k) >= 0;
+    if (isLeave){
+      var meta = null;
+      for (var j = 0; j < leaves.length; j++) if (normDate(leaves[j].date) === k) meta = leaves[j];
+      rows.push({ k: k, type: has ? "leavedone" : "leave", note: (meta && meta.note) || "", raw: meta ? meta.date : k });
+    } else if (firstDay && k >= firstDay && k !== tk && !has){
+      rows.push({ k: k, type: "miss", note: "", raw: k });
+    }
+  }
+  if (!rows.length) return '<div class="lh-empty">最近 30 天没有缺卡。请假会以黄色记在这里。</div>';
+  var shown = rows.slice(0, 12);
+  var html = shown.map(function(r){
+    var day = fmtShort(r.k) + " " + weekdayName(fromKey(r.k));
+    if (r.type === "miss"){
+      return '<div class="lh-row miss"><span class="lh-dot"></span><span class="lh-d">' + day + '</span>' +
+        '<span class="lh-tag">缺卡</span><span class="lh-note">当天没有打卡</span>' +
+        '<button class="lh-btn" data-act="fill-day" data-day="' + r.k + '">补</button></div>';
+    }
+    var note = esc(r.note || "已请假") + (r.type === "leavedone" ? " · 已补记" : "");
+    return '<div class="lh-row ' + r.type + '"><span class="lh-dot"></span><span class="lh-d">' + day + '</span>' +
+      '<span class="lh-tag">请假</span><span class="lh-note">' + note + '</span>' +
+      '<button class="lh-btn del" data-act="del-leave" data-date="' + r.raw + '">删</button></div>';
+  }).join("");
+  var foot = rows.length > shown.length ? '只列最近 12 条' : "";
+  var missN = 0, leaveN = 0, doneN = 0;
+  rows.forEach(function(r){
+    if (r.type === "miss") missN++;
+    else { leaveN++; if (r.type === "leavedone") doneN++; }
+  });
+  var stat = '<div class="lh-foot">近 30 天：缺卡 <b>' + missN + '</b> 天 · 请假 <b>' + leaveN + '</b> 天' +
+    (doneN ? '，其中已补 ' + doneN + ' 天' : "") + (foot ? " · " + foot : "") + '</div>';
+  return '<div class="lh-list">' + html + '</div>' + stat;
+}
 function renderMine(){
-  var rest = state.settings.restWeekday;
   var bk = state.lastBackup ? new Date(state.lastBackup) : null;
-  var opts = "";
-  for (var i = 1; i <= 7; i++) opts += '<option value="' + i + '"' + (i === rest ? " selected" : "") + '>周' + "一二三四五六日".charAt(i - 1) + '</option>';
   var goals = "";
   state.goals.forEach(function(g){
-    goals += '<div class="gitem"><span class="gdot" style="background:' + g.color + '"></span>' +
-      '<div class="ginfo"><div class="gn">' + esc(g.name) + '</div>' +
+    goals += '<div class="gitem">' +
+      '<div class="ginfo"><div class="gn"><span class="gdot" style="background:' + g.color + '"></span>' + esc(g.name) +
+        (g.archived ? '<span style="margin-left:8px;font-size:14px;font-weight:700;color:#64748B;background:#F1F5F9;border:1px solid #E2E8F0;border-radius:6px;padding:1px 6px">已完成</span>' : "") +
+        '</div>' +
       '<div class="gm">单位 ' + esc(g.unit) + ' · 总量 ' + g.total + ' · 截止 ' + g.deadline + '</div></div>' +
+      (g.archived
+        ? '<button class="btn plain" data-goal="' + g.id + '" data-act="do-restore">恢复</button>'
+        : '<button class="btn plain" data-goal="' + g.id + '" data-act="do-done">完成</button>') +
       '<button class="btn plain" data-goal="' + g.id + '" data-act="edit-goal">编辑</button>' +
       '<button class="btn plain" style="color:var(--red)" data-goal="' + g.id + '" data-act="del-goal">删除</button></div>';
   });
+  var kbRows = state.kbRoots.map(function(r){
+    return '<div class="gitem kb">' +
+      '<div class="ginfo"><div class="gn"><span class="kdot"></span>' + esc(r.name) + '</div>' +
+      '<div class="gm">' + esc(r.path) + '</div></div>' +
+      '<button class="btn plain" data-kb="' + r.key + '" data-act="kb-edit">修改</button>' +
+      '<button class="btn plain" style="color:var(--red)" data-kb="' + r.key + '" data-act="kb-del">删除</button></div>';
+  }).join("");
   var h =
     '<div class="card"><h3>Obsidian 自动同步</h3>' + obsCardHTML() + '</div>' +
-    '<div class="card"><h3>请假条</h3>' +
-    '<div class="mrow" style="align-items:center"><div class="mfield" style="flex:none;width:110px;margin-bottom:0"><label>请假日期</label><input type="text" id="leaveDate" placeholder="2026-1-1"></div>' +
-    '<div class="mfield" style="flex:none;width:220px;margin-bottom:0"><label>原因</label><input type="text" id="leaveNote"></div>' +
-    '<button class="btn sm" data-act="add-leave" style="flex:none;height:36px;margin-top:25px">记请假</button></div>' +
-    '<div class="leavelist" style="margin-top:12px">' + ((state.settings.leaveDays||[]).map(function(l){ return '<div class="leave-item"><span>' + l.date + '</span><span>' + esc(l.note||'') + '</span></div>'; }).join("") || '<div style="font-size:13px;color:var(--muted)">暂无请假记录</div>') + '</div></div>' +
-    '<div class="card"><h3>目标管理</h3><div class="glist">' + goals + '</div>' +
-    '<div class="gadd"><button class="btn ghost block" data-act="add-goal">＋ 添加目标</button></div></div>' +
+    '<div class="card"><h3>台账目录<span class="hsub">复盘读哪些文件夹</span>' +
+    '<button class="hact" data-act="kb-add">添加科目</button></h3>' +
+    '<div class="glist">' + kbRows + '</div>' +
+    '<p class="note" style="margin:10px 0 0">每科一个根目录，里面所有含「#### 台账数据」的 md 都会被读进今日复盘。路径相对 Vault 根目录。</p>' +
+    '</div>' +
+    '<div class="two-col"><div class="card leave-card"><h3>请假条</h3>' +
+    '<div class="leave-form">' +
+    '<div class="mfield"><label>请假日期</label><input type="date" id="leaveDate" value="' + todayKey() + '"></div>' +
+    '<div class="mfield"><label>原因（选填）</label><input type="text" id="leaveNote" placeholder="如：回家 / 生病"></div>' +
+    '<button class="btn" data-act="add-leave">记请假</button>' +
+    '</div></div>' +
+    '<div class="card"><h3>请假历史<span class="hsub">近 30 天 · 红色＝缺卡，黄色＝请假</span></h3>' + leaveHistory() + '</div></div>' +
+    '<div class="card"><h3>打卡目标<button class="hact" data-act="add-goal">添加科目</button></h3>' +
+    '<div class="glist">' + goals + '</div></div>' +
     '<div class="card"><h3>数据</h3>' +
     '<div class="data-acts">' +
     '<button class="btn ghost" data-act="export">导出备份</button>' +
@@ -1310,9 +2319,10 @@ function renderMine(){
     '<button class="btn ghost" data-act="import">导入备份</button>' +
     '<button class="btn danger" data-act="reset">清空数据</button>' +
     '</div>' +
-    (bk ? '<div class="obs-ts">上次备份 ' + (bk.getMonth() + 1) + '月' + bk.getDate() + '日 ' + pad(bk.getHours()) + ':' + pad(bk.getMinutes()) + ' · 建议每周导出一次</div>' : '<div class="obs-ts">尚未备份过 · 建议每周导出一次</div>') +
     '<input type="file" id="importFile" accept="application/json,.json" hidden>' +
-    '<p class="note" style="margin-top:10px">数据只存在<b>这台设备的浏览器</b>里，不经过任何服务器、不需要登录。Obsidian 只读本地文件夹，数据不上传。换设备：本机「导出备份」下载 JSON，新设备「导入备份」（Obsidian 目标重新连接一次即可）。<br>「复制备份文本」可把内容存进 Obsidian 等任意笔记。</p></div>' +
+    (bk ? '<p class="data-note">上次备份 ' + (bk.getMonth() + 1) + '月' + bk.getDate() + '日 ' + pad(bk.getHours()) + ':' + pad(bk.getMinutes()) + ' · 建议每周导出一次</p>' : '<p class="data-note">尚未备份过 · 建议每周导出一次</p>') +
+    '<p class="data-note">数据只存在这台设备的浏览器里，不经过任何服务器、不需要登录。Obsidian 只读本地文件夹，数据不上传。换设备：本机「导出备份」下载 JSON，新设备「导入备份」（Obsidian 目标重新连接一次即可）。</p>' +
+    '<p class="data-note">「复制备份文本」可把内容存进 Obsidian 等任意笔记。</p></div>' +
     '<div class="card"><h3>关于</h3><p class="note">纯静态页面，随博客部署在 GitHub Pages，完全免费、无第三方依赖。打卡数据不会上传。</p></div>';
   $("tab-mine").innerHTML = h;
 }
@@ -1323,14 +2333,16 @@ function doCheckin(gid){
   var a = +( $("amt-" + gid).value ) || 0;
   if (a <= 0){ toast("请输入大于 0 的数量"); return; }
   var m = +( $("min-" + gid).value ) || 0;
+  var cin = $("content-" + gid);
+  var content = cin ? String(cin.value || "").trim().slice(0, 60) : "";
   var sel = document.querySelector('.ttype[data-goal="' + gid + '"] .tt.on');
   var type = sel ? sel.getAttribute("data-tt") : "study";
-  addRecord(gid, todayKey(), a, m, false, type);
+  addRecord(gid, todayKey(), a, m, false, type, content);
   toast("已记录 " + a + " " + g.unit);
   render();
 }
-function addRecord(gid, date, amount, minutes, backfill, type){
-  state.records.push({ id: uid(), goalId: gid, date: date, amount: amount, minutes: minutes, backfill: backfill, type: type || "study", ts: Date.now() });
+function addRecord(gid, date, amount, minutes, backfill, type, content){
+  state.records.push({ id: uid(), goalId: gid, date: date, amount: amount, minutes: minutes, backfill: backfill, type: type || "study", content: content || "", ts: Date.now() });
   save();
 }
 function openBackfill(gid){
@@ -1338,14 +2350,14 @@ function openBackfill(gid){
   var sug = suggest(g);
   var opts = "";
   var t = fromKey(todayKey());
-  for (var i = 0; i < 6; i++){
+  for (var i = 0; i < 7; i++){
     var d = addDays(t, -i), k = toKey(d);
     var has = amountOn(gid, k) > 0;
     opts += '<option value="' + k + '">' + fmtDate(k) + (i === 0 ? "（今天）" : "") + (has ? "（已记录）" : "") + '</option>';
   }
   openModal(
     '<div class="modal"><h3>补打卡 · ' + esc(g.name) + '</h3>' +
-    '<div class="mfield"><label>日期（最近 6 天）</label><select id="bfDate">' + opts + '</select></div>' +
+    '<div class="mfield"><label>日期（最近 7 天）</label><select id="bfDate">' + opts + '</select></div>' +
     '<div class="mfield"><label>类型</label><select id="bfType">' + REC_TYPES.map(function(t){ return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join("") + '</select></div>' +
     '<div class="mrow">' +
     '<div class="mfield"><label>数量（' + esc(g.unit) + '）</label><input id="bfAmt" type="number" inputmode="numeric" min="1" value="' + sug.v + '"></div>' +
@@ -1367,6 +2379,52 @@ function saveBackfill(){
   closeModal();
   toast("已补记 " + fmtDate(k));
   render();
+}
+function openFillDay(k){
+  var connected = !!(state.obsidianInfo && state.obsidianInfo.dir);
+  var list = state.goals.filter(function(g){ return !g.archived && !(g.obsidian && connected); });
+  if (!list.length){ toast("还没有可以手动打卡的目标"); return; }
+  var leave = (state.settings.leaveDays || []).filter(function(l){ return normDate(l.date) === k; })[0];
+  var rows = list.map(function(g){
+    var has = amountOn(g.id, k) > 0;
+    var sug = suggest(g);
+    return '<div class="fdrow"><div class="fdname">' + esc(g.name) +
+      '<span>' + (has ? "这天已经记过" : "建议 " + sug.v + " " + esc(g.unit)) + '</span></div>' +
+      '<input id="fd-' + g.id + '" type="number" inputmode="numeric" min="0" value="" placeholder="' + (has ? "已记" : sug.v) + '">' +
+      '<select id="ft-' + g.id + '">' + REC_TYPES.map(function(t, i){
+        return '<option value="' + t[0] + '"' + ((leave && i === 1) ? " selected" : "") + '>' + t[1] + '</option>';
+      }).join("") + '</select></div>';
+  }).join("");
+  openModal(
+    '<div class="modal"><h3>补打卡 · ' + fmtDate(k) + ' 周' + "一二三四五六日".charAt(weekdayCN(fromKey(k)) - 1) + '</h3>' +
+    (leave ? '<div class="fdleave">这天记了请假：' + esc(leave.note || "没写原因") + ' · 补上之后这里就变正常</div>' : "") +
+    '<p class="note" style="margin:0 0 8px">填了数字才算补上，留空的目标不记。</p>' +
+    rows +
+    (leave
+      ? '<div class="macts"><button class="btn" data-act="save-fill-day">保存补打卡</button>' +
+        '<button class="btn ghost" data-act="close-modal">取消</button></div></div>'
+      : '<div class="fdleave" style="background:#F8FAFC;border-color:#E2E8F0;color:#475569;margin-top:12px">这天没学？那就记成请假，不记缺卡。' +
+        '<input id="fdLeaveNote" type="text" placeholder="原因（选填）如 回家 / 生病" style="width:100%;margin:7px 0;height:34px;padding:0 9px;border:1px solid #CBD5E1;border-radius:8px;font-size:14px">' +
+        '<button class="btn sm ghost" data-act="mark-leave" data-day="' + k + '">记为请假</button></div>' +
+        '<div class="macts"><button class="btn" data-act="save-fill-day">保存补打卡</button><button class="btn ghost" data-act="close-modal">取消</button></div></div>')
+  );
+  window._fillDay = k;
+}
+function saveFillDay(){
+  var k = window._fillDay;
+  var connected = !!(state.obsidianInfo && state.obsidianInfo.dir);
+  var list = state.goals.filter(function(g){ return !g.archived && !(g.obsidian && connected); });
+  var n = 0;
+  list.forEach(function(g){
+    var el = $("fd-" + g.id), sel = $("ft-" + g.id);
+    var a = el ? +el.value : 0;
+    if (!(a > 0)) return;
+    addRecord(g.id, k, a, 0, true, sel ? sel.value : "study");
+    n++;
+  });
+  closeModal();
+  render();
+  toast(n ? "补了 " + n + " 条 · " + fmtDate(k) : "没填数字，什么都没记");
 }
 function openGoalModal(gid){
   var g = gid ? getGoal(gid) : null;
@@ -1531,6 +2589,7 @@ function switchTab(name){
     if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
   });
   window.scrollTo(0, 0);
+  if (name === "today") fitRv();
 }
 
 /* ================= 事件与启动 ================= */
@@ -1558,10 +2617,51 @@ function boot(){
       if (act === "adjust"){ openGoalModal(gid); return; }
       if (act === "edit-goal"){ openGoalModal(gid); return; }
       if (act === "del-goal"){ confirmDel(gid); return; }
+      if (act === "do-del"){ confirmDel(gid); return; }
+      if (act === "do-done"){
+        var gd = getGoal(gid);
+        if (gd){ gd.archived = true; save(); closeModal(); render(); toast("已完成，从今日版面收起来了"); }
+        return;
+      }
+      if (act === "do-restore"){
+        var gr = getGoal(gid);
+        if (gr){ gr.archived = false; save(); closeModal(); render(); toast("已恢复"); }
+        return;
+      }
     }
+    if (act === "pick-del"){ openPickGoal("del"); return; }
+    if (act === "pick-done"){ openPickGoal("done"); return; }
+    if (act === "fill-day"){ openFillDay(el.getAttribute("data-day")); return; }
+    if (act === "save-fill-day"){ saveFillDay(); return; }
+    if (act === "mark-leave"){
+      var mk2 = el.getAttribute("data-day");
+      var note = ($("fdLeaveNote") && $("fdLeaveNote").value || "").trim();
+      state.settings.leaveDays = state.settings.leaveDays || [];
+      if (leaveDates().indexOf(mk2) < 0) state.settings.leaveDays.push({ date: mk2, note: note });
+      save(); closeModal(); render();
+      toast(fmtDate(mk2) + " 记为请假，不计缺卡");
+      return;
+    }
+    if (act === "rv-toggle"){
+      rvOpen = !rvOpen;
+      renderToday();
+      return;
+    }
+    if (act === "rv-rate"){
+      rvRate(el.getAttribute("data-file"), el.getAttribute("data-title"), el.getAttribute("data-q"), el.getAttribute("data-mode"))
+        .catch(function(err){ toast(err && err.message ? err.message : "写回失败"); });
+      return;
+    }
+    if (act === "kb-add"){ openKbModal(null); return; }
+    if (act === "kb-edit"){ openKbModal(el.getAttribute("data-kb")); return; }
+    if (act === "kb-del"){ delKb(el.getAttribute("data-kb")); return; }
+    if (act === "kb-save"){ saveKb(); return; }
     if (act === "add-goal"){ openGoalModal(null); return; }
     if (act === "save-goal"){ saveGoal(); return; }
     if (act === "save-backfill"){ saveBackfill(); return; }
+    if (act === "edit-rec"){ openRecordModal(el.getAttribute("data-ri")); return; }
+    if (act === "save-rec"){ saveRecord(); return; }
+    if (act === "del-rec"){ delRecord(); return; }
     if (act === "export"){ exportData(); return; }
     if (act === "copy-backup"){ copyBackup(); return; }
     if (act === "import"){ $("importFile").click(); return; }
@@ -1570,23 +2670,31 @@ function boot(){
     if (act === "save-review"){ saveReview(); return; }
     if (act === "obs-connect"){ obsConnect(); return; }
     if (act === "obs-refresh"){ obsRefresh(false); return; }
+    if (act === "obs-grant"){ obsGrant(); return; }
+    if (act === "rv-undo"){ rvUndo(); return; }
     if (act === "obs-disconnect"){ obsDisconnect(); return; }
     if (act === "add-leave"){
-      var d = $("leaveDate").value, n = $("leaveNote").value.trim();
-      if (!d){ toast("选日期"); return; }
+      var d = normDate($("leaveDate").value), n = ($("leaveNote").value || "").trim();
+      if (!d){ toast("请选一个日期"); return; }
       state.settings.leaveDays = state.settings.leaveDays || [];
+      if (leaveDates().indexOf(d) >= 0){ toast("这天已经请过假了"); return; }
       state.settings.leaveDays.push({ date: d, note: n });
-      save(); render(); toast("已记请假"); return;
+      save(); render(); toast("已记请假 " + d + "，这天不计缺卡"); return;
+    }
+    if (act === "del-leave"){
+      var dd = el.getAttribute("data-date");
+      state.settings.leaveDays = (state.settings.leaveDays || []).filter(function(l){ return normDate(l.date) !== dd; });
+      save(); render(); toast("已删除"); return;
     }
   });
   document.addEventListener("change", function(e){
-    if (e.target && e.target.id === "restDay"){ state.settings.restWeekday = +e.target.value; save(); render(); toast("休息日已更新"); }
     if (e.target && e.target.id === "importFile"){ importData(e.target); }
   });
   document.addEventListener("keydown", function(e){
     if (e.key === "Escape") closeModal();
   });
   render();
+  window.addEventListener("resize", function(){ fitRv(); });
   try { obsInit(); } catch(e){}
 }
 if (typeof document !== "undefined" && typeof window !== "undefined"){

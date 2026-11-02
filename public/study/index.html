@@ -797,10 +797,10 @@ function normalize(s){
   s.records = (Array.isArray(s.records) ? s.records : []).filter(function(r){
     return r && r.goalId && r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date) && (+r.amount) > 0;
   }).map(function(r){
-    var t = String(r.type || "study");
+    var t = String(r.type || "");
     var okT = REC_TYPES.some(function(x){ return x[0] === t; });
     return { id: String(r.id || uid()), goalId: String(r.goalId), date: String(r.date), amount: +r.amount,
-      minutes: +r.minutes || 0, backfill: !!r.backfill, type: okT ? t : "study",
+      minutes: +r.minutes || 0, backfill: !!r.backfill, type: okT ? t : "study", noType: !okT,
       content: String(r.content || "").slice(0, 60), ts: r.ts || 0 };
   });
   s.kbRoots = (Array.isArray(s.kbRoots) && s.kbRoots.length ? s.kbRoots : JSON.parse(JSON.stringify(DEFAULT_ROOTS)))
@@ -1797,38 +1797,52 @@ function renderBoard(){
   h += '<div class="two-col"><div class="card heat-card">' + heat35() + '</div><div class="card">' + recentFeed() + '</div></div>';
   $("tab-board").innerHTML = h;
 }
-var TYPE_COLOR = { study: "#2B6CE6", review: "#7C6BD6", practice: "#D99A3E", recite: "#3F9C6B" };
-function typeMixHTML(rows, total){
+var TYPE_COLOR = { study: "#2B6CE6", review: "#7C6BD6", practice: "#D99A3E", recite: "#3F9C6B", unknown: "#94A3B8" };
+function typeMixHTML(rows, totalMin, tooFew){
+  var byMin = totalMin > 0;
+  var denom = byMin ? totalMin : rows.reduce(function(a, r){ return a + r.n; }, 0);
+  if (!denom) denom = 1;
   var bar = rows.map(function(r){
-    if (!r.n) return "";
-    return '<i style="width:' + (r.n / total * 100).toFixed(2) + '%;background:' + TYPE_COLOR[r.key] + '"></i>';
+    var v = byMin ? r.mins : r.n;
+    if (!v || tooFew) return "";
+    return '<i style="width:' + (v / denom * 100).toFixed(2) + '%;background:' + TYPE_COLOR[r.key] + '"></i>';
   }).join("");
   var list = rows.map(function(r){
-    var p = total ? Math.round(r.n / total * 100) : 0;
-    var w = total ? (r.n / total * 100).toFixed(1) : 0;
+    var v = byMin ? r.mins : r.n;
+    var p = tooFew ? "—" : Math.round(v / denom * 100) + "%";
+    var w = tooFew ? 0 : (v / denom * 100).toFixed(1);
     return '<div class="tm-row"><i class="tm-dot" style="background:' + TYPE_COLOR[r.key] + '"></i>' +
       '<span class="tm-name">' + r.label + '</span>' +
       '<span class="tm-track"><i style="width:' + w + '%;background:' + TYPE_COLOR[r.key] + '"></i></span>' +
-      '<span class="tm-n">' + r.n + ' 次</span><span class="tm-p">' + p + '%</span></div>';
+      '<span class="tm-n">' + (byMin ? r.mins + ' 分钟' : r.n + ' 次') + '</span>' +
+      '<span class="tm-p">' + p + '</span></div>';
   }).join("");
   return '<div class="tm-bar">' + bar + '</div><div class="tm-grid">' + list + '</div>';
 }
 function typeMixCard(){
   var rows = REC_TYPES.map(function(t){ return { key: t[0], label: t[1], n: 0, mins: 0 }; });
+  rows.push({ key: "unknown", label: "未分类", n: 0, mins: 0 });
   var total = 0, totalMin = 0, days = {};
   state.records.forEach(function(r){
+    var key = r.noType ? "unknown" : (r.type || "study");
     var row = null;
-    for (var i = 0; i < rows.length; i++) if (rows[i].key === (r.type || "study")) row = rows[i];
-    if (!row) return;
+    for (var i = 0; i < rows.length; i++) if (rows[i].key === key) row = rows[i];
+    if (!row) row = rows[rows.length - 1];
     row.n++; row.mins += (+r.minutes || 0);
     total++; totalMin += (+r.minutes || 0); days[r.date] = 1;
   });
-  var head = '<h3>四类投入构成<span class="hsub">累计 · 学习 / 复习 / 练习 / 背诵各占多少</span></h3>';
+  var head = '<h3>四类投入构成<span class="hsub">按投入分钟 · 学习 / 复习 / 练习 / 背诵 / 未分类各占多少</span></h3>';
   if (!total){
     return '<div class="card">' + head + '<p class="note">还没有分类记录。打卡时选一下「学习 / 复习 / 练习 / 背诵」，这里就会画出构成。</p></div>';
   }
-  return '<div class="card">' + head + typeMixHTML(rows, total) +
-    '<div class="tm-sum">累计 ' + total + ' 次 · 覆盖 ' + Object.keys(days).length + ' 天' + (totalMin ? ' · ' + totalMin + ' 分钟' : "") + '</div></div>';
+  // 只有一条记录、或全挤在一类时，百分比必然是 100%，没有意义，先不显示
+  var kinds = rows.filter(function(r){ return r.n > 0; }).length;
+  var tooFew = total < 2 || kinds <= 1;
+  var sum = '<div class="tm-sum">累计 ' + total + ' 次 · 覆盖 ' + Object.keys(days).length + ' 天' +
+    (totalMin ? ' · 共 ' + totalMin + ' 分钟 · 占比按分钟' : ' · 未填分钟，占比暂按次数') + '</div>';
+  return '<div class="card">' + head +
+    (tooFew ? '<p class="note">数据还少，暂不计算构成（至少 2 次打卡、且分布在两类以上）。</p>' : "") +
+    typeMixHTML(rows, totalMin, tooFew) + sum + '</div>';
 }
 function subjectLoopCard(){
   var subs = subjectLoop().filter(function(x){ return !x.missing && x.total; });

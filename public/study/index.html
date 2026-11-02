@@ -662,16 +662,17 @@ textarea.sent{width:100%;border:1px solid var(--line);border-radius:8px;padding:
 }
 
 /* 四类投入：左扇形图（百分比）+ 右五行具体分钟 */
-.tm-split{display:flex;align-items:center;gap:22px;margin-top:6px}
+/* 左右等高：右栏五行均分左栏扇形图的高度，上下边缘对齐 */
+.tm-split{display:flex;align-items:stretch;gap:22px;margin-top:6px}
 .tm-pie{flex:none;width:168px}
 .tm-pie svg{display:block;width:168px;height:168px}
-.tm-grid{flex:1;min-width:0;grid-template-columns:1fr;gap:12px}
+.tm-grid{flex:1;min-width:0;grid-template-columns:1fr;grid-template-rows:repeat(5,1fr);gap:0}
 .tm-row.zero{opacity:.5}
 @media(max-width:640px){
   .tm-split{gap:12px;align-items:flex-start}
   .tm-pie{width:128px}
   .tm-pie svg{width:128px;height:128px}
-  .tm-grid{gap:8px}
+  .tm-grid{grid-template-rows:none;gap:8px}
 }
 
 

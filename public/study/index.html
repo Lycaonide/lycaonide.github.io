@@ -680,7 +680,7 @@ function recsOn(gid, k){ return state.records.filter(function(r){ return r.goalI
 function amountOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + r.amount; }, 0); }
 function minutesOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + (r.minutes || 0); }, 0); }
 function autoCount(g){ if (!g.obsidian) return 0; return (state.obsidianCounts && state.obsidianCounts[g.obsidian]) || 0; }
-function doneTotal(g){ return (+g.base || 0) + state.records.reduce(function(s, r){ return r.goalId === g.id ? s + r.amount : s; }, 0) + autoCount(g); }
+function doneTotal(g){ return (+g.base || 0) + state.records.reduce(function(s, r){ return r.goalId === g.id && r.tt === "学" ? s + r.amount : s; }, 0) + autoCount(g); }
 function remaining(g){ return Math.max(0, (+g.total || 0) - doneTotal(g)); }
 function daysLeft(g){ var t = fromKey(todayKey()), dl = fromKey(g.deadline); return Math.round((dl - t) / 86400000) + 1; }
 function suggest(g){
@@ -1041,9 +1041,10 @@ function heat35(){
   }
   function lvl(m){
     if (m <= 0) return 0;
-    if (maxMin <= 0) return 1;
-    var r = m / maxMin;
-    return r > 0.66 ? 4 : (r > 0.33 ? 3 : (r > 0.1 ? 2 : 1));
+    if (m < 30) return 1;
+    if (m < 60) return 2;
+    if (m < 120) return 3;
+    return 4;
   }
   var html = '<h3>近 35 天打卡热力</h3><div class="heat">';
   for (var w = 0; w < 5; w++){

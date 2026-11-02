@@ -322,7 +322,7 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
 .tm-track i{display:block;height:100%;border-radius:99px}
 .tm-n{font-variant-numeric:tabular-nums;color:var(--ink);flex:none;min-width:48px;text-align:right;font-size:15px;font-weight:600}
 .tm-p{color:var(--muted);font-size:14px;flex:none;min-width:40px;text-align:right}
-.tm-sum{font-size:15px;color:var(--muted);margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.tm-sum{font-size:15px;color:var(--muted);margin-top:16px}
 
 /* 手机端四类投入：一行放下，不挤到边缘 */
 @media(max-width:640px){
@@ -465,8 +465,8 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
 
 /* ===== 看板 ===== */
 /* 各科目进度：环形图 */
-.bring-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(154px,1fr));gap:6px 4px;margin-top:4px}
-.bring{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 6px 12px;min-width:0}
+.bring-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 4px;margin-top:4px}
+.bring{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 6px 12px;min-width:0;flex:0 0 132px;box-sizing:border-box}
 .rng{position:relative;width:96px;height:96px;flex:none}
 .rng svg{width:96px;height:96px;display:block}
 .rng-v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.4px}
@@ -474,8 +474,8 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
 .bring .rmeta{font-size:14px;color:var(--muted);margin-top:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bring .robs{font-size:14px;color:#B45309;margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:640px){
-  .bring-grid{grid-template-columns:repeat(2,1fr);gap:2px}
-  .bring{padding:8px 4px 10px}
+  .bring-grid{gap:2px}
+  .bring{padding:8px 4px 10px;flex:0 0 calc(50% - 1px)}
   .rng,.rng svg{width:84px;height:84px}
   .rng-v{font-size:17px}
   .bring .rname{font-size:14px;min-height:20px}

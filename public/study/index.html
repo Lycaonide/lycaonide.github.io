@@ -35,8 +35,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .sidebar{width:252px;flex:none;background:#F8FAFC;border-right:1px solid var(--line);padding:26px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
 .sb-brand{display:flex;flex-direction:row;justify-content:space-between;align-items:center;padding:0 6px 22px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.back-link{position:fixed;bottom:18px;left:196px;display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0;background:transparent;color:var(--ink2);text-decoration:none;font-size:16px;font-weight:500;z-index:10}
-.back-link:hover{color:var(--brand)}
+.back-link{position:fixed;bottom:18px;left:196px;display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0;background:transparent;color:var(--ink2);text-decoration:none;font-size:15px;font-weight:500;z-index:10}
+/* 移上去 / 按下都用「今日」悬停时的墨色，不再跳成蓝色 */
+.back-link:hover,.back-link:active{color:var(--ink)}
 .brand-mark{width:28px;height:28px;border-radius:7px;background:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
 .brand-mark svg{width:17px;height:17px;stroke:#fff}
 .brand h1{font-size:24px;font-weight:700;letter-spacing:0;white-space:nowrap;color:var(--ink)}
@@ -60,7 +61,7 @@ main > *{max-width:1320px;margin-left:auto;margin-right:auto}
   .layout{flex-direction:column}
   .sidebar{width:100%;height:auto;position:sticky;top:0;flex-direction:column;gap:8px;padding:10px 14px;border-right:none;border-bottom:1px solid var(--line);z-index:20}
   .sb-brand{flex-direction:row;align-items:center;justify-content:space-between;padding:0 0 8px;gap:10px}
-  .back-link{position:static;order:2;font-size:14px;color:var(--ink2)}
+  .back-link{position:static;order:2;font-size:13px;color:var(--ink2)}
   .brand{order:1}
   .brand h1{font-size:19px}
   .date{display:none}

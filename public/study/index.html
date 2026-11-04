@@ -1977,7 +1977,7 @@ function heat35(){
   var t = fromKey(todayKey());
   var thisMon = addDays(t, -(weekdayCN(t) - 1));
   var start = addDays(thisMon, -28);
-  var weeks = [], maxMin = 0;
+  var weeks = [];
   for (var w = 0; w < 5; w++){
     var row = [];
     for (var d = 0; d < 7; d++){
@@ -1985,15 +1985,18 @@ function heat35(){
       var dayRecs = state.records.filter(function(r){ return r.date === k; });
       var mins = dayRecs.reduce(function(x, r){ return x + (+r.minutes || 0); }, 0);
       row.push({ k: k, mins: mins, n: dayRecs.length });
-      if (mins > maxMin) maxMin = mins;
     }
     weeks.push(row);
   }
+  /* 固定刻度，不随这 35 天里最高那天浮动：3 小时以上才算最深色。
+     以前按「相对最大值」分档，最高只有 28 分钟时，20 多分钟也会显示成深蓝。 */
   function lvl(c){
     if (!c.n) return 0;
-    if (!maxMin) return 2;
-    var v = Math.ceil(c.mins / maxMin * 4);
-    return Math.max(1, Math.min(4, v || 1));
+    var m = c.mins;
+    if (m >= 180) return 4;
+    if (m >= 120) return 3;
+    if (m >= 60) return 2;
+    return 1;
   }
   var dowNames = ["一", "二", "三", "四", "五", "六", "日"];
   var html = '<h3>近 35 天打卡热力</h3><div class="heat">' +
@@ -2009,7 +2012,10 @@ function heat35(){
     }
     html += '</div>';
   }
-  html += '</div><div class="heat-legend"><span>少</span>' + [1,2,3,4].map(function(i){ return '<i class="heat-cell l' + i + '"></i>'; }).join("") + '<span>多</span></div>';
+  var HEAT_LV = ["", "1 小时内", "1~2 小时", "2~3 小时", "3 小时以上"];
+  html += '</div><div class="heat-legend"><span>1 小时内</span>' +
+    [1,2,3,4].map(function(i){ return '<i class="heat-cell l' + i + '" title="' + HEAT_LV[i] + '"></i>'; }).join("") +
+    '<span>3 小时以上</span></div>';
   var dayCnt = 0, minCnt = 0;
   weeks.forEach(function(row){
     row.forEach(function(c){

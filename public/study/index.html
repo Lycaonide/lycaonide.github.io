@@ -283,6 +283,7 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
 .heat-cell.l2{background:#7BA9F0}
 .heat-cell.l3{background:#2F6BE4}
 .heat-cell.l4{background:#1B4FD0}
+.heat-cell.l5{background:#12368F}
 .heat-cell.future{opacity:.3}
 .heat-legend{display:flex;align-items:center;gap:6px;justify-content:center;margin-top:12px;font-size:14px;color:var(--muted)}
 .heat-sum{text-align:center;font-size:15px;color:var(--muted);margin-top:14px}
@@ -1988,14 +1989,15 @@ function heat35(){
     }
     weeks.push(row);
   }
-  /* 固定刻度，不随这 35 天里最高那天浮动：3 小时以上才算最深色。
-     以前按「相对最大值」分档，最高只有 28 分钟时，20 多分钟也会显示成深蓝。 */
+  /* 固定刻度五档，分界：半小时 / 2 小时 / 3 小时 / 5 小时。
+     不随这 35 天里最高那天浮动，免得最高只有 28 分钟时 20 多分钟也算深蓝。 */
   function lvl(c){
     if (!c.n) return 0;
     var m = c.mins;
+    if (m >= 300) return 5;
     if (m >= 180) return 4;
     if (m >= 120) return 3;
-    if (m >= 60) return 2;
+    if (m >= 30) return 2;
     return 1;
   }
   var dowNames = ["一", "二", "三", "四", "五", "六", "日"];
@@ -2012,10 +2014,10 @@ function heat35(){
     }
     html += '</div>';
   }
-  var HEAT_LV = ["", "1 小时内", "1~2 小时", "2~3 小时", "3 小时以上"];
-  html += '</div><div class="heat-legend"><span>1 小时内</span>' +
-    [1,2,3,4].map(function(i){ return '<i class="heat-cell l' + i + '" title="' + HEAT_LV[i] + '"></i>'; }).join("") +
-    '<span>3 小时以上</span></div>';
+  var HEAT_LV = ["", "半小时以内", "半小时~2 小时", "2~3 小时", "3~5 小时", "5 小时以上"];
+  html += '</div><div class="heat-legend"><span>半小时以内</span>' +
+    [1,2,3,4,5].map(function(i){ return '<i class="heat-cell l' + i + '" title="' + HEAT_LV[i] + '"></i>'; }).join("") +
+    '<span>5 小时以上</span></div>';
   var dayCnt = 0, minCnt = 0;
   weeks.forEach(function(row){
     row.forEach(function(c){
@@ -2110,17 +2112,15 @@ function chart14(){
     if (sum > max) max = sum;
   }
   var step, yMax;
-  if (max <= 0){ step = 10; yMax = 60; }
-  else {
-    // 按实际最大分钟数定刻度：先取约 6 段，段数太少再对半折一次
-    var raw = max / 6, mag = Math.pow(10, Math.floor(Math.log10(raw))), norm = raw / mag;
-    step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
-    if (step < 1) step = 1;
-    yMax = Math.ceil(max / step) * step;
-    var half = step / 2;
-    if (yMax / step < 5 && half >= 1 && Math.round(half) === half){
-      step = half; yMax = Math.ceil(max / step) * step;
-    }
+  // 总高度最少按 60 分钟算：数据再少，也别把二十来分钟画成满格
+  var base = Math.max(60, max);
+  var raw = base / 6, mag = Math.pow(10, Math.floor(Math.log10(raw))), norm = raw / mag;
+  step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+  if (step < 1) step = 1;
+  yMax = Math.ceil(base / step) * step;
+  var half = step / 2;
+  if (yMax / step < 5 && half >= 1 && Math.round(half) === half){
+    step = half; yMax = Math.ceil(base / step) * step;
   }
   var ticks = [];
   for (var gv = 0; gv * step <= yMax + 0.001; gv++) ticks.push(Math.round(gv * step));

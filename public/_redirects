@@ -1,0 +1,3 @@
+# 打卡页统一到 GitHub Pages：两个域名各存一套 localStorage 会让记录分叉
+/study https://lycaonide.github.io/study/ 301
+/study/* https://lycaonide.github.io/study/:splat 301

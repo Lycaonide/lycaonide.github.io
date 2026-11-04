@@ -474,6 +474,7 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
 .rng-v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.4px}
 .bring .rname{font-size:15px;font-weight:700;line-height:1.35;color:var(--ink);margin-top:10px;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:22px;letter-spacing:-.1px}
 .bring .rmeta{font-size:14px;color:var(--muted);margin-top:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bring .rplan{font-size:13px;color:var(--ink2);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bring .robs{font-size:14px;color:#B45309;margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:640px){
   .bring-grid{grid-template-columns:repeat(2,1fr);gap:2px;justify-items:center}
@@ -482,6 +483,7 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
   .rng-v{font-size:17px}
   .bring .rname{font-size:14px;min-height:20px}
   .bring .rmeta,.bring .robs{font-size:13px}
+  .bring .rplan{font-size:12px}
 }
 .chart-card h3{font-size:22px;margin-bottom:14px}
 .chart{width:100%;height:auto;display:block;margin-top:4px}
@@ -785,6 +787,16 @@ function defaultState(){
       ],
       dailySentence: ""
     },
+    /* 四类每日计划量：每科一组，单位同该科 unit。先用模拟值，用久了在「编辑目标」里改。 */
+    plans: {
+      "g1": { study: 1, review: 1, practice: 2, recite: 0 },
+      "g2": { study: 1, review: 1, practice: 0, recite: 1 },
+      "g3": { study: 50, review: 30, practice: 0, recite: 20 },
+      "g4": { study: 1, review: 1, practice: 2, recite: 0 },
+      "g5": { study: 1, review: 2, practice: 1, recite: 0 },
+      "g6": { study: 2, review: 1, practice: 1, recite: 0 },
+      "g7": { study: 1, review: 1, practice: 1, recite: 1 }
+    },
     dismissed: {},
     lastBackup: 0
   };
@@ -827,6 +839,16 @@ function normalize(s){
   s.lastBackup = +s.lastBackup || 0;
   s.reviews = s.reviews && typeof s.reviews === "object" ? s.reviews : {};
   if (!s.goals.length) s.goals = d.goals;
+  /* 四类每日计划量：旧备份没有就按目标补默认，字段只增不减 */
+  var pv = function(v, dv){ var n = Number(v); return (isFinite(n) && n >= 0) ? n : dv; };
+  var oldPlans = (s.plans && typeof s.plans === "object") ? s.plans : {};
+  var newPlans = {};
+  s.goals.forEach(function(g){
+    var p = oldPlans[g.id] || {}, def = d.plans[g.id] || { study: 1, review: 1, practice: 1, recite: 0 };
+    newPlans[g.id] = { study: pv(p.study, def.study), review: pv(p.review, def.review),
+      practice: pv(p.practice, def.practice), recite: pv(p.recite, def.recite) };
+  });
+  s.plans = newPlans;
   return s;
 }
 function load(){
@@ -1179,17 +1201,24 @@ function suggest(g){
   if (g.name && g.name.indexOf("单词") >= 0) return { v: 50, note: "" };
   return { v: Math.ceil(rem / dl), note: "" };
 }
+/* 预计速度只取「学习」类：完成率和剩余量本来就只算学习，复习 / 练习 / 背诵属于掌握率那条线。
+   混进来会把「什么时候学完」算歪 —— 复习多、新学少时，日期会被拖得很远。 */
 function pace7(g){
   var t = fromKey(todayKey()), sum = 0, cnt = 0;
-  for (var i = 0; i < 7; i++) { var a = amountOn(g.id, toKey(addDays(t, -i))); sum += a; if (a > 0) cnt++; }
+  for (var i = 0; i < 7; i++) {
+    var k = toKey(addDays(t, -i));
+    var a = recsOn(g.id, k).reduce(function(s, r){ return r.type === "study" ? s + r.amount : s; }, 0);
+    sum += a; if (a > 0) cnt++;
+  }
   if (cnt < 3) return null;
   return sum / 7;
 }
 function eta(g){
-  var p = pace7(g);
-  if (p === null || p <= 0) return null;
   var rem = remaining(g);
   if (rem <= 0) return todayKey();
+  var p = pace7(g);
+  /* 只按新学算：近 7 天不足 3 天有学习记录就显示「无」，不拿计划值硬凑一个日期。 */
+  if (p === null || p <= 0) return null;
   return toKey(addDays(fromKey(todayKey()), Math.ceil(rem / p)));
 }
 function streak(g){
@@ -1246,11 +1275,35 @@ function relDate(k){
   return d + " 天前";
 }
 function pct(g){ var t = +g.total || 0; if (t <= 0) return 0; return Math.min(100, Math.round(doneTotal(g) / t * 100)); }
+/* 计划完成：近 7 天四类活动按计划该做的量，实际做到了几成。
+   每类最多拿满自己那份，防止只刷一类把整体拉满。 */
+function planRatio(g){
+  var p = (state.plans && state.plans[g.id]) || { study: 1, review: 1, practice: 1, recite: 0 };
+  var t = fromKey(todayKey()), DAYS = 7;
+  var lo = toKey(addDays(t, -(DAYS - 1))), hi = toKey(t);
+  var got = { study: 0, review: 0, practice: 0, recite: 0 };
+  state.records.forEach(function(r){
+    if (r.goalId !== g.id || r.date < lo || r.date > hi) return;
+    if (got[r.type] != null) got[r.type] += (+r.amount || 0);
+  });
+  var plan = 0, done = 0;
+  ["study", "review", "practice", "recite"].forEach(function(k){
+    var want = (+p[k] || 0) * DAYS;
+    plan += want; done += Math.min(got[k], want);
+  });
+  if (plan <= 0) return null;
+  return Math.round(done / plan * 100);
+}
 function statusOf(g){
   if (remaining(g) <= 0) return { cls: "ok", t: "已完成" };
   if (daysLeft(g) <= 0) return { cls: "bad", t: "已逾期" };
-  if (doneTotal(g) > 0) return { cls: "info", t: "进行中" };
-  return { cls: "warn", t: "未开始" };
+  if (g.obsidian) return doneTotal(g) > 0 ? { cls: "info", t: "进行中" } : { cls: "warn", t: "未开始" };
+  if (!state.records.some(function(r){ return r.goalId === g.id; })) return { cls: "warn", t: "未开始" };
+  var pr = planRatio(g);
+  if (pr === null) return { cls: "info", t: "进行中" };
+  if (pr >= 85) return { cls: "ok", t: "正常" };
+  if (pr >= 60) return { cls: "warn", t: "稍慢" };
+  return { cls: "bad", t: "落后" };
 }
 function deltaPct(cur, prev){
   if (prev <= 0) return cur > 0 ? "+" : "—";
@@ -1801,10 +1854,15 @@ function renderBoard(){
   h += '<div class="bring-grid">';
   state.goals.forEach(function(g){
     var p = pct(g);
+    var pr = planRatio(g);
+    var planTxt = g.obsidian ? "自动统计" : (pr === null ? "四类进度 —" : "四类进度 " + pr + "%");
+    var planTip = g.obsidian ? "Obsidian 自动统计，不按每日四类计划量衡量"
+      : "近 7 天四类（学习 / 复习 / 练习 / 背诵）按计划该做的量，实际完成了 " + (pr === null ? 0 : pr) + "%";
     h += '<div class="bring" title="' + esc(g.name) + ' · 已完成 ' + doneTotal(g) + ' / ' + g.total + ' ' + esc(g.unit) + '">' +
       ringChart(p, g.color) +
       '<div class="rname">' + esc(g.name) + '</div>' +
       '<div class="rmeta">' + (g.archived ? "已归档" : doneTotal(g) + ' / ' + g.total + ' ' + esc(g.unit)) + '</div>' +
+      '<div class="rplan" title="' + esc(planTip) + '">' + planTxt + '</div>' +
       (g.obstacle ? '<div class="robs" title="' + esc(g.obstacle) + '">卡住：' + esc(g.obstacle) + '</div>' : "") +
       '</div>';
   });
@@ -2476,6 +2534,11 @@ function saveFillDay(){
 }
 function openGoalModal(gid){
   var g = gid ? getGoal(gid) : null;
+  var p = (gid && state.plans && state.plans[gid]) || { study: 1, review: 1, practice: 1, recite: 0 };
+  var plInput = function(label, key, obj){
+    return '<div class="mfield" style="flex:1;min-width:60px"><label>' + label + '</label>' +
+      '<input id="pl-' + key + '" type="number" inputmode="numeric" min="0" value="' + (+obj[key] || 0) + '"></div>';
+  };
   var gObsCustom = g && g.obsidian && (g.obsidian.indexOf("dir:") === 0 || g.obsidian.indexOf("tbl:") === 0);
   var gObsPath = "";
   if (gObsCustom){ var pm = /^(?:dir:|tbl:)(.+)$/.exec(g.obsidian); gObsPath = pm ? pm[1] : ""; }
@@ -2494,6 +2557,9 @@ function openGoalModal(gid){
     '<div class="mfield"><label>总量</label><input id="glTotal" type="number" inputmode="numeric" min="1" value="' + (g ? g.total : "") + '"></div>' +
     '</div>' +
     '<div class="mfield"><label>截止日期</label><input id="glDeadline" type="date" value="' + (g ? g.deadline : "2027-12-20") + '"></div>' +
+    '<div class="mfield"><label>每日计划量 · 四类各多少 ' + esc(g ? g.unit : "次") + '（填 0 表示不计这类）</label>' +
+      '<div class="mrow">' + plInput("学习", "study", p) + plInput("复习", "review", p) +
+      plInput("练习", "practice", p) + plInput("背诵", "recite", p) + '</div></div>' +
     '<div class="mfield"><label>自动统计来源（可选）</label><select id="glObsidian">' +
       '<option value="">无（手动打卡）</option>' +
       '<option value="math-notes"' + (g && g.obsidian === "math-notes" ? " selected" : "") + '>数学讲义（章节文件数）</option>' +
@@ -2547,15 +2613,21 @@ function saveGoal(){
     obsVal = obsVal + p;
   }
   var id = window._goalId;
+  var newPlan = { study: Math.max(0, +($("pl-study").value) || 0), review: Math.max(0, +($("pl-review").value) || 0),
+    practice: Math.max(0, +($("pl-practice").value) || 0), recite: Math.max(0, +($("pl-recite").value) || 0) };
+  if (!state.plans) state.plans = {};
   if (id){
     var g = getGoal(id);
     if (g){ g.name = name; g.unit = unit; g.total = total; g.deadline = deadline; g.color = color;
       g.obsidian = obsVal;
       g.obstacle = $("glObs").value.trim(); g.countermeasure = $("glCnt").value.trim(); }
+    state.plans[id] = newPlan;
   } else {
-    state.goals.push({ id: uid(), name: name, unit: unit, total: total, deadline: deadline, color: color,
+    var nid = uid();
+    state.goals.push({ id: nid, name: name, unit: unit, total: total, deadline: deadline, color: color,
       base: 0, obsidian: obsVal,
       obstacle: $("glObs").value.trim(), countermeasure: $("glCnt").value.trim() });
+    state.plans[nid] = newPlan;
   }
   save(); closeModal(); render(); toast("已保存");
   if (state.obsidianInfo && state.obsidianInfo.dir && state.goals.some(function(x){ return x.obsidian; })) obsRefresh(true);

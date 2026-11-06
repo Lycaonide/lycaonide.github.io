@@ -126,6 +126,11 @@ main > *{max-width:1320px;margin-left:auto;margin-right:auto}
 .gact input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(37,99,235,.13)}
 .gact .ttype{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-start;gap:6px;background:none;padding:0}
 .gact .btn.primary{grid-column:auto;min-width:88px;padding:0 18px;white-space:nowrap}
+.gact.jact{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.gact.jact .f-content{flex:1 1 200px}
+.gact.jact .f-min{flex:0 0 96px}
+.gact.jact .btn.primary{flex:0 0 auto;min-width:88px;margin-left:0}
+.feed-a.jfeed{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .unit-holder{position:relative}
 .unit-holder input{padding-right:38px}
 .unit-holder .u{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);pointer-events:none;font-weight:600}
@@ -136,6 +141,7 @@ main > *{max-width:1320px;margin-left:auto;margin-right:auto}
 .rl-title{font-size:15px;color:var(--muted);font-weight:600;letter-spacing:.3px}
 .rl-more{background:none;border:none;padding:0;font-family:inherit;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:color .15s}
 .rl-more:hover{color:var(--brand)}
+.rl-note{font-size:13px;color:#94A3B8;white-space:nowrap}
 .rec{display:flex;align-items:center;gap:8px;font-size:15px;padding:5px 0}
 .rec .rc-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
 .rec .amt{font-weight:700;color:var(--brand-ink);font-variant-numeric:tabular-nums;flex:none}
@@ -748,7 +754,7 @@ function defaultState(){
     version: 1,
     goals: [
       {id:"g1", name:"考研数学 · 讲义", unit:"讲", total:20, deadline:"2027-12-20", color:"#2563EB", base:0, obsidian:"math-notes", obstacle:"", countermeasure:""},
-      {id:"g2", name:"考研英语 · 每日一句", unit:"句", total:100, deadline:"2027-12-20", color:"#4A90D9", base:0, obsidian:"sentence", obstacle:"", countermeasure:""},
+      {id:"g2", name:"考研英语 · 每日一句", unit:"句", total:78, deadline:"2027-12-20", color:"#4A90D9", base:0, obsidian:"sentence", obstacle:"", countermeasure:""},
       {id:"g3", name:"考研英语 · 单词", unit:"词", total:6024, deadline:"2027-12-20", color:"#E8A33D", base:581, obsidian:"", obstacle:"", countermeasure:""},
       {id:"g4", name:"408 · 数据结构", unit:"轮", total:3, deadline:"2027-09-30", color:"#E25B5B", base:0, obsidian:"", obstacle:"", countermeasure:""},
       {id:"g5", name:"408 · 计算机组成原理", unit:"轮", total:3, deadline:"2027-09-30", color:"#7FB069", base:0, obsidian:"", obstacle:"", countermeasure:""},
@@ -756,6 +762,8 @@ function defaultState(){
       {id:"g7", name:"408 · 计算机网络", unit:"轮", total:3, deadline:"2027-09-30", color:"#C77D5A", base:0, obsidian:"", obstacle:"", countermeasure:""}
     ],
     records: [],
+    /* 随手记：自动统计科目的流水（内容 + 分钟），只用来自己看进度，不参与任何统计 */
+    journals: [],
     kbRoots: JSON.parse(JSON.stringify(DEFAULT_ROOTS)),
     rvLog: [],
     /**
@@ -817,6 +825,11 @@ function normalize(s){
         obsidian: (g.obsidian === "math-notes" || g.obsidian === "sentence" || /^dir:/.test(g.obsidian) || /^tbl:/.test(g.obsidian)) ? g.obsidian : "",
         obstacle: String(g.obstacle || ""), countermeasure: String(g.countermeasure || "") };
     });
+  /* 每日一句总量：旧默认值 100 实际是 78 句。只迁移一次，之后用户改多少都保留。 */
+  if (!s.settings.sentence78){
+    s.goals.forEach(function(g){ if (g.id === "g2" && +g.total === 100) g.total = 78; });
+    s.settings.sentence78 = true;
+  }
   s.records = (Array.isArray(s.records) ? s.records : []).filter(function(r){
     return r && r.goalId && r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date) && (+r.amount) > 0;
   }).map(function(r){
@@ -825,6 +838,13 @@ function normalize(s){
     return { id: String(r.id || uid()), goalId: String(r.goalId), date: String(r.date), amount: +r.amount,
       minutes: +r.minutes || 0, backfill: !!r.backfill, type: okT ? t : "study", noType: !okT,
       content: String(r.content || "").slice(0, 60), ts: r.ts || 0 };
+  });
+  /* 随手记：旧备份没有就补空数组，字段只增不减 */
+  s.journals = (Array.isArray(s.journals) ? s.journals : []).filter(function(j){
+    return j && j.goalId && j.date && /^\d{4}-\d{2}-\d{2}$/.test(j.date);
+  }).map(function(j){
+    return { id: String(j.id || uid()), goalId: String(j.goalId), date: String(j.date),
+      content: String(j.content || "").slice(0, 80), minutes: +j.minutes || 0, ts: j.ts || 0 };
   });
   s.kbRoots = (Array.isArray(s.kbRoots) && s.kbRoots.length ? s.kbRoots : JSON.parse(JSON.stringify(DEFAULT_ROOTS)))
     .filter(function(r){ return r && r.path; })
@@ -1189,6 +1209,7 @@ function uid(){ return "r" + Date.now().toString(36) + Math.random().toString(36
 /* ================= 统计（纯函数） ================= */
 function getGoal(id){ for (var i = 0; i < state.goals.length; i++) if (state.goals[i].id === id) return state.goals[i]; return null; }
 function recsOn(gid, k){ return state.records.filter(function(r){ return r.goalId === gid && r.date === k; }); }
+function journalsOn(gid, k){ return (state.journals || []).filter(function(j){ return j.goalId === gid && j.date === k; }); }
 function amountOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + r.amount; }, 0); }
 function minutesOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + (r.minutes || 0); }, 0); }
 function autoCount(g){ if (!g.obsidian) return 0; return (state.obsidianCounts && state.obsidianCounts[g.obsidian]) || 0; }
@@ -1777,7 +1798,19 @@ function goalCard(g){
   var et = e === null ? "无" : (remaining(g) <= 0 ? "已完成" : fmtDate(e));
   var sugLabel = "今日建议量";
   var recHtml = "";
-  if (!auto){
+  if (auto){
+    var jn = journalsOn(g.id, todayKey());
+    recHtml = '<div class="reclist' + (jn.length ? '' : ' lite') + '">' +
+      '<div class="rl-head"><span class="rl-title">' +
+      (jn.length ? '今日随手记 ' + jn.length + ' 条' : '今日还没有随手记') +
+      '</span><span class="rl-note">只记流水 · 不计入统计</span></div>' +
+      jn.map(function(j){
+        return '<div class="rec">' +
+          (j.content ? '<span class="rc-t" title="' + esc(j.content) + '">' + esc(j.content) + '</span>' : "") +
+          (j.minutes ? '<span class="tag">' + j.minutes + ' 分钟</span>' : "") +
+          '<span class="time">' + fmtTime(j.ts) + '</span></div>';
+      }).join("") + '</div>';
+  } else {
     var recs = recsOn(g.id, todayKey());
     recHtml = '<div class="reclist' + (recs.length ? '' : ' lite') + '">' +
       '<div class="rl-head"><span class="rl-title">' +
@@ -1822,6 +1855,13 @@ function goalCard(g){
       '<div class="ttype" data-goal="' + g.id + '">' + REC_TYPES.map(function(t, i){
         return '<button type="button" class="tt' + (i === 0 ? " on" : "") + '" data-goal="' + g.id + '" data-tt="' + t[0] + '">' + t[1] + '</button>';
       }).join("") + '<button class="btn primary" data-goal="' + g.id + '" data-act="checkin"' + (disabled ? ' disabled' : '') + '>打卡</button></div>' +
+      '</div>';
+  } else {
+    /* 自动统计科目：给一个跟其他科目一样的内容 + 分钟输入框，但只写进 journals */
+    gact = '<div class="gact jact">' +
+      '<div class="field f-content"><label>学习内容（选填）</label><input id="jcontent-' + g.id + '" type="text" placeholder="如：03 章 一元二次方程" style="width:100%"></div>' +
+      '<div class="field f-min"><label>分钟</label><input id="jmin-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
+      '<button class="btn primary" data-goal="' + g.id + '" data-act="note-add">记一笔</button>' +
       '</div>';
   }
   var streakTxt = auto ? "自动" : streak(g) + "<small>天</small>";
@@ -2032,12 +2072,25 @@ function heat35(){
   return html;
 }
 function recentFeed(){
-  var recs = state.records.slice().sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); }).slice(0, 9);
-  if (!recs.length) return '<h3>最近动态</h3><p class="note">还没有记录，今天开始打卡吧。</p>';
+  var all = state.records.map(function(r){ return { k: "rec", r: r, ts: r.ts || 0 }; })
+    .concat((state.journals || []).map(function(j){ return { k: "jnl", r: j, ts: j.ts || 0 }; }))
+    .sort(function(a, b){ return b.ts - a.ts; }).slice(0, 9);
+  if (!all.length) return '<h3>最近动态</h3><p class="note">还没有记录，今天开始打卡吧。</p>';
   var h = '<h3>最近动态</h3><div class="feed">';
-  recs.forEach(function(r){
-    var g = getGoal(r.goalId);
+  all.forEach(function(o){
+    var r = o.r, g = getGoal(r.goalId);
     if (!g) return;
+    if (o.k === "jnl"){
+      var ji = state.journals.indexOf(r);
+      h += '<div class="feed-row"><span class="gdot" style="background:' + g.color + '"></span>' +
+        '<span class="feed-n">' + esc(g.name) + '</span>' +
+        '<span class="feed-a jfeed">' + (r.content ? esc(r.content) : "随手记") +
+        (r.minutes ? ' · ' + r.minutes + ' 分钟' : "") + '</span>' +
+        '<span class="tag">仅记录</span>' +
+        '<span class="feed-d">' + relDate(r.date) + '</span>' +
+        '<button class="feed-act" data-act="edit-note" data-ji="' + ji + '">改</button></div>';
+      return;
+    }
     var ri = state.records.indexOf(r);
     h += '<div class="feed-row"><span class="gdot" style="background:' + g.color + '"></span>' +
       '<span class="feed-n">' + esc(g.name) + '</span>' +
@@ -2094,6 +2147,47 @@ function delRecord(){
       state.records.splice(ri, 1);
       save(); closeModal(); render(); toast("已删除");
     });
+}
+
+/* ---- 随手记：只留流水，不写进 records，因此不参与完成率 / 四类进度 / 预计 / 热力图 / 近 14 天 / 周报 ---- */
+function noteAt(ji){ var i = +ji; return (i >= 0 && i < state.journals.length) ? state.journals[i] : null; }
+function doNoteAdd(gid){
+  var g = getGoal(gid); if (!g) return;
+  var ci = $("jcontent-" + gid), mi = $("jmin-" + gid);
+  var content = ci ? String(ci.value || "").trim().slice(0, 80) : "";
+  var minutes = mi ? Math.max(0, Math.round(+mi.value || 0)) : 0;
+  if (!content && !minutes){ toast("写点内容或填个分钟数"); return; }
+  state.journals.push({ id: uid(), goalId: gid, date: todayKey(), content: content, minutes: minutes, ts: Date.now() });
+  save(); render(); toast("已记一笔（不计入统计）");
+}
+function openNoteModal(ji){
+  var j = noteAt(ji); if (!j){ toast("这条已经不在了"); return; }
+  var g = getGoal(j.goalId); if (!g){ toast("记在已删除的目标上"); return; }
+  window._noteIdx = +ji;
+  openModal(
+    '<div class="modal"><h3>修改这条随手记</h3>' +
+    '<div class="mfield"><label>记在哪</label><div class="rec-fixed">' + esc(g.name) + ' · ' + fmtDate(j.date) + '</div></div>' +
+    '<div class="mfield"><label>学习内容</label><input id="noContent" type="text" maxlength="80" value="' + esc(j.content || "") + '"></div>' +
+    '<div class="mfield"><label>分钟</label><input id="noMin" type="number" inputmode="numeric" min="0" value="' + (j.minutes || "") + '"></div>' +
+    '<p class="note" style="margin:0">只记流水，不计入完成率、四类进度、热力图、周报等任何统计。</p>' +
+    '<div class="macts"><button class="btn primary" data-act="save-note">保存</button>' +
+    '<button class="btn ghost" data-act="del-note" style="color:var(--red)">删除这条</button>' +
+    '<button class="btn ghost" data-act="close-modal">取消</button></div></div>'
+  );
+}
+function saveNote(){
+  var j = noteAt(window._noteIdx); if (!j) return;
+  j.content = ($("noContent").value || "").trim().slice(0, 80);
+  j.minutes = Math.max(0, Math.round(+($("noMin").value) || 0));
+  if (!j.content && !j.minutes){ toast("内容或分钟至少留一个"); return; }
+  save(); closeModal(); render(); toast("已改好");
+}
+function delNote(){
+  var j = noteAt(window._noteIdx); if (!j) return;
+  confirmBox("删掉这条随手记？", function(){
+    state.journals.splice(window._noteIdx, 1);
+    save(); closeModal(); render(); toast("已删除");
+  });
 }
 
 function chart14(){
@@ -2643,6 +2737,7 @@ function confirmDel(gid){
   confirmBox("删除目标「" + g.name + "」？该目标的打卡记录也会一并删除。", function(){
     state.goals = state.goals.filter(function(x){ return x.id !== gid; });
     state.records = state.records.filter(function(r){ return r.goalId !== gid; });
+    state.journals = (state.journals || []).filter(function(j){ return j.goalId !== gid; });
     save(); render(); toast("已删除");
   });
 }
@@ -2788,6 +2883,10 @@ function boot(){
     if (act === "edit-rec"){ openRecordModal(el.getAttribute("data-ri")); return; }
     if (act === "save-rec"){ saveRecord(); return; }
     if (act === "del-rec"){ delRecord(); return; }
+    if (act === "note-add"){ doNoteAdd(el.getAttribute("data-goal")); return; }
+    if (act === "edit-note"){ openNoteModal(el.getAttribute("data-ji")); return; }
+    if (act === "save-note"){ saveNote(); return; }
+    if (act === "del-note"){ delNote(); return; }
     if (act === "export"){ exportData(); return; }
     if (act === "copy-backup"){ copyBackup(); return; }
     if (act === "import"){ $("importFile").click(); return; }

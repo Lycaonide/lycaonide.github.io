@@ -1209,6 +1209,13 @@ function recsOn(gid, k){ return state.records.filter(function(r){ return r.goalI
 /* 连上 Obsidian 的科目：进度由笔记算，打卡框只留流水 */
 function isAuto(g){ return !!(g && g.obsidian && state.obsidianInfo && state.obsidianInfo.dir); }
 function journalsOn(gid, k){ return (state.journals || []).filter(function(j){ return j.goalId === gid && j.date === k; }); }
+/* 投入类统计专用：普通打卡 + 自动统计科目的打卡流水，合成一条活动时间线。
+   流水字段已与 records 对齐（goalId/date/amount/minutes/type/backfill）；
+   完成率 / 预计 / 四类进度 / 连续天数等「进度」统计仍只读 state.records。 */
+function activityAll(){ return state.records.concat(state.journals || []); }
+function activityOn(gid, k){ return activityAll().filter(function(r){ return r.goalId === gid && r.date === k; }); }
+function activityMinutes(gid, k){ return activityOn(gid, k).reduce(function(s, r){ return s + (+r.minutes || 0); }, 0); }
+function activityAmount(gid, k){ return activityOn(gid, k).reduce(function(s, r){ return s + (+r.amount || 0); }, 0); }
 function amountOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + r.amount; }, 0); }
 function minutesOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + (r.minutes || 0); }, 0); }
 function autoCount(g){ if (!g.obsidian) return 0; return (state.obsidianCounts && state.obsidianCounts[g.obsidian]) || 0; }
@@ -1283,11 +1290,11 @@ function weekSum(g, range){
 }
 function activeDays(g, range){
   var days = {};
-  state.records.forEach(function(r){ if (r.goalId === g.id && r.date >= range.mon && r.date <= range.sun) days[r.date] = 1; });
+  activityAll().forEach(function(r){ if (r.goalId === g.id && r.date >= range.mon && r.date <= range.sun) days[r.date] = 1; });
   return Object.keys(days).length;
 }
 function minutesSum(g, range){
-  return state.records.reduce(function(s, r){ return r.goalId === g.id && r.date >= range.mon && r.date <= range.sun ? s + (+r.minutes || 0) : s; }, 0);
+  return activityAll().reduce(function(s, r){ return r.goalId === g.id && r.date >= range.mon && r.date <= range.sun ? s + (+r.minutes || 0) : s; }, 0);
 }
 function relDate(k){
   if (k === todayKey()) return "今天";
@@ -1711,9 +1718,10 @@ function todayOverview(){
   var connected = !!(state.obsidianInfo && state.obsidianInfo.dir);
   var manual = state.goals.filter(function(g){ return !g.archived && !(g.obsidian && connected); });
   var doneN = manual.filter(function(g){ return amountOn(g.id, today) > 0; }).length;
-  var todayMin = state.records.reduce(function(s, r){ return r.date === today ? s + (+r.minutes || 0) : s; }, 0);
+  var act = activityAll();
+  var todayMin = act.reduce(function(s, r){ return r.date === today ? s + (+r.minutes || 0) : s; }, 0);
   var wr = weekRange(0);
-  var wk = state.records.filter(function(r){ return r.date >= wr.mon && r.date <= wr.sun; }).length;
+  var wk = act.filter(function(r){ return r.date >= wr.mon && r.date <= wr.sun; }).length;
   var best = 0;
   state.goals.forEach(function(g){ var st = streak(g); if (st > best) best = st; });
   return '<div class="ov-grid">' +
@@ -1734,10 +1742,11 @@ function weekRhythm(){
   var names = ["一", "二", "三", "四", "五", "六", "日"];
   var lv = leaveDates(), tk = todayKey(), t = fromKey(tk);
   var cells = [], totalMin = 0, missDays = 0;
-  var firstDay = state.records.reduce(function(m, r){ return (!m || r.date < m) ? r.date : m; }, "");
+  var act = activityAll();
+  var firstDay = act.reduce(function(m, r){ return (!m || r.date < m) ? r.date : m; }, "");
   for (var i = 6; i >= 0; i--){
     var d = addDays(t, -i), k = toKey(d), wd = weekdayCN(d);
-    var recs = state.records.filter(function(r){ return r.date === k; });
+    var recs = act.filter(function(r){ return r.date === k; });
     var mins = recs.reduce(function(s, r){ return s + (+r.minutes || 0); }, 0);
     totalMin += mins;
     var has = recs.length > 0;
@@ -1937,7 +1946,7 @@ function typeMixCard(){
   var rows = REC_TYPES.map(function(t){ return { key: t[0], label: t[1], n: 0, mins: 0 }; });
   rows.push({ key: "unknown", label: "未分类", n: 0, mins: 0 });
   var total = 0, totalMin = 0, days = {};
-  state.records.forEach(function(r){
+  activityAll().forEach(function(r){
     var key = r.noType ? "unknown" : (r.type || "study");
     var row = null;
     for (var i = 0; i < rows.length; i++) if (rows[i].key === key) row = rows[i];
@@ -1994,12 +2003,12 @@ function heat35(){
   var t = fromKey(todayKey());
   var thisMon = addDays(t, -(weekdayCN(t) - 1));
   var start = addDays(thisMon, -28);
-  var weeks = [];
+  var weeks = [], act = activityAll();
   for (var w = 0; w < 5; w++){
     var row = [];
     for (var d = 0; d < 7; d++){
       var k = toKey(addDays(start, w * 7 + d));
-      var dayRecs = state.records.filter(function(r){ return r.date === k; });
+      var dayRecs = act.filter(function(r){ return r.date === k; });
       var mins = dayRecs.reduce(function(x, r){ return x + (+r.minutes || 0); }, 0);
       row.push({ k: k, mins: mins, n: dayRecs.length });
     }
@@ -2183,7 +2192,7 @@ function chart14(){
   var t = fromKey(todayKey()), days = [];
   for (var i = N - 1; i >= 0; i--) days.push(toKey(addDays(t, -i)));
   var rows = state.goals.map(function(g){
-    return { g: g, vals: days.map(function(k){ var m = minutesOn(g.id, k), a = amountOn(g.id, k); return m || a || 0; }) };
+    return { g: g, vals: days.map(function(k){ var m = activityMinutes(g.id, k), a = activityAmount(g.id, k); return m || a || 0; }) };
   });
   var dayTot = [], max = 0;
   for (var di = 0; di < N; di++){
@@ -2240,8 +2249,8 @@ function legendHTML(){
 }
 
 /* ---- 周报 ---- */
-function minSum(range){ var s=0; state.records.forEach(function(r){ if(r.date>=range.mon && r.date<=range.sun) s+= (+r.minutes||0); }); return s; }
-function activeDaysAll(range){ var days={}; state.records.forEach(function(r){ if(r.date>=range.mon && r.date<=range.sun) days[r.date]=1; }); return Object.keys(days).length; }
+function minSum(range){ var s=0; activityAll().forEach(function(r){ if(r.date>=range.mon && r.date<=range.sun) s+= (+r.minutes||0); }); return s; }
+function activeDaysAll(range){ var days={}; activityAll().forEach(function(r){ if(r.date>=range.mon && r.date<=range.sun) days[r.date]=1; }); return Object.keys(days).length; }
 function renderWeek(){
   var cur = weekRange(0), prev = weekRange(-1);
   var h = '<div class="card"><h3>本周概览<span class="hsub">' + fmtDate(cur.mon) + ' – ' + fmtDate(cur.sun) + '，周一开始</span></h3>';
@@ -2264,13 +2273,14 @@ function renderWeek(){
     if (s > best) best = s;
   });
   h += '<table class="wk-tbl"><thead><tr><th>科目</th><th>本周</th><th>上周</th><th class="ta-r">变化</th></tr></thead><tbody>' + rowsH + '</tbody></table>';
+  var act = activityAll();
   var active = 0;
   for (var dd = 0; dd < 7; dd++){
     var k = toKey(addDays(fromKey(cur.mon), dd));
-    if (state.records.some(function(r){ return r.date === k; })) active++;
+    if (act.some(function(r){ return r.date === k; })) active++;
   }
-  var curN = state.records.filter(function(r){ return r.date >= cur.mon && r.date <= cur.sun; }).length;
-  var prevN = state.records.filter(function(r){ return r.date >= prev.mon && r.date <= prev.sun; }).length;
+  var curN = act.filter(function(r){ return r.date >= cur.mon && r.date <= cur.sun; }).length;
+  var prevN = act.filter(function(r){ return r.date >= prev.mon && r.date <= prev.sun; }).length;
   h += '<div class="week-compare">' +
     '<span>本周 <b>' + curN + '</b> 次打卡 · ' + active + ' 天 · ' + minSum(cur) + ' 分钟</span>' +
     '<span class="dim">上周 ' + prevN + ' 次 · ' + activeDaysAll(prev) + ' 天 · ' + minSum(prev) + ' 分钟</span>' +
@@ -2344,11 +2354,12 @@ function buildWeekText(cur, prev, curAll, prevAll, over, best){
   });
   if (autos.length) L.push("· Obsidian 自动统计：" + autos.map(function(g){ return g.name; }).join("、") + "（进度随 Obsidian 更新，无需打卡）");
   L.push("");
-  var curN2 = state.records.filter(function(r){ return r.date >= cur.mon && r.date <= cur.sun; }).length;
-  var prevN2 = state.records.filter(function(r){ return r.date >= prev.mon && r.date <= prev.sun; }).length;
+  var act = activityAll();
+  var curN2 = act.filter(function(r){ return r.date >= cur.mon && r.date <= cur.sun; }).length;
+  var prevN2 = act.filter(function(r){ return r.date >= prev.mon && r.date <= prev.sun; }).length;
   L.push("二、比上周：" + deltaPct(curN2, prevN2) + "（本周 " + curN2 + " 次打卡，累计 " + curAll + "）");
   var tcount = { study: 0, review: 0, practice: 0, recite: 0 };
-  state.records.forEach(function(r){ if (r.date >= cur.mon && r.date <= cur.sun && tcount[r.type] != null) tcount[r.type]++; });
+  act.forEach(function(r){ if (r.date >= cur.mon && r.date <= cur.sun && tcount[r.type] != null) tcount[r.type]++; });
   L.push("· 本周类型：学习 " + tcount.study + " 次 · 复习 " + tcount.review + " 次 · 练习 " + tcount.practice + " 次 · 背诵 " + tcount.recite + " 次");
   L.push("");
   L.push("三、复盘");

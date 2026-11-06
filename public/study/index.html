@@ -126,11 +126,6 @@ main > *{max-width:1320px;margin-left:auto;margin-right:auto}
 .gact input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(37,99,235,.13)}
 .gact .ttype{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-start;gap:6px;background:none;padding:0}
 .gact .btn.primary{grid-column:auto;min-width:88px;padding:0 18px;white-space:nowrap}
-.gact.jact{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
-.gact.jact .f-content{flex:1 1 200px}
-.gact.jact .f-min{flex:0 0 96px}
-.gact.jact .btn.primary{flex:0 0 auto;min-width:88px;margin-left:0}
-.feed-a.jfeed{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .unit-holder{position:relative}
 .unit-holder input{padding-right:38px}
 .unit-holder .u{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);pointer-events:none;font-weight:600}
@@ -141,7 +136,6 @@ main > *{max-width:1320px;margin-left:auto;margin-right:auto}
 .rl-title{font-size:15px;color:var(--muted);font-weight:600;letter-spacing:.3px}
 .rl-more{background:none;border:none;padding:0;font-family:inherit;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:color .15s}
 .rl-more:hover{color:var(--brand)}
-.rl-note{font-size:13px;color:#94A3B8;white-space:nowrap}
 .rec{display:flex;align-items:center;gap:8px;font-size:15px;padding:5px 0}
 .rec .rc-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
 .rec .amt{font-weight:700;color:var(--brand-ink);font-variant-numeric:tabular-nums;flex:none}
@@ -762,7 +756,7 @@ function defaultState(){
       {id:"g7", name:"408 · 计算机网络", unit:"轮", total:3, deadline:"2027-09-30", color:"#C77D5A", base:0, obsidian:"", obstacle:"", countermeasure:""}
     ],
     records: [],
-    /* 随手记：自动统计科目的流水（内容 + 分钟），只用来自己看进度，不参与任何统计 */
+    /* 自动统计科目的打卡流水：框与普通科目一致，但单独存放，不参与任何统计 */
     journals: [],
     kbRoots: JSON.parse(JSON.stringify(DEFAULT_ROOTS)),
     rvLog: [],
@@ -839,12 +833,15 @@ function normalize(s){
       minutes: +r.minutes || 0, backfill: !!r.backfill, type: okT ? t : "study", noType: !okT,
       content: String(r.content || "").slice(0, 60), ts: r.ts || 0 };
   });
-  /* 随手记：旧备份没有就补空数组，字段只增不减 */
+  /* 打卡流水：旧备份没有就补空数组；旧流水只有内容/分钟，补上数量与类型，字段只增不减 */
   s.journals = (Array.isArray(s.journals) ? s.journals : []).filter(function(j){
     return j && j.goalId && j.date && /^\d{4}-\d{2}-\d{2}$/.test(j.date);
   }).map(function(j){
+    var jt = String(j.type || "");
+    var okJT = REC_TYPES.some(function(x){ return x[0] === jt; });
     return { id: String(j.id || uid()), goalId: String(j.goalId), date: String(j.date),
-      content: String(j.content || "").slice(0, 80), minutes: +j.minutes || 0, ts: j.ts || 0 };
+      amount: +j.amount || 0, type: okJT ? jt : "study", backfill: !!j.backfill,
+      content: String(j.content || "").slice(0, 60), minutes: +j.minutes || 0, ts: j.ts || 0 };
   });
   s.kbRoots = (Array.isArray(s.kbRoots) && s.kbRoots.length ? s.kbRoots : JSON.parse(JSON.stringify(DEFAULT_ROOTS)))
     .filter(function(r){ return r && r.path; })
@@ -1209,6 +1206,8 @@ function uid(){ return "r" + Date.now().toString(36) + Math.random().toString(36
 /* ================= 统计（纯函数） ================= */
 function getGoal(id){ for (var i = 0; i < state.goals.length; i++) if (state.goals[i].id === id) return state.goals[i]; return null; }
 function recsOn(gid, k){ return state.records.filter(function(r){ return r.goalId === gid && r.date === k; }); }
+/* 连上 Obsidian 的科目：进度由笔记算，打卡框只留流水 */
+function isAuto(g){ return !!(g && g.obsidian && state.obsidianInfo && state.obsidianInfo.dir); }
 function journalsOn(gid, k){ return (state.journals || []).filter(function(j){ return j.goalId === gid && j.date === k; }); }
 function amountOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + r.amount; }, 0); }
 function minutesOn(gid, k){ return recsOn(gid, k).reduce(function(s, r){ return s + (r.minutes || 0); }, 0); }
@@ -1790,42 +1789,27 @@ function blogLink(g){
   return '<a class="blink" href="/kb/考研/' + encodeURIComponent(m[1]) + '/" target="_blank" rel="noopener">博客笔记 ↗</a>';
 }
 function goalCard(g){
-  var connected = !!(state.obsidianInfo && state.obsidianInfo.dir);
-  var auto = !!g.obsidian && connected;
-  var sug = auto ? null : suggest(g);
+  var auto = isAuto(g);
+  var sug = suggest(g);
   var st = statusOf(g);
   var e = eta(g);
   var et = e === null ? "无" : (remaining(g) <= 0 ? "已完成" : fmtDate(e));
   var sugLabel = "今日建议量";
-  var recHtml = "";
-  if (auto){
-    var jn = journalsOn(g.id, todayKey());
-    recHtml = '<div class="reclist' + (jn.length ? '' : ' lite') + '">' +
-      '<div class="rl-head"><span class="rl-title">' +
-      (jn.length ? '今日随手记 ' + jn.length + ' 条' : '今日还没有随手记') +
-      '</span><span class="rl-note">只记流水 · 不计入统计</span></div>' +
-      jn.map(function(j){
-        return '<div class="rec">' +
-          (j.content ? '<span class="rc-t" title="' + esc(j.content) + '">' + esc(j.content) + '</span>' : "") +
-          (j.minutes ? '<span class="tag">' + j.minutes + ' 分钟</span>' : "") +
-          '<span class="time">' + fmtTime(j.ts) + '</span></div>';
-      }).join("") + '</div>';
-  } else {
-    var recs = recsOn(g.id, todayKey());
-    recHtml = '<div class="reclist' + (recs.length ? '' : ' lite') + '">' +
-      '<div class="rl-head"><span class="rl-title">' +
-      (recs.length ? '今日已记录 ' + recs.length + ' 次' : '今日还没有记录') +
-      '</span><button class="rl-more" data-goal="' + g.id + '" data-act="backfill">补记最近 7 天</button></div>' +
-      recs.map(function(r){
-        return '<div class="rec">' +
-          (r.content ? '<span class="rc-t" title="' + esc(r.content) + '">' + esc(r.content) + '</span>' : "") +
-          '<span class="amt">' + r.amount + ' ' + esc(g.unit) + '</span>' +
-          '<span class="tag ttag">' + typeName(r.type) + '</span>' +
-          (r.minutes ? '<span class="tag">' + r.minutes + ' 分钟</span>' : "") +
-          (r.backfill ? '<span class="tag">补</span>' : "") +
-          '<span class="time">' + fmtTime(r.ts) + '</span></div>';
-      }).join("") + '</div>';
-  }
+  /* 自动统计科目与普通科目用同一套记录区：只是数据取自 journals，不计入统计 */
+  var recs = auto ? journalsOn(g.id, todayKey()) : recsOn(g.id, todayKey());
+  var recHtml = '<div class="reclist' + (recs.length ? '' : ' lite') + '">' +
+    '<div class="rl-head"><span class="rl-title">' +
+    (recs.length ? '今日已记录 ' + recs.length + ' 次' : '今日还没有记录') +
+    '</span><button class="rl-more" data-goal="' + g.id + '" data-act="backfill">补记最近 7 天</button></div>' +
+    recs.map(function(r){
+      return '<div class="rec">' +
+        (r.content ? '<span class="rc-t" title="' + esc(r.content) + '">' + esc(r.content) + '</span>' : "") +
+        (r.amount ? '<span class="amt">' + r.amount + ' ' + esc(g.unit) + '</span>' : "") +
+        '<span class="tag ttag">' + typeName(r.type || "study") + '</span>' +
+        (r.minutes ? '<span class="tag">' + r.minutes + ' 分钟</span>' : "") +
+        (r.backfill ? '<span class="tag">补</span>' : "") +
+        '<span class="time">' + fmtTime(r.ts) + '</span></div>';
+    }).join("") + '</div>';
   var obs = "";
   if (g.obstacle || g.countermeasure){
     obs = '<div class="obstacle"><b>障碍：</b>' + esc(g.obstacle || "—") + '　<b>对策：</b>' + esc(g.countermeasure || "—") + '</div>';
@@ -1845,25 +1829,17 @@ function goalCard(g){
   var autoHint = auto ? '<div class="auto-hint">' +
     'Obsidian 统计 · 已完成 ' + autoCount(g) + '/' + g.total + ' ' + esc(g.unit) + '</div>' + sub
     : (g.obsidian ? '<div class="auto-hint lite">Obsidian 未连接 · 暂用手动打卡，连接后自动同步</div>' : "");
-  var gact = "";
-  if (!auto){
-    var disabled = sug.v <= 0;
-    gact = '<div class="gact">' +
-      '<div class="field f-amt"><label>' + sugLabel + '</label><div class="unit-holder"><input id="amt-' + g.id + '" type="number" inputmode="numeric" min="0" value="' + sug.v + '"' + (disabled ? ' disabled' : '') + '><span class="u">' + esc(g.unit) + '</span></div></div>' +
-      '<div class="field f-content"><label>学习内容（选填）</label><input id="content-' + g.id + '" type="text" placeholder="如：02-例9 有理化" style="width:100%"></div>' +
-      '<div class="field f-min"><label>分钟</label><input id="min-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
-      '<div class="ttype" data-goal="' + g.id + '">' + REC_TYPES.map(function(t, i){
-        return '<button type="button" class="tt' + (i === 0 ? " on" : "") + '" data-goal="' + g.id + '" data-tt="' + t[0] + '">' + t[1] + '</button>';
-      }).join("") + '<button class="btn primary" data-goal="' + g.id + '" data-act="checkin"' + (disabled ? ' disabled' : '') + '>打卡</button></div>' +
-      '</div>';
-  } else {
-    /* 自动统计科目：给一个跟其他科目一样的内容 + 分钟输入框，但只写进 journals */
-    gact = '<div class="gact jact">' +
-      '<div class="field f-content"><label>学习内容（选填）</label><input id="jcontent-' + g.id + '" type="text" placeholder="如：03 章 一元二次方程" style="width:100%"></div>' +
-      '<div class="field f-min"><label>分钟</label><input id="jmin-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
-      '<button class="btn primary" data-goal="' + g.id + '" data-act="note-add">记一笔</button>' +
-      '</div>';
-  }
+  /* 自动统计科目用和普通科目完全相同的输入区，只有落库位置不同 */
+  var disabled = auto ? false : sug.v <= 0;
+  var amtVal = auto ? (sug.v || 1) : sug.v;
+  var gact = '<div class="gact">' +
+    '<div class="field f-amt"><label>' + sugLabel + '</label><div class="unit-holder"><input id="amt-' + g.id + '" type="number" inputmode="numeric" min="0" value="' + amtVal + '"' + (disabled ? ' disabled' : '') + '><span class="u">' + esc(g.unit) + '</span></div></div>' +
+    '<div class="field f-content"><label>学习内容（选填）</label><input id="content-' + g.id + '" type="text" placeholder="如：02-例9 有理化" style="width:100%"></div>' +
+    '<div class="field f-min"><label>分钟</label><input id="min-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
+    '<div class="ttype" data-goal="' + g.id + '">' + REC_TYPES.map(function(t, i){
+      return '<button type="button" class="tt' + (i === 0 ? " on" : "") + '" data-goal="' + g.id + '" data-tt="' + t[0] + '">' + t[1] + '</button>';
+    }).join("") + '<button class="btn primary" data-goal="' + g.id + '" data-act="' + (auto ? "note-add" : "checkin") + '"' + (disabled ? ' disabled' : '') + '>打卡</button></div>' +
+    '</div>';
   var streakTxt = auto ? "自动" : streak(g) + "<small>天</small>";
   var sumParts = ['完成率<b>' + pct(g) + '<small>%</small></b>'];
   if (!auto) sumParts.push('连续<b>' + streakTxt + '</b>');
@@ -2084,9 +2060,9 @@ function recentFeed(){
       var ji = state.journals.indexOf(r);
       h += '<div class="feed-row"><span class="gdot" style="background:' + g.color + '"></span>' +
         '<span class="feed-n">' + esc(g.name) + '</span>' +
-        '<span class="feed-a jfeed">' + (r.content ? esc(r.content) : "随手记") +
-        (r.minutes ? ' · ' + r.minutes + ' 分钟' : "") + '</span>' +
-        '<span class="tag">仅记录</span>' +
+        '<span class="feed-a">' + (r.amount ? '+' + r.amount + ' ' + esc(g.unit) : (r.content ? esc(r.content) : "记录")) +
+        (r.minutes ? ' · ' + r.minutes + ' 分钟' : '') + '</span>' +
+        (r.backfill ? '<span class="tag">补</span>' : "") +
         '<span class="feed-d">' + relDate(r.date) + '</span>' +
         '<button class="feed-act" data-act="edit-note" data-ji="' + ji + '">改</button></div>';
       return;
@@ -2149,27 +2125,37 @@ function delRecord(){
     });
 }
 
-/* ---- 随手记：只留流水，不写进 records，因此不参与完成率 / 四类进度 / 预计 / 热力图 / 近 14 天 / 周报 ---- */
+/* ---- 自动统计科目的打卡流水：只写 journals，因此不参与完成率 / 四类进度 / 预计 / 热力图 / 近 14 天 / 周报 ---- */
 function noteAt(ji){ var i = +ji; return (i >= 0 && i < state.journals.length) ? state.journals[i] : null; }
 function doNoteAdd(gid){
   var g = getGoal(gid); if (!g) return;
-  var ci = $("jcontent-" + gid), mi = $("jmin-" + gid);
-  var content = ci ? String(ci.value || "").trim().slice(0, 80) : "";
-  var minutes = mi ? Math.max(0, Math.round(+mi.value || 0)) : 0;
-  if (!content && !minutes){ toast("写点内容或填个分钟数"); return; }
-  state.journals.push({ id: uid(), goalId: gid, date: todayKey(), content: content, minutes: minutes, ts: Date.now() });
-  save(); render(); toast("已记一笔（不计入统计）");
+  var ai = $("amt-" + gid), ci = $("content-" + gid), mi = $("min-" + gid);
+  var a = ai ? Math.max(0, Math.round(+ai.value || 0)) : 0;
+  if (a <= 0){ toast("请输入大于 0 的数量"); return; }
+  var m = mi ? Math.max(0, Math.round(+mi.value || 0)) : 0;
+  var content = ci ? String(ci.value || "").trim().slice(0, 60) : "";
+  var sel = document.querySelector('.ttype[data-goal="' + gid + '"] .tt.on');
+  var type = sel ? sel.getAttribute("data-tt") : "study";
+  state.journals.push({ id: uid(), goalId: gid, date: todayKey(), amount: a, minutes: m,
+    backfill: false, type: type, content: content, ts: Date.now() });
+  save(); render(); toast("已记录 " + a + " " + g.unit);
 }
 function openNoteModal(ji){
-  var j = noteAt(ji); if (!j){ toast("这条已经不在了"); return; }
+  var j = noteAt(ji); if (!j){ toast("这条记录已经不在了"); return; }
   var g = getGoal(j.goalId); if (!g){ toast("记在已删除的目标上"); return; }
   window._noteIdx = +ji;
+  var typeOpts = REC_TYPES.map(function(t){
+    return '<option value="' + t[0] + '"' + ((j.type || "study") === t[0] ? " selected" : "") + '>' + t[1] + '</option>';
+  }).join("");
   openModal(
-    '<div class="modal"><h3>修改这条随手记</h3>' +
-    '<div class="mfield"><label>记在哪</label><div class="rec-fixed">' + esc(g.name) + ' · ' + fmtDate(j.date) + '</div></div>' +
-    '<div class="mfield"><label>学习内容</label><input id="noContent" type="text" maxlength="80" value="' + esc(j.content || "") + '"></div>' +
-    '<div class="mfield"><label>分钟</label><input id="noMin" type="number" inputmode="numeric" min="0" value="' + (j.minutes || "") + '"></div>' +
-    '<p class="note" style="margin:0">只记流水，不计入完成率、四类进度、热力图、周报等任何统计。</p>' +
+    '<div class="modal"><h3>修改这条记录</h3>' +
+    '<div class="mfield"><label>记在哪</label><div class="rec-fixed">' + esc(g.name) + ' · ' + fmtDate(j.date) + (j.backfill ? " · 补记" : "") + '</div></div>' +
+    '<div class="mrow">' +
+    '<div class="mfield"><label>数量（' + esc(g.unit) + '）</label><input id="noAmt" type="number" inputmode="numeric" min="1" value="' + (j.amount || 1) + '"></div>' +
+    '<div class="mfield"><label>分钟（选填）</label><input id="noMin" type="number" inputmode="numeric" min="0" placeholder="0" value="' + (j.minutes || "") + '"></div>' +
+    '</div>' +
+    '<div class="mfield"><label>类型</label><select id="noType">' + typeOpts + '</select></div>' +
+    '<div class="mfield"><label>学习内容（选填）</label><input id="noContent" type="text" maxlength="80" placeholder="如 第 3 章 极限 20 题" value="' + esc(j.content || "") + '"></div>' +
     '<div class="macts"><button class="btn primary" data-act="save-note">保存</button>' +
     '<button class="btn ghost" data-act="del-note" style="color:var(--red)">删除这条</button>' +
     '<button class="btn ghost" data-act="close-modal">取消</button></div></div>'
@@ -2177,14 +2163,15 @@ function openNoteModal(ji){
 }
 function saveNote(){
   var j = noteAt(window._noteIdx); if (!j) return;
-  j.content = ($("noContent").value || "").trim().slice(0, 80);
+  j.amount = Math.max(1, Math.round(+($("noAmt").value) || 0));
   j.minutes = Math.max(0, Math.round(+($("noMin").value) || 0));
-  if (!j.content && !j.minutes){ toast("内容或分钟至少留一个"); return; }
+  j.type = $("noType").value;
+  j.content = ($("noContent").value || "").trim();
   save(); closeModal(); render(); toast("已改好");
 }
 function delNote(){
   var j = noteAt(window._noteIdx); if (!j) return;
-  confirmBox("删掉这条随手记？", function(){
+  confirmBox("删掉这条记录？", function(){
     state.journals.splice(window._noteIdx, 1);
     save(); closeModal(); render(); toast("已删除");
   });
@@ -2556,9 +2543,10 @@ function openBackfill(gid){
   var sug = suggest(g);
   var opts = "";
   var t = fromKey(todayKey());
+  var jAuto = isAuto(g);
   for (var i = 0; i < 7; i++){
     var d = addDays(t, -i), k = toKey(d);
-    var has = amountOn(gid, k) > 0;
+    var has = jAuto ? journalsOn(gid, k).length > 0 : amountOn(gid, k) > 0;
     opts += '<option value="' + k + '">' + fmtDate(k) + (i === 0 ? "（今天）" : "") + (has ? "（已记录）" : "") + '</option>';
   }
   openModal(
@@ -2569,7 +2557,7 @@ function openBackfill(gid){
     '<div class="mfield"><label>数量（' + esc(g.unit) + '）</label><input id="bfAmt" type="number" inputmode="numeric" min="1" value="' + sug.v + '"></div>' +
     '<div class="mfield"><label>分钟（选填）</label><input id="bfMin" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
     '</div>' +
-    '<div class="mfield"><label>原因（选填，如：生病/有事）</label><input id="bfNote" type="text" placeholder="写请假原因"></div>' +
+    '<div class="mfield"><label>' + (jAuto ? "学习内容（选填）" : "原因（选填，如：生病/有事）") + '</label><input id="bfNote" type="text" placeholder="' + (jAuto ? "如：03 章 例题 14-16" : "写请假原因") + '"></div>' +
     '<div class="macts"><button class="btn" data-act="save-backfill">保存补打卡</button><button class="btn ghost" data-act="close-modal">取消</button></div></div>'
   );
   window._bfGoal = gid;
@@ -2581,7 +2569,13 @@ function saveBackfill(){
   if (a <= 0){ toast("数量需大于 0"); return; }
   var m = +($("bfMin").value) || 0;
   var type = $("bfType") ? $("bfType").value : "study";
-  addRecord(gid, k, a, m, true, type);
+  if (isAuto(g)){
+    var note = (($("bfNote") && $("bfNote").value) || "").trim().slice(0, 60);
+    state.journals.push({ id: uid(), goalId: gid, date: k, amount: a, minutes: m,
+      backfill: true, type: type, content: note, ts: Date.now() });
+  } else {
+    addRecord(gid, k, a, m, true, type);
+  }
   closeModal();
   toast("已补记 " + fmtDate(k));
   render();

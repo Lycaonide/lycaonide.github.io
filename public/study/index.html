@@ -124,7 +124,8 @@ main > *{max-width:1320px;margin-left:auto;margin-right:auto}
 .gact input::placeholder{color:#94A3B8}
 .gact input:hover{border-color:var(--line2)}
 .gact input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(37,99,235,.13)}
-.gact .ttype{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-start;gap:6px;background:none;padding:0}
+.gact .ttype{grid-column:1/-1;grid-row:2;display:flex;align-items:center;justify-content:flex-start;gap:6px;background:none;padding:0}
+.gact.ch-open .ttype{grid-row:3}
 .gact .btn.primary{grid-column:auto;min-width:88px;padding:0 18px;white-space:nowrap}
 .unit-holder{position:relative}
 .unit-holder input{padding-right:38px}
@@ -136,15 +137,10 @@ main > *{max-width:1320px;margin-left:auto;margin-right:auto}
 .ch-row{display:flex;align-items:center;gap:8px;padding:7px 6px;border-radius:7px;cursor:pointer;font-size:14px}
 .ch-row:hover{background:#EEF2F7}
 .ch-row .ch-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ch-row .ch-meta{color:var(--muted);font-size:12.5px;white-space:nowrap}
 .ch-row .ch-fav{color:var(--brand);font-size:12px;font-weight:600;white-space:nowrap}
 .ch-row .ch-x{border:none;background:none;color:var(--muted);font-size:16px;line-height:1;padding:2px 6px;cursor:pointer;font-family:inherit}
 .ch-row .ch-x:hover{color:var(--red)}
-.ch-tpls{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
-.ch-tpls:empty{display:none}
-.ch-tpl{border:1px solid var(--line2);background:#F8FAFF;color:var(--ink2);border-radius:999px;padding:3px 10px;font-size:13px;cursor:pointer;font-family:inherit;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ch-tpl:hover{border-color:var(--brand);color:var(--brand)}
-.ch-tpl b{font-weight:600;color:var(--brand);margin-right:4px}
+.gact .ch-panel{grid-column:2;grid-row:2;margin-top:0}
 .reclist{margin-top:12px;border-top:1px solid var(--line-soft);padding-top:10px}
 .reclist.lite{margin-top:19px;border-top:none;padding-top:0}
 .reclist.lite .rl-head{margin-bottom:0}
@@ -441,7 +437,9 @@ html::-webkit-scrollbar-thumb:hover{background:#B4C2D6}
   .gact .f-amt{grid-column:1;grid-row:1}
   .gact .f-min{grid-column:2;grid-row:1}
   .gact .f-content{grid-column:1/-1;grid-row:2}
+  .gact .ch-panel{grid-column:1/-1;grid-row:3}
   .gact .ttype{grid-row:3;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .gact.ch-open .ttype{grid-row:4}
   .gact .ttype .btn.primary{grid-column:1/-1;margin-left:0;margin-top:8px}
   .gact .tt{padding:0 6px;height:38px;font-size:14px}
   .rh-grid{gap:4px}
@@ -1920,8 +1918,9 @@ function goalCard(g){
     '<div class="field f-amt"><label>' + sugLabel + '</label><div class="unit-holder"><input id="amt-' + g.id + '" type="number" inputmode="numeric" min="0" value="' + amtVal + '"' + (disabled ? ' disabled' : '') + '><span class="u">' + esc(g.unit) + '</span></div></div>' +
     '<div class="field f-content"><label>学习内容（选填）</label><div class="ch-wrap" data-gid="' + g.id + '">' +
       '<input id="content-' + g.id + '" type="text" placeholder="如：02-例9 有理化" style="width:100%" autocomplete="off">' +
-      '</div><div class="ch-tpls">' + chTplHTML(g.id) + '</div></div>' +
+      '</div></div>' +
     '<div class="field f-min"><label>分钟</label><input id="min-' + g.id + '" type="number" inputmode="numeric" min="0" placeholder="0"></div>' +
+    '<div class="ch-panel" data-gid="' + g.id + '"></div>' +
     '<div class="ttype" data-goal="' + g.id + '">' + REC_TYPES.map(function(t, i){
       return '<button type="button" class="tt' + (i === 0 ? " on" : "") + '" data-goal="' + g.id + '" data-tt="' + t[0] + '">' + t[1] + '</button>';
     }).join("") + '<button class="btn primary" data-goal="' + g.id + '" data-act="' + (auto ? "note-add" : "checkin") + '"' + (disabled ? ' disabled' : '') + '>打卡</button></div>' +
@@ -1937,7 +1936,7 @@ function goalCard(g){
     '<span class="chip ' + st.cls + '">' + st.t + '</span></div>' +
     '<div class="gbar"><div class="gfill" style="width:' + pct(g) + '%;background:' + g.color + '"></div></div>' +
     autoHint +
-    gact + '<div class="ch-panel" data-gid="' + g.id + '"></div>' + recHtml + obs + '</div>';
+    gact + recHtml + obs + '</div>';
 }
 
 /* 环形进度：96×96，中心写百分比 */
@@ -2198,7 +2197,7 @@ function saveRecord(){
   r.minutes = m;
   r.type = $("reType").value;
   r.content = ($("reContent").value || "").trim();
-  bumpContent(r.goalId, r.content, r.amount, r.minutes, r.type);
+  bumpContent(r.goalId, r.content);
   save(); closeModal(); render();
   toast("已改好 · " + fmtDate(r.date) + " " + a + " " + (getGoal(r.goalId) || {}).unit);
 }
@@ -2225,7 +2224,7 @@ function doNoteAdd(gid){
   var type = sel ? sel.getAttribute("data-tt") : "study";
   state.journals.push({ id: uid(), goalId: gid, date: todayKey(), amount: a, minutes: m,
     backfill: false, type: type, content: content, ts: Date.now() });
-  bumpContent(gid, content, a, m, type);
+  bumpContent(gid, content);
   save(); render(); toast("已记录 " + a + " " + g.unit);
 }
 function openNoteModal(ji){
@@ -2255,7 +2254,7 @@ function saveNote(){
   j.minutes = Math.max(0, Math.round(+($("noMin").value) || 0));
   j.type = $("noType").value;
   j.content = ($("noContent").value || "").trim();
-  bumpContent(j.goalId, j.content, j.amount, j.minutes, j.type);
+  bumpContent(j.goalId, j.content);
   save(); closeModal(); render(); toast("已改好");
 }
 function delNote(){
@@ -2612,17 +2611,13 @@ function renderMine(){
   $("tab-mine").innerHTML = h;
 }
 
-/* ---- 学习内容历史 / 常用模板 ---- */
+/* ---- 学习内容历史 ---- */
 function contentList(gid){
   var a = (state.contentLib && state.contentLib[gid]) || [];
-  return a.slice().sort(function(x, y){
-    var fx = x.n >= 3 ? 1 : 0, fy = y.n >= 3 ? 1 : 0;
-    if (fx !== fy) return fy - fx;
-    if (fx && x.n !== y.n) return y.n - x.n;
-    return (y.ts || 0) - (x.ts || 0);
-  });
+  /* 最近用过的排最前，点开就能看到上次的记录 */
+  return a.slice().sort(function(x, y){ return (y.ts || 0) - (x.ts || 0); });
 }
-function bumpContent(gid, text, amount, minutes, type){
+function bumpContent(gid, text){
   var t = String(text || "").trim().slice(0, 60);
   if (!t || !gid) return;
   if (!state.contentLib) state.contentLib = {};
@@ -2631,21 +2626,16 @@ function bumpContent(gid, text, amount, minutes, type){
   if (hid.indexOf(t) >= 0) return;                 /* 用户删过的，不再自动收进来 */
   var arr = state.contentLib[gid] || (state.contentLib[gid] = []);
   var hit = arr.filter(function(x){ return x.t === t; })[0];
-  if (hit){ hit.n++; hit.ts = Date.now(); hit.amount = +amount || 0; hit.minutes = +minutes || 0; hit.type = type || "study"; }
-  else arr.push({ t: t, n: 1, ts: Date.now(), amount: +amount || 0, minutes: +minutes || 0, type: type || "study" });
+  /* 历史只存学过的文字和用过几次，不存上次的数字，免得点一下带错 */
+  if (hit){ hit.n++; hit.ts = Date.now(); }
+  else arr.push({ t: t, n: 1, ts: Date.now() });
   if (arr.length > 12) arr.splice(0, arr.length - 12);
   save();
 }
 function chRowHTML(gid, x){
-  var bits = [];
-  if (x.amount) bits.push(x.amount + " " + ((getGoal(gid) || {}).unit || ""));
-  if (x.minutes) bits.push(x.minutes + " 分钟");
-  if (x.type) bits.push(typeName(x.type));
-  return '<div class="ch-row" data-ch="pick" data-gid="' + gid + '" data-text="' + esc(x.t) + '"' +
-    ' data-amount="' + (+x.amount || 0) + '" data-minutes="' + (+x.minutes || 0) + '" data-type="' + esc(x.type || "study") + '">' +
-    (x.n >= 3 ? '<span class="ch-fav">常用 ' + x.n + ' 次</span>' : "") +
+  return '<div class="ch-row" data-ch="pick" data-gid="' + gid + '" data-text="' + esc(x.t) + '">' +
+    (x.n >= 3 ? '<span class="ch-fav">' + x.n + ' 次</span>' : "") +
     '<span class="ch-t" title="' + esc(x.t) + '">' + esc(x.t) + '</span>' +
-    (bits.length ? '<span class="ch-meta">' + esc(bits.join(" · ")) + '</span>' : "") +
     '<button type="button" class="ch-x" data-ch="del" data-gid="' + gid + '" data-text="' + esc(x.t) + '" title="从历史里删掉">×</button></div>';
 }
 function chPanelHTML(gid){
@@ -2653,15 +2643,12 @@ function chPanelHTML(gid){
   if (!rows.length) return '<div class="ch-empty">还没有历史记录，打过一次卡就会出现在这里</div>';
   return rows.slice(0, 8).map(function(x){ return chRowHTML(gid, x); }).join("");
 }
-function chTplHTML(gid){
-  return contentList(gid).filter(function(x){ return x.n >= 3; }).slice(0, 4).map(function(x){
-    return '<button type="button" class="ch-tpl" data-ch="pick" data-gid="' + gid + '" data-text="' + esc(x.t) + '"' +
-      ' data-amount="' + (+x.amount || 0) + '" data-minutes="' + (+x.minutes || 0) + '" data-type="' + esc(x.type || "study") + '">' +
-      '<b>' + x.n + ' 次</b>' + esc(x.t) + '</button>';
-  }).join("");
-}
 function closeChPanels(){
-  document.querySelectorAll(".ch-panel.open").forEach(function(p){ p.classList.remove("open"); });
+  document.querySelectorAll(".ch-panel.open").forEach(function(p){
+    p.classList.remove("open");
+    var g = p.closest ? p.closest(".gact") : null;
+    if (g) g.classList.remove("ch-open");
+  });
 }
 function openChPanel(input){
   closeChPanels();
@@ -2669,21 +2656,18 @@ function openChPanel(input){
   if (!wrap) return;
   var gid = wrap.getAttribute("data-gid");
   var p = document.querySelector('.ch-panel[data-gid="' + gid + '"]');
-  if (p){ p.innerHTML = chPanelHTML(gid); p.classList.add("open"); }
+  if (p){
+    p.innerHTML = chPanelHTML(gid); p.classList.add("open");
+    var g = p.closest ? p.closest(".gact") : null;
+    if (g) g.classList.add("ch-open");
+  }
 }
 function chPick(el){
   var gid = el.getAttribute("data-gid"), t = el.getAttribute("data-text") || "";
   window._chNoOpen = true;
   var ci = $("content-" + gid);
   if (ci){ ci.value = t; ci.focus(); }
-  var ai = $("amt-" + gid), mi = $("min-" + gid);
-  if (ai && +el.getAttribute("data-amount") > 0) ai.value = el.getAttribute("data-amount");
-  if (mi && +el.getAttribute("data-minutes") > 0) mi.value = el.getAttribute("data-minutes");
-  var tt = document.querySelector('.ttype[data-goal="' + gid + '"]');
-  if (tt){
-    var want = el.getAttribute("data-type") || "study";
-    tt.querySelectorAll(".tt").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-tt") === want); });
-  }
+  /* 只回填文字；数量、分钟、类型保持这次自己填的，别把上次的数字带过来 */
   closeChPanels();
   setTimeout(function(){ window._chNoOpen = false; closeChPanels(); }, 0);
 }
@@ -2698,11 +2682,6 @@ function chDel(gid, t){
   /* 只重绘这一块，不动整页，避免把已经填好的内容清掉 */
   var p = document.querySelector('.ch-panel[data-gid="' + gid + '"]');
   if (p && p.classList.contains("open")) p.innerHTML = chPanelHTML(gid);
-  var wrap = document.querySelector('.ch-wrap[data-gid="' + gid + '"]');
-  if (wrap && wrap.parentNode){
-    var box = wrap.parentNode.querySelector(".ch-tpls");
-    if (box) box.innerHTML = chTplHTML(gid);
-  }
 }
 
 /* ---- 动作 ---- */
@@ -2716,7 +2695,7 @@ function doCheckin(gid){
   var sel = document.querySelector('.ttype[data-goal="' + gid + '"] .tt.on');
   var type = sel ? sel.getAttribute("data-tt") : "study";
   addRecord(gid, todayKey(), a, m, false, type, content);
-  bumpContent(gid, content, a, m, type);
+  bumpContent(gid, content);
   toast("已记录 " + a + " " + g.unit);
   render();
 }
